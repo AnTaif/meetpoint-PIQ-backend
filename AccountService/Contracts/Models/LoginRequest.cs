@@ -1,7 +1,10 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace AccountService.Contracts.Models;
 
 public class LoginRequest
 {
-    public string Email { get; } = null!;
-    public string Password { get; } = null!;
+    [EmailAddress] public string Email { get; init; } = null!;
+
+    public string Password { get; init; } = null!;
 }

@@ -17,8 +17,6 @@ public class DataSeeder
     {
         using var scope = serviceProvider.CreateScope();
         var dbContext = scope.ServiceProvider.GetRequiredService<AccountDbContext>();
-        await dbContext.Database.MigrateAsync();
-
         var userManager = scope.ServiceProvider.GetRequiredService<UserManager<User>>();
         
         if (dbContext.Users.Any())
@@ -26,6 +24,7 @@ public class DataSeeder
             return;
         }
 
+        await dbContext.Database.MigrateAsync();
         await SeedUsersAsync(userManager);
     }
 
