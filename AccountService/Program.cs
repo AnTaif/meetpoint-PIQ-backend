@@ -1,12 +1,15 @@
 using AccountService.Data;
 using AccountService.Models;
 using AccountService.Options;
+using DotNetEnv;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
+
+Env.Load("../.env");
 
 builder.Services.AddSwaggerGen();
 builder.Services.AddControllers();
@@ -50,7 +53,19 @@ builder.Services.AddAuthentication(options =>
         };
     });
 
-builder.Services.AddDbContext<AccountDbContext>(options => { options.UseNpgsql(); });
+var dbHost = Environment.GetEnvironmentVariable("DB_CONTAINER") ?? "localhost";
+var dbPort = Environment.GetEnvironmentVariable("DATABASE_PORT") ?? "3306";
+var dbName = builder.Configuration.GetSection("DatabaseName").Value
+             ?? throw new NullReferenceException("Cannot parse DatabaseName from appsettings");
+var dbUser = Environment.GetEnvironmentVariable("DATABASE_USER")!;
+var dbPassword = Environment.GetEnvironmentVariable("DATABASE_PASSWORD")!;
+
+var connectionString = $"Host={dbHost};Port={dbPort};Database={dbName};Username={dbUser};Password={dbPassword}";
+
+builder.Services.AddDbContext<AccountDbContext>(options =>
+{
+    options.UseMySql(connectionString, new MySqlServerVersion(new Version(9, 2)));
+});
 
 var app = builder.Build();
 

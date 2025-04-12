@@ -17,10 +17,10 @@ public class DataSeeder
     {
         using var scope = serviceProvider.CreateScope();
         var dbContext = scope.ServiceProvider.GetRequiredService<AccountDbContext>();
-        var userManager = scope.ServiceProvider.GetRequiredService<UserManager<User>>();
-
         await dbContext.Database.MigrateAsync();
 
+        var userManager = scope.ServiceProvider.GetRequiredService<UserManager<User>>();
+        
         if (dbContext.Users.Any())
         {
             return;
