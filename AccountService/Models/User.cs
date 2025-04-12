@@ -22,6 +22,7 @@ public sealed class User : IdentityUser<Guid>
     public User(string email, string firstName, string lastName, string? middleName)
     {
         Email = email;
+        UserName = email;
         FirstName = firstName;
         LastName = lastName;
         MiddleName = middleName;

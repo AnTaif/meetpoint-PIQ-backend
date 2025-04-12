@@ -25,13 +25,14 @@ public class DataSeeder
         }
 
         await dbContext.Database.MigrateAsync();
-        await SeedUsersAsync(userManager);
+        await SeedUsersAsync(userManager, dbContext);
     }
 
-    private static async Task SeedUsersAsync(UserManager<User> userManager)
+    private static async Task SeedUsersAsync(UserManager<User> userManager, AccountDbContext dbContext)
     {
         var testUser = new User("temp@mail.ru", "Имя", "Фамилия", "Отчество");
 
-        await userManager.CreateAsync(testUser, "password");
+        var result = await userManager.CreateAsync(testUser, "password");
+        await dbContext.SaveChangesAsync();
     }
 }
