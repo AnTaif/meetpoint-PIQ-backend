@@ -1,11 +1,21 @@
+using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OpenApi.Models;
+using Swashbuckle.AspNetCore.Filters;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
-namespace Core.Extensions;
+namespace Core.Swagger;
 
 public static class SwaggerGenOptionsExtensions
 {
+    public static void AddDocs(this SwaggerGenOptions options)
+    {
+        options.ExampleFilters();
+        var xmlFile = $"{Assembly.GetCallingAssembly().GetName().Name}.xml";
+        var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+        options.IncludeXmlComments(xmlPath);
+    }
+    
     public static void AddJwtSecurity(this SwaggerGenOptions options)
     {
         options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme

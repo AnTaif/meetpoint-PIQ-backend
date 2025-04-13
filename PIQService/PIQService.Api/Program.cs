@@ -1,16 +1,22 @@
-using Core.Extensions;
+using System.Reflection;
+using Core.Swagger;
 using DotNetEnv;
 using PIQService.Api;
-
-var builder = WebApplication.CreateBuilder(args);
+using Swashbuckle.AspNetCore.Filters;
 
 Env.Load("../../.env");
 
+var builder = WebApplication.CreateBuilder(args);
+
 builder.Services.AddControllers();
-builder.Services.AddSwaggerGen(options =>
-{
-    options.AddJwtSecurity();
-});
+
+builder.Services
+    .AddSwaggerGen(options =>
+    {
+        options.AddJwtSecurity();
+        options.AddDocs();
+    })
+    .AddSwaggerExamplesFromAssemblies(Assembly.GetExecutingAssembly());
 
 builder.AddAuth();
 

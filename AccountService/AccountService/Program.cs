@@ -1,12 +1,18 @@
+using System.Reflection;
 using AccountService;
 using AccountService.Data;
+using Core.Swagger;
 using DotNetEnv;
-
-var builder = WebApplication.CreateBuilder(args);
+using Swashbuckle.AspNetCore.Filters;
 
 Env.Load("../../.env");
 
-builder.Services.AddSwaggerGen();
+var builder = WebApplication.CreateBuilder(args);
+
+builder.Services
+    .AddSwaggerGen(options => { options.AddDocs(); })
+    .AddSwaggerExamplesFromAssemblies(Assembly.GetExecutingAssembly());
+
 builder.Services.AddControllers();
 
 builder.AddAuth();
