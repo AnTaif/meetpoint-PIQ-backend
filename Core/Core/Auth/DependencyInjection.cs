@@ -1,16 +1,14 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
-using PIQService.Api.Options;
 
-namespace PIQService.Api;
+namespace Core.Auth;
 
 public static class DependencyInjection
 {
-    public static void AddAuth(this WebApplicationBuilder builder)
+    public static void AddJwtAuth(this IServiceCollection services, ConfigurationManager configuration)
     {
-        var services = builder.Services;
-        var configuration = builder.Configuration;
-
         var jwtOptions = new JwtOptions();
         configuration.GetSection("JwtOptions").Bind(jwtOptions);
 

@@ -1,7 +1,7 @@
 using System.Reflection;
+using Core.Auth;
 using Core.Swagger;
 using DotNetEnv;
-using PIQService.Api;
 using Swashbuckle.AspNetCore.Filters;
 
 Env.Load("../../.env");
@@ -18,7 +18,7 @@ builder.Services
     })
     .AddSwaggerExamplesFromAssemblies(Assembly.GetExecutingAssembly());
 
-builder.AddAuth();
+builder.Services.AddJwtAuth(builder.Configuration);
 
 var app = builder.Build();
 

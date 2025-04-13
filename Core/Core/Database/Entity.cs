@@ -1,4 +1,4 @@
-namespace Core.Common;
+namespace Core.Database;
 
 public class Entity(Guid id)
 {

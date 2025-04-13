@@ -1,6 +1,8 @@
 using System.Reflection;
 using AccountService;
 using AccountService.Data;
+using Core.Auth;
+using Core.Database;
 using Core.Swagger;
 using DotNetEnv;
 using Swashbuckle.AspNetCore.Filters;
@@ -15,9 +17,10 @@ builder.Services
 
 builder.Services.AddControllers();
 
-builder.AddAuth();
-builder.AddDatabase();
-builder.AddServices();
+builder.Services.AddJwtAuth(builder.Configuration);
+builder.Services.AddIdentity();
+builder.Services.AddMySqlDbContext<AccountDbContext>(builder.Configuration);
+builder.Services.AddServices();
 
 var app = builder.Build();
 
