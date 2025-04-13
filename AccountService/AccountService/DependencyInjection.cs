@@ -77,22 +77,17 @@ public static class DependencyInjection
             })
             .AddEntityFrameworkStores<AccountDbContext>()
             .AddDefaultTokenProviders();
-        
-        var dbHost = Environment.GetEnvironmentVariable("DB_CONTAINER") ?? "localhost";
-        var dbPort = Environment.GetEnvironmentVariable("DATABASE_PORT") ?? "3306";
-        var dbName = builder.Configuration.GetSection("DatabaseName").Value
-                     ?? throw new Exception("Cannot parse DatabaseName from appsettings");
-        var dbUser = Environment.GetEnvironmentVariable("DATABASE_USER")!;
-        var dbPassword = Environment.GetEnvironmentVariable("DATABASE_PASSWORD")!;
 
-        var dbVersion = builder.Configuration.GetSection("DatabaseVersion").Value
-                        ?? throw new Exception("Cannot parse DatabaseVersion from appsettings");
-
-        var connectionString = $"Host={dbHost};Port={dbPort};Database={dbName};Username={dbUser};Password={dbPassword}";
+        var dbOptions = new DatabaseOptions();
+        configuration.GetSection("DatabaseOptions").Bind(dbOptions);
+        dbOptions.Host = Environment.GetEnvironmentVariable("DB_CONTAINER") ?? "localhost";
+        dbOptions.Port = Environment.GetEnvironmentVariable("DATABASE_PORT") ?? "3306";
+        dbOptions.User = Environment.GetEnvironmentVariable("DATABASE_USER")!;
+        dbOptions.Password = Environment.GetEnvironmentVariable("DATABASE_PASSWORD")!;
 
         builder.Services.AddDbContext<AccountDbContext>(options =>
         {
-            options.UseMySql(connectionString, new MySqlServerVersion(dbVersion));
+            options.UseMySql(dbOptions.GetConnectionString(), new MySqlServerVersion(dbOptions.Version));
         });
     }
 }

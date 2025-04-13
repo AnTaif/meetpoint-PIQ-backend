@@ -3,16 +3,35 @@
     driver: bridge
 
 services:
-  piq-account-service:
-    image: piq-account-service
+  piq-service:
+    container_name: piq-service
+    image: piq-service
     build:
-      context: .
-      dockerfile: AccountService/AccountService/Dockerfile
+      context: PIQService
+      dockerfile: PIQService.Api/Dockerfile
     environment:
       ASPNETCORE_ENVIRONMENT: Development
       DB_CONTAINER: "piq-db"
     env_file:
       - .env
+    ports:
+      - "5212:5212"
+    depends_on:
+      - piq-db
+  
+  account-service:
+    container_name: account-service
+    image: piq-account-service
+    build:
+      context: AccountService
+      dockerfile: AccountService/Dockerfile
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      DB_CONTAINER: "piq-db"
+    env_file:
+      - .env
+    ports:
+      - "5247:5247"
     depends_on:
       - piq-db
   
