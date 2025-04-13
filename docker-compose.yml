@@ -7,11 +7,14 @@ services:
     image: piq-account-service
     build:
       context: .
-      dockerfile: AccountService/Dockerfile
-    depends_on:
-      - piq-db
+      dockerfile: AccountService/AccountService/Dockerfile
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      DB_CONTAINER: "piq-db"
     env_file:
       - .env
+    depends_on:
+      - piq-db
   
   piq-db:
     container_name: piq-db

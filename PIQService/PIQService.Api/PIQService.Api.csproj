@@ -10,27 +10,23 @@
     <ItemGroup>
         <PackageReference Include="DotNetEnv" Version="3.1.1" />
         <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="9.0.4" />
-        <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="9.0.4" />
         <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.1"/>
-        <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.4" />
-        <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.4">
-          <PrivateAssets>all</PrivateAssets>
-          <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-        </PackageReference>
-        <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="9.0.0-preview.3.efcore.9.0.0" />
         <PackageReference Include="Swashbuckle.AspNetCore.SwaggerGen" Version="8.1.1" />
         <PackageReference Include="Swashbuckle.AspNetCore.SwaggerUI" Version="8.1.1" />
-        <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.7.0" />
     </ItemGroup>
 
     <ItemGroup>
-      <Content Include="..\.dockerignore">
+      <Content Include="..\..\.dockerignore">
         <Link>.dockerignore</Link>
       </Content>
     </ItemGroup>
 
     <ItemGroup>
       <ProjectReference Include="..\..\Core\Core\Core.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Controllers\" />
     </ItemGroup>
 
 </Project>
