@@ -1,5 +1,4 @@
 using System.ComponentModel.DataAnnotations;
-using Core.Common;
 using Microsoft.AspNetCore.Identity;
 
 // ReSharper disable EntityFramework.ModelValidation.UnlimitedStringLength

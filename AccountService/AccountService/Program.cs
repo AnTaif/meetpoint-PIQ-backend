@@ -4,7 +4,7 @@ using DotNetEnv;
 
 var builder = WebApplication.CreateBuilder(args);
 
-Env.Load("../.env");
+Env.Load("../../.env");
 
 builder.Services.AddSwaggerGen();
 builder.Services.AddControllers();

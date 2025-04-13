@@ -1,5 +1,4 @@
 using AccountService.Contracts.Models;
-using AccountService.Data;
 using AccountService.Models;
 using AccountService.Providers;
 using Core.Results;
