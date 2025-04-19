@@ -20,6 +20,18 @@ builder.Services
 
 builder.Services.AddJwtAuth(builder.Configuration);
 
+var corsOrigins = builder.Configuration.GetSection("AllowedOrigins").Get<string[]?>();
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("FrontendPolicy", policy =>
+    {
+        if (corsOrigins != null)
+            policy.WithOrigins(corsOrigins).AllowAnyHeader().AllowAnyMethod();
+        else
+            policy.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod();
+    });
+});
+
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
@@ -30,6 +42,9 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+app.UseCors("FrontendPolicy");
+
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();

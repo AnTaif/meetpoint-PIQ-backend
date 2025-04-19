@@ -22,6 +22,18 @@ builder.Services.AddIdentity();
 builder.Services.AddMySqlDbContext<AccountDbContext>(builder.Configuration);
 builder.Services.AddServices();
 
+var corsOrigins = builder.Configuration.GetSection("AllowedOrigins").Get<string[]?>();
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("FrontendPolicy", policy =>
+    {
+        if (corsOrigins != null)
+            policy.WithOrigins(corsOrigins).AllowAnyHeader().AllowAnyMethod();
+        else
+            policy.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod();
+    });
+});
+
 var app = builder.Build();
 
 var dataSeeder = new DataSeeder(app.Services);
@@ -34,6 +46,12 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseCors("FrontendPolicy");
+
+app.UseAuthentication();
+app.UseAuthorization();
+
 app.MapControllers();
 
 app.Run();
