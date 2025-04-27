@@ -17,11 +17,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PIQService.Api", "PIQServic
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "PIQService", "PIQService", "{B311F2A3-46B4-407C-A988-AD91FD867BB2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PIQService.Application", "PIQService.Application\PIQService.Application.csproj", "{3B482328-21CC-41CB-B868-DD7C5B149BC1}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PIQService.Application", "PIQService\PIQService.Application\PIQService.Application.csproj", "{3B482328-21CC-41CB-B868-DD7C5B149BC1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PIQService.Models", "PIQService.Models\PIQService.Models.csproj", "{9EDE5D64-3957-49A1-9A99-40C04D4EF143}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PIQService.Models", "PIQService\PIQService.Models\PIQService.Models.csproj", "{9EDE5D64-3957-49A1-9A99-40C04D4EF143}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PIQService.Infra", "PIQService.Infra\PIQService.Infra.csproj", "{605C30A2-A13F-4590-AA32-CA5831354CAE}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PIQService.Infra", "PIQService\PIQService.Infra\PIQService.Infra.csproj", "{605C30A2-A13F-4590-AA32-CA5831354CAE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

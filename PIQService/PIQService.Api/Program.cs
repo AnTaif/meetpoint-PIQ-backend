@@ -1,7 +1,11 @@
 using System.Reflection;
 using Core.Auth;
+using Core.Database;
 using Core.Swagger;
 using DotNetEnv;
+using PIQService.Application;
+using PIQService.Infra;
+using PIQService.Infra.Data;
 using Swashbuckle.AspNetCore.Filters;
 
 Env.Load("../../.env");
@@ -20,6 +24,10 @@ builder.Services
 
 builder.Services.AddJwtAuth(builder.Configuration);
 
+builder.Services.AddServices();
+builder.Services.AddRepositories();
+builder.Services.AddMySqlDbContext<AppDbContext>(builder.Configuration);
+
 var corsOrigins = builder.Configuration.GetSection("AllowedOrigins").Get<string[]?>();
 builder.Services.AddCors(options =>
 {
@@ -33,6 +41,9 @@ builder.Services.AddCors(options =>
 });
 
 var app = builder.Build();
+
+var dataSeeder = new DataSeeder(app.Services);
+await dataSeeder.SeedAsync();
 
 if (app.Environment.IsDevelopment())
 {

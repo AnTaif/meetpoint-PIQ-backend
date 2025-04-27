@@ -17,7 +17,7 @@ public class DataSeeder
         using var scope = serviceProvider.CreateScope();
         var dbContext = scope.ServiceProvider.GetRequiredService<AccountDbContext>();
         var userManager = scope.ServiceProvider.GetRequiredService<UserManager<User>>();
-     
+
         Console.WriteLine("Start seeding...");
 
         if (!await dbContext.Database.EnsureCreatedAsync())
@@ -32,7 +32,13 @@ public class DataSeeder
 
     private static async Task SeedUsersAsync(UserManager<User> userManager, AccountDbContext dbContext)
     {
-        var testUser = new User("temp@mail.ru", "Имя", "Фамилия", "Отчество");
+        var testUser = new User(
+            Guid.Parse("0c9e1791-96ea-4533-a2be-1691cfa8a368"),
+            "temp@mail.ru",
+            "Имя",
+            "Фамилия",
+            "Отчество"
+        );
 
         var result = await userManager.CreateAsync(testUser, "password");
     }
