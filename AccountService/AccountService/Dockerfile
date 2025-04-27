@@ -7,10 +7,10 @@ EXPOSE 8081
 FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
-COPY ["AccountService/AccountService.csproj", "AccountService/"]
-RUN dotnet restore "AccountService/AccountService.csproj"
+COPY ["AccountService/AccountService/AccountService.csproj", "AccountService/AccountService/"]
+RUN dotnet restore "AccountService/AccountService/AccountService.csproj"
 COPY . .
-WORKDIR "/src/AccountService"
+WORKDIR "/src/AccountService/AccountService"
 RUN dotnet build "AccountService.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
 FROM build AS publish

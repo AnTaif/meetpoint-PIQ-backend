@@ -7,8 +7,9 @@ services:
     container_name: piq-service
     image: piq-service
     build:
-      context: PIQService
-      dockerfile: PIQService.Api/Dockerfile
+      context: .
+      dockerfile: PIQService/PIQService.Api/Dockerfile
+    restart: always
     environment:
       ASPNETCORE_ENVIRONMENT: Development
       DB_CONTAINER: "piq-db"
@@ -23,8 +24,9 @@ services:
     container_name: account-service
     image: piq-account-service
     build:
-      context: AccountService
-      dockerfile: AccountService/Dockerfile
+      context: .
+      dockerfile: AccountService/AccountService/Dockerfile
+    restart: always
     environment:
       ASPNETCORE_ENVIRONMENT: Development
       DB_CONTAINER: "piq-db"
@@ -41,8 +43,6 @@ services:
     restart: always
     environment:
       - MYSQL_ROOT_PASSWORD=${DATABASE_PASSWORD}
-      - MYSQL_USER=${DATABASE_USER}
-      - MYSQL_PASSWORD=${DATABASE_PASSWORD}
     ports:
       - "3306:3306"
     volumes:
