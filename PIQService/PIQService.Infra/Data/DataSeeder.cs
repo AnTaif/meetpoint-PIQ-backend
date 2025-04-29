@@ -52,10 +52,10 @@ public class DataSeeder
             LastName = "Мациева",
         };
 
-        var user11 = GetUser("Зверев", "Александр", team2Id);
-        var user12 = GetUser("Калугин", "Илья", team2Id);
-        var user13 = GetUser("Новиков", "Антон", team2Id);
-        var user14 = GetUser("Рябков", "Георгий", team2Id);
+        var user11 = GetUser("Зверев", "Александр", team1Id);
+        var user12 = GetUser("Калугин", "Илья", team1Id);
+        var user13 = GetUser("Новиков", "Антон", team1Id);
+        var user14 = GetUser("Рябков", "Георгий", team1Id);
 
         var user21 = GetUser("Анамнешев", "Николай", team2Id);
         var user22 = GetUser("Куркин", "Артём", team2Id);

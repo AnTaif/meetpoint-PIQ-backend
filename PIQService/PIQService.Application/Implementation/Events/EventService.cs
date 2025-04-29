@@ -64,26 +64,40 @@ public class EventService : IEventService
 
     private static IEnumerable<DirectionDto> ConvertTeamsToDirectionDtos(IEnumerable<Team> teams)
     {
-        var directionLookup = teams.ToLookup(t => t.Project.Direction);
+        var teamList = teams.ToList();
+        var directions = teamList.Select(t => t.Project.Direction).DistinctBy(d => d.Id).ToList();
+        var projects = teamList.Select(t => t.Project).DistinctBy(t => t.Id).ToList();
 
-        return directionLookup.Select(directionGroup => new DirectionDto
+        var directionIdToProjects = new Dictionary<Guid, List<Project>>();
+        foreach (var direction in directions)
         {
-            Id = directionGroup.Key.Id,
-            Name = directionGroup.Key.Name,
-            Projects = directionGroup
-                .ToLookup(t => t.Project)
-                .Select(projectGroup => new ProjectDto
+            var projectsByDirection = projects.Where(p => p.Direction.Id == direction.Id).ToList();
+            directionIdToProjects.Add(direction.Id, projectsByDirection);
+        }
+
+        var projectIdToTeams = new Dictionary<Guid, List<Team>>();
+        foreach (var project in projects)
+        {
+            var teamsByProject = teamList.Where(t => t.Project.Id == project.Id).ToList();
+            projectIdToTeams.Add(project.Id, teamsByProject);
+        }
+
+        return directions.Select(d => new DirectionDto
+        {
+            Id = d.Id,
+            Name = d.Name,
+            Projects = directionIdToProjects[d.Id].Select(p => new ProjectDto
+            {
+                Id = p.Id,
+                Name = p.Name,
+                Teams = projectIdToTeams[p.Id].Select(t => new TeamDto
                 {
-                    Id = projectGroup.Key.Id,
-                    Name = projectGroup.Key.Name,
-                    Teams = projectGroup.Select(t => new TeamDto
-                    {
-                        Id = t.Id,
-                        Name = t.Name,
-                        Tutor = t.Tutor.ToDtoModel(),
-                        Members = t.Users.Select(u => u.ToDtoModel()),
-                    }),
+                    Id = t.Id,
+                    Name = t.Name,
+                    Tutor = t.Tutor.ToDtoModel(),
+                    Members = t.Users.Select(u => u.ToDtoModel()),
                 }),
-        });
+            }),
+        }).ToList();
     }
 }

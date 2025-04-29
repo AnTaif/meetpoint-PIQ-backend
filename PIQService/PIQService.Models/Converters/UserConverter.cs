@@ -17,7 +17,8 @@ public static class UserConverter
 
     public static User ToDomainModel(this UserDbo userDbo, bool shouldLoadTeam = true)
     {
-        return new User(userDbo.Id, shouldLoadTeam ? userDbo.Team?.ToDomainModel() : null);
+        return new User(userDbo.Id, userDbo.FirstName, userDbo.LastName, userDbo.MiddleName,
+            shouldLoadTeam ? userDbo.Team?.ToDomainModel() : null);
     }
 
     public static UserDto ToDtoModel(this User user)
@@ -25,6 +26,19 @@ public static class UserConverter
         return new UserDto
         {
             Id = user.Id,
+            FullName = GetFullName(user),
         };
+    }
+
+    private static string GetFullName(User user)
+    {
+        var fullname = $"{user.LastName} {user.FirstName}";
+
+        if (user.MiddleName != null)
+        {
+            fullname += $" {user.MiddleName}";
+        }
+
+        return fullname;
     }
 }
