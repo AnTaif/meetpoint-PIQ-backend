@@ -1,4 +1,5 @@
 using AccountService.Models;
+using Core.Auth;
 using Microsoft.AspNetCore.Identity;
 
 namespace AccountService.Data;
@@ -35,11 +36,16 @@ public class DataSeeder
         var testUser = new User(
             Guid.Parse("0c9e1791-96ea-4533-a2be-1691cfa8a368"),
             "temp@mail.ru",
-            "Имя",
-            "Фамилия",
-            "Отчество"
+            "Анна",
+            "Мациева",
+            null
         );
 
         var result = await userManager.CreateAsync(testUser, "password");
+
+        if (result.Succeeded)
+        {
+            await userManager.AddToRolesAsync(testUser, [RolesConstants.Tutor]);
+        }
     }
 }

@@ -27,14 +27,15 @@ public class AuthService : IAuthService
         {
             return HttpError.NotFound($"User with email {request.Email} not found");
         }
-        
+
         var isSuccess = await userManager.CheckPasswordAsync(user, request.Password);
         if (!isSuccess)
         {
             return HttpError.BadRequest("Bad credentials.");
         }
 
-        var token = tokenProvider.GenerateToken(user, []);
+        var roles = await userManager.GetRolesAsync(user);
+        var token = tokenProvider.GenerateToken(user, roles);
 
         return new LoginResponse
         {
