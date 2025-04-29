@@ -1,6 +1,5 @@
 using PIQService.Models.Dbo;
 using PIQService.Models.Domain;
-using PIQService.Models.Dto;
 
 namespace PIQService.Models.Converters;
 
@@ -26,17 +25,5 @@ public static class TeamConverter
             teamDbo.Name,
             teamDbo.Members.Select(u => u.ToDomainModel(false)).ToArray()
         );
-    }
-
-    public static TeamDto ToDtoModel(this Team team)
-    {
-        return new TeamDto
-        {
-            Id = team.Id,
-            Project = team.Project.ToDtoModel(),
-            Tutor = team.Tutor.ToDtoModel(),
-            Name = team.Name,
-            Members = team.Users.Select(u => u.ToDtoModel()).ToList(),
-        };
     }
 }

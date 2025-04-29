@@ -1,3 +1,5 @@
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 using AccountService.Contracts.Models;
 using AccountService.Docs.RequestExamples;
 using AccountService.Docs.ResponseExamples;
@@ -31,5 +33,15 @@ public class AuthController : ControllerBase
     {
         var result = await authService.LoginAsync(loginRequest);
         return result.ToActionResult(this);
+    }
+
+    private Guid GetContextUserId()
+    {
+        var stringId = User.FindFirstValue(JwtRegisteredClaimNames.Sid);
+
+        if (stringId == null)
+            throw new Exception($"Failed when reading logged in userId: {stringId}");
+
+        return Guid.Parse(stringId);
     }
 }

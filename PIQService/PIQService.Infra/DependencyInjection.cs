@@ -1,4 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
+using PIQService.Application.Implementation.Events;
 using PIQService.Application.Implementation.Teams;
 using PIQService.Infra.Data.Repositories;
 
@@ -9,5 +10,6 @@ public static class DependencyInjection
     public static void AddRepositories(this IServiceCollection services)
     {
         services.AddScoped<ITeamRepository, TeamRepository>();
+        services.AddScoped<IEventRepository, EventRepository>();
     }
 }

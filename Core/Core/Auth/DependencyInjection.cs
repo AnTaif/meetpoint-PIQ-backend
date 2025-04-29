@@ -39,8 +39,9 @@ public static class DependencyInjection
                     ValidIssuer = jwtOptions.Issuer,
                     ValidAudience = jwtOptions.Audience,
                     IssuerSigningKey = jwtOptions.GetSymmetricSecurityKey(),
-                    ClockSkew = TimeSpan.Zero
+                    ClockSkew = TimeSpan.FromMinutes(5),
                 };
             });
+        services.AddAuthorization();
     }
 }

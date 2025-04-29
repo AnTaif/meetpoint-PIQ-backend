@@ -12,8 +12,6 @@ Env.Load("../../.env");
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddControllers();
-
 builder.Services
     .AddSwaggerGen(options =>
     {
@@ -22,8 +20,9 @@ builder.Services
     })
     .AddSwaggerExamplesFromAssemblies(Assembly.GetExecutingAssembly());
 
-builder.Services.AddJwtAuth(builder.Configuration);
+builder.Services.AddControllers();
 
+builder.Services.AddJwtAuth(builder.Configuration);
 builder.Services.AddServices();
 builder.Services.AddRepositories();
 builder.Services.AddMySqlDbContext<AppDbContext>(builder.Configuration);

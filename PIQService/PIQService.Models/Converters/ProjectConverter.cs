@@ -1,6 +1,5 @@
 using PIQService.Models.Dbo;
 using PIQService.Models.Domain;
-using PIQService.Models.Dto;
 
 namespace PIQService.Models.Converters;
 
@@ -23,15 +22,5 @@ public static class ProjectConverter
             projectDbo.Direction.ToDomainModel(),
             projectDbo.Name
         );
-    }
-
-    public static ProjectDto ToDtoModel(this Project project)
-    {
-        return new ProjectDto
-        {
-            Id = project.Id,
-            Direction = project.Direction.ToDtoModel(),
-            Name = project.Name,
-        };
     }
 }

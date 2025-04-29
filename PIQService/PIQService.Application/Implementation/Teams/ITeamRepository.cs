@@ -4,5 +4,5 @@ namespace PIQService.Application.Implementation.Teams;
 
 public interface ITeamRepository
 {
-    Task<IEnumerable<Team>> FindAllByTutorIdAsync(Guid tutorId);
+    Task<IEnumerable<Team>> SelectByTutorIdAsync(Guid tutorId, Guid eventId);
 }

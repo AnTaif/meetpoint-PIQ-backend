@@ -7,7 +7,7 @@ namespace PIQService.Infra.Data.Repositories;
 
 public class TeamRepository(AppDbContext dbContext) : ITeamRepository
 {
-    public async Task<IEnumerable<Team>> FindAllByTutorIdAsync(Guid tutorId)
+    public async Task<IEnumerable<Team>> SelectByTutorIdAsync(Guid tutorId, Guid eventId)
     {
         var teams = await dbContext.Teams
             .Include(t => t.Tutor)
@@ -15,6 +15,7 @@ public class TeamRepository(AppDbContext dbContext) : ITeamRepository
             .Include(t => t.Project)
             .ThenInclude(p => p.Direction)
             .ThenInclude(d => d.Event)
+            .Where(t => t.Project.Direction.Event.Id == eventId)
             .Where(t => t.TutorId == tutorId)
             .ToListAsync();
 
