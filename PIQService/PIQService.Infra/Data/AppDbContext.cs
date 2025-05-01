@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using PIQService.Models.Dbo;
+using PIQService.Models.Dbo.Assessments;
 
 namespace PIQService.Infra.Data;
 
@@ -27,5 +28,20 @@ public class AppDbContext : DbContext
             .HasOne(u => u.Team)
             .WithMany(t => t.Members)
             .HasForeignKey(u => u.TeamId);
+
+        modelBuilder.Entity<AssessmentDbo>()
+            .HasMany(f => f.Teams)
+            .WithMany()
+            .UsingEntity("assessments_teams");
+
+        modelBuilder.Entity<FormDbo>()
+            .HasMany(f => f.CriteriaList)
+            .WithMany()
+            .UsingEntity("forms_criteria");
+
+        modelBuilder.Entity<AssessmentMarkDbo>()
+            .HasMany(f => f.Choices)
+            .WithMany()
+            .UsingEntity("marks_choices");
     }
 }
