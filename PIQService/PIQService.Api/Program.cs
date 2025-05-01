@@ -41,8 +41,11 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
-var dataSeeder = new DataSeeder(app.Services);
-await dataSeeder.SeedAsync();
+await using (var scope = app.Services.CreateAsyncScope())
+{
+    var dataSeeder = new DataSeeder(scope.ServiceProvider.GetRequiredService<AppDbContext>());
+    await dataSeeder.SeedAsync();
+}
 
 if (app.Environment.IsDevelopment())
 {

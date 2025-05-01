@@ -1,176 +1,187 @@
-using Microsoft.Extensions.DependencyInjection;
 using PIQService.Models.Dbo;
+using PIQService.Models.Dbo.Assessments;
+using PIQService.Models.Domain.Assessments;
 
 namespace PIQService.Infra.Data;
 
-public class DataSeeder
+public class DataSeeder(AppDbContext dbContext)
 {
-    private static readonly Guid tutor1Id = Guid.Parse("0c9e1791-96ea-4533-a2be-1691cfa8a368");
-    private static readonly Guid member1Id = Guid.Parse("9d8ee7c8-c5af-46b5-8b09-df7fa5729ef5");
-    private static readonly Guid event1Id = Guid.Parse("9d8ee7c8-c5af-46b5-8b09-df7fa5729ef5");
-    private static readonly Guid direction1Id = Guid.Parse("9d8ee7c8-c5af-46b5-8b09-df7fa5729ef5");
-    private static readonly Guid direction2Id = Guid.Parse("73d9ad25-ab11-410c-8cd9-cc89dc4d6130");
-    private static readonly Guid project11Id = Guid.Parse("9d8ee7c8-c5af-46b5-8b09-df7fa5729ef5");
-    private static readonly Guid project12Id = Guid.Parse("41d9f5f3-61f9-42c6-91bb-1c2c414f794f");
-    private static readonly Guid project21Id = Guid.Parse("acc9a174-7730-4f0c-9a77-63cdd9246982");
-    private static readonly Guid team1Id = Guid.Parse("9d8ee7c8-c5af-46b5-8b09-df7fa5729ef5");
-    private static readonly Guid team2Id = Guid.Parse("afa6c00c-9934-4ad9-b13f-81d128195478");
-    private static readonly Guid team3Id = Guid.Parse("bd038431-7ced-4b8f-83ef-a8b2cd03298e");
-    private static readonly Guid team21Id = Guid.Parse("e8aae664-a9e7-4b76-b614-9942c8d77485");
-
-    private readonly IServiceProvider serviceProvider;
-
-    public DataSeeder(IServiceProvider serviceProvider)
-    {
-        this.serviceProvider = serviceProvider;
-    }
+    private readonly Guid tutorId = Guid.Parse("0c9e1791-96ea-4533-a2be-1691cfa8a368");
+    private readonly Guid templateId = Guid.Parse("d85cf73a-b8c8-4b0d-85f0-4ff242bba9c1");
 
     public async Task SeedAsync()
     {
-        using var scope = serviceProvider.CreateScope();
-        var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+        Console.WriteLine("Starting database seeding...");
 
-        Console.WriteLine("Start seeding...");
-
-        if (!await dbContext.Database.EnsureCreatedAsync())
+        if (dbContext.Users.Any())
         {
+            Console.WriteLine("Database already has some data, skipping...");
             return;
         }
 
-        SeedTeams(dbContext);
-        SeedUsers(dbContext);
+        SeedEventRelatedData();
+        SeedAssessmentTemplates();
+
         await dbContext.SaveChangesAsync();
-        Console.WriteLine("Seeding ended...");
+        Console.WriteLine("Database seeding completed.");
     }
 
-    private static void SeedUsers(AppDbContext dbContext)
+    private void SeedEventRelatedData()
     {
-        var tutor1 = new UserDbo
-        {
-            Id = tutor1Id,
-            FirstName = "Анна",
-            LastName = "Мациева",
-        };
-
-        var user11 = GetUser("Зверев", "Александр", team1Id);
-        var user12 = GetUser("Калугин", "Илья", team1Id);
-        var user13 = GetUser("Новиков", "Антон", team1Id);
-        var user14 = GetUser("Рябков", "Георгий", team1Id);
-
-        var user21 = GetUser("Анамнешев", "Николай", team2Id);
-        var user22 = GetUser("Куркин", "Артём", team2Id);
-        var user23 = GetUser("Лавринович", "Станислав", team2Id);
-        var user24 = GetUser("Петриченко", "Максим", team2Id);
-
-        var user31 = GetUser("Мельников", "Михаил", team3Id);
-        var user32 = GetUser("Килязова", "Юния", team3Id);
-        var user33 = GetUser("Гавриляк", "Михаил", team3Id);
-        var user34 = GetUser("Полякова", "Юлия", team3Id);
-
-        var user211 = GetUser("Корелин", "Никита", team21Id);
-        var user212 = GetUser("Олищук", "Владислав", team21Id);
-        var user213 = GetUser("Иванов", "Максим", team21Id);
-
-        dbContext.Users.AddRange(tutor1,
-            user11, user12, user13, user14,
-            user21, user22, user23, user24,
-            user31, user32, user33, user34,
-            user211, user212, user213
-        );
-    }
-
-    private static void SeedTeams(AppDbContext dbContext)
-    {
-        var event1 = new EventDbo
-        {
-            Id = event1Id,
-            Name = "ПП Весна 2025",
-            StartDate = DateTime.UtcNow.AddMonths(-1),
-            EndDate = DateTime.Now.AddMonths(5),
-        };
-
-        var direction1 = new DirectionDbo
-        {
-            Id = direction1Id,
-            EventId = event1Id,
-            Name = "Точка сбора",
-        };
-
-        var direction2 = new DirectionDbo
-        {
-            Id = direction2Id,
-            EventId = event1Id,
-            Name = "1С",
-        };
-
-        var project11 = new ProjectDbo
-        {
-            Id = project11Id,
-            DirectionId = direction1Id,
-            Name = "Оценка ПВК",
-        };
-
-        var project12 = new ProjectDbo
-        {
-            Id = project12Id,
-            DirectionId = direction1Id,
-            Name = "Личный Кабинет",
-        };
-
-        var project21 = new ProjectDbo
-        {
-            Id = project21Id,
-            DirectionId = direction2Id,
-            Name = "УНФ айки",
-        };
-
-        var team1 = new TeamDbo
-        {
-            Id = team1Id,
-            ProjectId = project11Id,
-            TutorId = tutor1Id,
-            Name = "ПВК 1",
-        };
-
-        var team2 = new TeamDbo
-        {
-            Id = team2Id,
-            ProjectId = project11Id,
-            TutorId = tutor1Id,
-            Name = "ПВК 2",
-        };
-
-        var team3 = new TeamDbo
-        {
-            Id = team3Id,
-            ProjectId = project11Id,
-            TutorId = tutor1Id,
-            Name = "ПВК 3",
-        };
-
-        var team21 = new TeamDbo
-        {
-            Id = team21Id,
-            ProjectId = project21Id,
-            TutorId = tutor1Id,
-            Name = "УНФ айки",
-        };
-
-        dbContext.Events.AddRange(event1);
-        dbContext.Directions.AddRange(direction1, direction2);
-        dbContext.Projects.AddRange(project11, project12, project21);
-        dbContext.Teams.AddRange(team1, team2, team3, team21);
-    }
-
-    private static UserDbo GetUser(string lastName, string firstName, Guid teamId)
-    {
-        return new UserDbo
+        var springEvent = new EventDbo
         {
             Id = Guid.NewGuid(),
-            FirstName = firstName,
-            LastName = lastName,
-            MiddleName = null,
-            TeamId = teamId,
+            Name = "ПП Весна 2025",
+            StartDate = DateTime.UtcNow.AddMonths(-1),
+            EndDate = DateTime.UtcNow.AddMonths(5),
+            TemplateId = templateId,
+        };
+        dbContext.Events.Add(springEvent);
+
+        var directions = new[]
+        {
+            new DirectionDbo { Id = NewGuid(), EventId = springEvent.Id, Name = "Точка сбора" },
+            new DirectionDbo { Id = NewGuid(), EventId = springEvent.Id, Name = "1С" },
+        };
+        dbContext.Directions.AddRange(directions);
+
+        var projects = new[]
+        {
+            new ProjectDbo { Id = NewGuid(), DirectionId = directions[0].Id, Name = "Оценка ПВК" },
+            new ProjectDbo { Id = NewGuid(), DirectionId = directions[0].Id, Name = "Личный Кабинет" },
+            new ProjectDbo { Id = NewGuid(), DirectionId = directions[1].Id, Name = "УНФ айки" },
+        };
+        dbContext.Projects.AddRange(projects);
+
+        var teams = new[]
+        {
+            new TeamDbo { Id = NewGuid(), ProjectId = projects[0].Id, TutorId = tutorId, Name = "ПВК 1" },
+            new TeamDbo { Id = NewGuid(), ProjectId = projects[0].Id, TutorId = tutorId, Name = "ПВК 2" },
+            new TeamDbo { Id = NewGuid(), ProjectId = projects[0].Id, TutorId = tutorId, Name = "ПВК 3" },
+            new TeamDbo { Id = NewGuid(), ProjectId = projects[2].Id, TutorId = tutorId, Name = "УНФ айки" },
+        };
+        dbContext.Teams.AddRange(teams);
+
+        var users = new List<UserDbo>
+        {
+            new UserDbo
+            {
+                Id = tutorId,
+                FirstName = "Анна",
+                LastName = "Мациева",
+            },
+        };
+
+        var teamMembers = new Dictionary<Guid, (string Last, string First)[]>
+        {
+            [teams[0].Id] =
+            [
+                ("Зверев", "Александр"),
+                ("Калугин", "Илья"),
+                ("Новиков", "Антон"),
+                ("Рябков", "Георгий"),
+            ],
+            [teams[1].Id] =
+            [
+                ("Анамнешев", "Николай"),
+                ("Куркин", "Артём"),
+                ("Лавринович", "Станислав"),
+                ("Петриченко", "Максим"),
+            ],
+            [teams[2].Id] =
+            [
+                ("Мельников", "Михаил"),
+                ("Килязова", "Юния"),
+                ("Гавриляк", "Михаил"),
+                ("Полякова", "Юлия"),
+            ],
+            [teams[3].Id] =
+            [
+                ("Корелин", "Никита"),
+                ("Олищук", "Владислав"),
+                ("Иванов", "Максим"),
+            ],
+        };
+
+        foreach (var (teamId, roster) in teamMembers)
+        {
+            foreach (var (last, first) in roster)
+            {
+                users.Add(new UserDbo
+                {
+                    Id = NewGuid(),
+                    FirstName = first,
+                    LastName = last,
+                    TeamId = teamId,
+                });
+            }
+        }
+
+        dbContext.Users.AddRange(users);
+    }
+
+    private void SeedAssessmentTemplates()
+    {
+        var criteriaList = new[]
+        {
+            new CriteriaDbo { Id = NewGuid(), Name = "Вовлеченность", Description = "Описание вовлеченности" },
+            new CriteriaDbo { Id = NewGuid(), Name = "Организованность", Description = "Описание организованности" },
+            new CriteriaDbo { Id = NewGuid(), Name = "Обучаемость", Description = "Описание обучаемости" },
+            new CriteriaDbo { Id = NewGuid(), Name = "Командность", Description = "Описание командности" },
+        };
+        dbContext.Criteria.AddRange(criteriaList);
+
+        var forms = new[]
+        {
+            new FormDbo { Id = NewGuid(), Type = AssessmentType.Circle, CriteriaList = criteriaList },
+        };
+        dbContext.Forms.AddRange(forms);
+
+        var templates = new[]
+        {
+            new TemplateDbo { Id = templateId, Name = "Шаблон 360", CircleFormId = forms[0].Id },
+        };
+        dbContext.Templates.AddRange(templates);
+
+        var questions = new[]
+        {
+            CreateQuestion("Проявляет инициативу в обсуждениях?", 0.5f, 0, forms[0].Id, criteriaList[0].Id),
+            CreateQuestion("Делится знаниями с командой?", 0.5f, 1, forms[0].Id, criteriaList[0].Id),
+            CreateQuestion("Работает системно, без авралов?", 0.5f, 1, forms[0].Id, criteriaList[1].Id),
+            CreateQuestion("Документирует свои процессы?", 0.5f, 1, forms[0].Id, criteriaList[1].Id),
+            CreateQuestion("Быстро осваивает новые инструменты?", 0.5f, 1, forms[0].Id, criteriaList[2].Id),
+            CreateQuestion("Применяет новые знания на практике?", 0.5f, 1, forms[0].Id, criteriaList[2].Id),
+            CreateQuestion("Помогает коллегам без напоминаний?", 0.5f, 1, forms[0].Id, criteriaList[3].Id),
+            CreateQuestion("Конструктивно решает конфликты?", 0.5f, 1, forms[0].Id, criteriaList[3].Id),
+        };
+        dbContext.Questions.AddRange(questions);
+
+        var choices = new List<ChoiceDbo>();
+        var choiceTextList = new Dictionary<string, short>() { { "A", -1 }, { "B", 0 }, { "C", 1 }, { "D", 2 }, { "E", 3 } };
+        foreach (var question in questions)
+        {
+            choices.AddRange(choiceTextList.Select(pairs =>
+                new ChoiceDbo
+                {
+                    Id = NewGuid(), QuestionId = question.Id, Text = pairs.Key, Value = pairs.Value,
+                }));
+        }
+
+        dbContext.Choices.AddRange(choices);
+    }
+
+    private static QuestionDbo CreateQuestion(string text, float weight, short order, Guid formId, Guid criteriaId)
+    {
+        return new QuestionDbo
+        {
+            Id = Guid.NewGuid(),
+            QuestionText = text,
+            Weight = weight,
+            FormId = formId,
+            CriteriaId = criteriaId,
+            Order = order,
         };
     }
+
+    private static Guid NewGuid() => Guid.NewGuid();
 }

@@ -16,6 +16,20 @@ public class AppDbContext : DbContext
 
     public DbSet<UserDbo> Users { get; set; }
 
+    public DbSet<TemplateDbo> Templates { get; set; }
+
+    public DbSet<QuestionDbo> Questions { get; set; }
+
+    public DbSet<FormDbo> Forms { get; set; }
+
+    public DbSet<CriteriaDbo> Criteria { get; set; }
+
+    public DbSet<ChoiceDbo> Choices { get; set; }
+
+    public DbSet<AssessmentDbo> Assessments { get; set; }
+
+    public DbSet<AssessmentMarkDbo> AssessmentMarks { get; set; }
+
     public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
     {
     }
