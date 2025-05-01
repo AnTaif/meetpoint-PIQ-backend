@@ -8,13 +8,10 @@ public class Criteria
 
     public string Description { get; set; }
 
-    public List<Question> Questions { get; private set; }
-
-    public Criteria(Guid id, string name, string description, List<Question> questions)
+    public Criteria(Guid id, string name, string description)
     {
         Id = id;
         Name = name;
         Description = description;
-        Questions = questions;
     }
 }
