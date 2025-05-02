@@ -1,6 +1,6 @@
 namespace PIQService.Models.Dto.Responses;
 
-public class GetEventWithIncludesResponse
+public class GetEventHierarchyResponse
 {
     public EventDto Event { get; init; } = null!;
 

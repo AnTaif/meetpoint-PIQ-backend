@@ -21,7 +21,7 @@ public class EventService : IEventService
         this.teamRepository = teamRepository;
     }
 
-    public async Task<Result<GetEventWithIncludesResponse>> GetEventWithIncludesByUserIdAsync(Guid userId, Guid? eventId = null)
+    public async Task<Result<GetEventHierarchyResponse>> GetEventHierarchyByUserIdAsync(Guid userId, Guid? eventId = null)
     {
         Event? @event;
         if (!eventId.HasValue)
@@ -42,7 +42,7 @@ public class EventService : IEventService
 
         var teams = await teamRepository.SelectByTutorIdAsync(userId, @event.Id);
 
-        return new GetEventWithIncludesResponse
+        return new GetEventHierarchyResponse
         {
             Event = new EventDto
             {

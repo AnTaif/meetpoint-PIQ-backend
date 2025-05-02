@@ -5,5 +5,5 @@ namespace PIQService.Application.Implementation.Events;
 
 public interface IEventService
 {
-    Task<Result<GetEventWithIncludesResponse>> GetEventWithIncludesByUserIdAsync(Guid userId, Guid? eventId = null);
+    Task<Result<GetEventHierarchyResponse>> GetEventHierarchyByUserIdAsync(Guid userId, Guid? eventId = null);
 }

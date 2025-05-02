@@ -34,8 +34,4 @@
       <ProjectReference Include="..\PIQService.Infra\PIQService.Infra.csproj" />
     </ItemGroup>
 
-    <ItemGroup>
-      <Folder Include="Docs\RequestExamples\" />
-    </ItemGroup>
-
 </Project>

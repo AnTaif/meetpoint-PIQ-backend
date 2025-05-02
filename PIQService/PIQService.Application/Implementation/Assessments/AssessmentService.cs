@@ -55,7 +55,7 @@ public class AssessmentService : IAssessmentService
 
         var newAssessment = new Assessment(Guid.NewGuid(), request.Name, [], template, request.StartDate, request.EndDate);
 
-        assessmentRepository.CreateAsync(newAssessment, team);
+        await assessmentRepository.CreateAsync(newAssessment, team);
         await assessmentRepository.SaveChangesAsync();
 
         return newAssessment.ToDtoModel();

@@ -4,11 +4,10 @@ using Swashbuckle.AspNetCore.Filters;
 
 namespace PIQService.Api.Docs.ResponseExamples;
 
-public class GetEventWithIncludesResponseExample : IExamplesProvider<GetEventWithIncludesResponse>
+public class GetEventHierarchyResponseExample : IExamplesProvider<GetEventHierarchyResponse>
 {
-    public GetEventWithIncludesResponse GetExamples()
-    {
-        return new GetEventWithIncludesResponse
+    public GetEventHierarchyResponse GetExamples() =>
+        new()
         {
             Event = new EventDto
             {
@@ -78,5 +77,4 @@ public class GetEventWithIncludesResponseExample : IExamplesProvider<GetEventWit
                 Guid.Parse("c5a0d585-2939-42ca-9c0d-5fcea9779980"),
             ],
         };
-    }
 }

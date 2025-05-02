@@ -1,8 +1,11 @@
 using Core.Results;
 using Microsoft.AspNetCore.Mvc;
+using PIQService.Api.Docs;
+using PIQService.Api.Docs.RequestExamples;
 using PIQService.Application.Implementation.Assessments;
 using PIQService.Application.Implementation.Assessments.Requests;
 using PIQService.Models.Dto;
+using Swashbuckle.AspNetCore.Filters;
 
 namespace PIQService.Api.Controllers;
 
@@ -17,7 +20,13 @@ public class AssessmentController : ControllerBase
         this.assessmentService = assessmentService;
     }
 
+    /// <summary>
+    /// Получение оцениваний команды
+    /// </summary>
     [HttpGet]
+    [SwaggerResponseExample(StatusCodes.Status200OK, typeof(EnumerableAssessmentDtoExample))]
+    [ProducesResponseType<IEnumerable<AssessmentDto>>(StatusCodes.Status200OK)]
+    [ProducesResponseType<string>(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<IEnumerable<AssessmentDto>>> GetTeamAssessments(Guid teamId)
     {
         var result = await assessmentService.GetTeamAssessments(teamId);
@@ -25,7 +34,15 @@ public class AssessmentController : ControllerBase
         return result.ToActionResult(this);
     }
 
+    /// <summary>
+    /// Создание оценивания для команды
+    /// </summary>
     [HttpPost]
+    [SwaggerRequestExample(typeof(CreateTeamAssessmentRequest), typeof(CreateTeamAssessmentRequestExample))]
+    [SwaggerResponseExample(StatusCodes.Status201Created, typeof(AssessmentDtoExample))]
+    [ProducesResponseType<AssessmentDto>(StatusCodes.Status201Created)]
+    [ProducesResponseType<string>(StatusCodes.Status404NotFound)]
+    [ProducesResponseType<string>(StatusCodes.Status401Unauthorized)]
     public async Task<ActionResult<AssessmentDto>> CreateForTeam(Guid teamId, CreateTeamAssessmentRequest request)
     {
         var result = await assessmentService.CreateTeamAssessmentAsync(teamId, request);
