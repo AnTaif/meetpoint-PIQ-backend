@@ -8,14 +8,14 @@ namespace PIQService.Infra.Data.Repositories;
 
 public class AssessmentRepository(AppDbContext dbContext) : IAssessmentRepository
 {
-    public async Task<IEnumerable<Assessment>> SelectByTeamIdAsync(Guid teamId)
+    public async Task<IEnumerable<AssessmentWithoutDeps>> SelectByTeamIdAsync(Guid teamId)
     {
         var dbos = await dbContext.Assessments
             .Where(a => a.Teams.Any(t => t.Id == teamId))
             .OrderByDescending(a => a.StartDate)
             .ToListAsync();
 
-        return dbos.Select(x => x.ToDomainModel()).ToList();
+        return dbos.Select(x => x.ToDomainWithoutDepsModel()).ToList();
     }
 
     public async Task CreateAsync(Assessment assessment, Team team)

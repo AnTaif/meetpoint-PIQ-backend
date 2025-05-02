@@ -17,6 +17,14 @@ public class AssessmentController : ControllerBase
         this.assessmentService = assessmentService;
     }
 
+    [HttpGet]
+    public async Task<ActionResult<IEnumerable<AssessmentDto>>> GetTeamAssessments(Guid teamId)
+    {
+        var result = await assessmentService.GetTeamAssessments(teamId);
+
+        return result.ToActionResult(this);
+    }
+
     [HttpPost]
     public async Task<ActionResult<AssessmentDto>> CreateForTeam(Guid teamId, CreateTeamAssessmentRequest request)
     {

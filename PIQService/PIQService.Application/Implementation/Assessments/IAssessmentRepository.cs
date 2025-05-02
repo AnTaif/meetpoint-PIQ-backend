@@ -5,7 +5,7 @@ namespace PIQService.Application.Implementation.Assessments;
 
 public interface IAssessmentRepository
 {
-    Task<IEnumerable<Assessment>> SelectByTeamIdAsync(Guid teamId);
+    Task<IEnumerable<AssessmentWithoutDeps>> SelectByTeamIdAsync(Guid teamId);
 
     Task CreateAsync(Assessment assessment, Team team);
 

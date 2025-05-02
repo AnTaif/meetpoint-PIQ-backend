@@ -27,7 +27,15 @@ public static class AssessmentConverter
             assessmentDbo.EndDate
         );
 
-    public static AssessmentDto ToDtoModel(this Assessment assessment) =>
+    public static AssessmentWithoutDeps ToDomainWithoutDepsModel(this AssessmentDbo assessmentDbo) =>
+        new(
+            assessmentDbo.Id,
+            assessmentDbo.Name,
+            assessmentDbo.StartDate,
+            assessmentDbo.EndDate
+        );
+
+    public static AssessmentDto ToDtoModel(this AssessmentWithoutDeps assessment) =>
         new()
         {
             Id = assessment.Id,
