@@ -1,6 +1,7 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using Core.Results;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PIQService.Api.Docs.ResponseExamples;
 using PIQService.Application.Implementation.Events;
@@ -9,8 +10,9 @@ using Swashbuckle.AspNetCore.Filters;
 
 namespace PIQService.Api.Controllers;
 
-[Route("events")]
 [ApiController]
+[Authorize]
+[Route("events")]
 public class EventsController : ControllerBase
 {
     private readonly IEventService eventService;
@@ -28,7 +30,7 @@ public class EventsController : ControllerBase
     /// Куратору - команды, в которых он куратор, руководителю - все команды.
     /// </remarks>
     [HttpGet("current")]
-    // [Authorize(AuthenticationSchemes = "Bearer")] TODO: пофиксить авторизацию / мб ходить в аккаунт-сервис валидировать токен
+    [Authorize]
     [SwaggerResponseExample(StatusCodes.Status200OK, typeof(GetEventHierarchyResponseExample))]
     [ProducesResponseType<GetEventHierarchyResponse>(StatusCodes.Status200OK)]
     [ProducesResponseType<string>(StatusCodes.Status404NotFound)]

@@ -1,4 +1,5 @@
 using Core.Results;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PIQService.Api.Docs;
 using PIQService.Api.Docs.RequestExamples;
@@ -10,6 +11,7 @@ using Swashbuckle.AspNetCore.Filters;
 namespace PIQService.Api.Controllers;
 
 [ApiController]
+[Authorize]
 [Route("teams/{teamId}/assessments")]
 public class AssessmentController : ControllerBase
 {
