@@ -1,5 +1,6 @@
 using PIQService.Models.Dbo.Assessments;
 using PIQService.Models.Domain.Assessments;
+using PIQService.Models.Dto;
 
 namespace PIQService.Models.Converters.Assessments;
 
@@ -13,7 +14,7 @@ public static class AssessmentConverter
             TemplateId = assessment.Template.Id,
             StartDate = assessment.StartDate,
             EndDate = assessment.EndDate,
-            Teams = assessment.Teams.Select(t => t.ToDboModel()).ToList(),
+            Teams = [],
         };
 
     public static Assessment ToDomainModel(this AssessmentDbo assessmentDbo) =>
@@ -25,4 +26,13 @@ public static class AssessmentConverter
             assessmentDbo.StartDate,
             assessmentDbo.EndDate
         );
+
+    public static AssessmentDto ToDtoModel(this Assessment assessment) =>
+        new()
+        {
+            Id = assessment.Id,
+            Name = assessment.Name,
+            StartDate = assessment.StartDate,
+            EndDate = assessment.EndDate,
+        };
 }

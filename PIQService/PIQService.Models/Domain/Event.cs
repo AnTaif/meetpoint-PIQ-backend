@@ -10,11 +10,14 @@ public class Event
 
     public DateTime EndDate { get; private set; }
 
-    public Event(Guid id, string name, DateTime startDate, DateTime endDate)
+    public Guid TemplateId { get; private set; }
+
+    public Event(Guid id, string name, DateTime startDate, DateTime endDate, Guid templateId)
     {
         Id = id;
         Name = name;
         StartDate = startDate;
         EndDate = endDate;
+        TemplateId = templateId;
     }
 }

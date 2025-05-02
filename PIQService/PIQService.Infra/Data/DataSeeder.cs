@@ -13,7 +13,7 @@ public class DataSeeder(AppDbContext dbContext)
     {
         Console.WriteLine("Starting database seeding...");
 
-        if (dbContext.Users.Any())
+        if (!await dbContext.Database.EnsureCreatedAsync() && dbContext.Users.Any())
         {
             Console.WriteLine("Database already has some data, skipping...");
             return;

@@ -23,7 +23,8 @@ public static class EventConverter
             domainModel.Id,
             domainModel.Name,
             domainModel.StartDate,
-            domainModel.EndDate
+            domainModel.EndDate,
+            domainModel.TemplateId
         );
     }
 
