@@ -18,18 +18,22 @@ public class AssessmentRepository(AppDbContext dbContext) : IAssessmentRepositor
         return dbos.Select(x => x.ToDomainWithoutDepsModel()).ToList();
     }
 
-    public async Task CreateAsync(Assessment assessment, Team team)
+    public async Task CreateAsync(Assessment assessment, params Team[] teams)
     {
-        var teamDbo = dbContext.Teams.Local.FirstOrDefault(t => t.Id == team.Id)
-                      ?? await dbContext.Teams.FindAsync(team.Id);
+        var assessmentDbo = assessment.ToDboModel();
 
-        if (teamDbo == null)
+        foreach (var team in teams)
         {
-            throw new InvalidOperationException("Team not found in database.");
+            var teamDbo = dbContext.Teams.Local.FirstOrDefault(t => t.Id == team.Id) ?? await dbContext.Teams.FindAsync(team.Id);
+
+            if (teamDbo == null)
+            {
+                throw new InvalidOperationException("Team not found in database.");
+            }
+
+            assessmentDbo.Teams.Add(teamDbo);
         }
 
-        var assessmentDbo = assessment.ToDboModel();
-        assessmentDbo.Teams.Add(teamDbo);
         dbContext.Assessments.Add(assessmentDbo);
     }
 

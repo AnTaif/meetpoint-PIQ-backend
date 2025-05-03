@@ -9,4 +9,6 @@ public interface IAssessmentService
     Task<Result<IEnumerable<AssessmentDto>>> GetTeamAssessments(Guid teamId);
 
     Task<Result<AssessmentDto>> CreateTeamAssessmentAsync(Guid teamId, CreateTeamAssessmentRequest request);
+
+    Task<Result<AssessmentDto>> CreateTeamsAssessmentAsync(CreateTeamsAssessmentRequest request);
 }

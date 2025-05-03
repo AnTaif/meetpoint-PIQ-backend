@@ -7,7 +7,7 @@ public interface IAssessmentRepository
 {
     Task<IEnumerable<AssessmentWithoutDeps>> SelectByTeamIdAsync(Guid teamId);
 
-    Task CreateAsync(Assessment assessment, Team team);
+    Task CreateAsync(Assessment assessment, params Team[] teams);
 
     Task SaveChangesAsync();
 }

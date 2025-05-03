@@ -49,6 +49,6 @@ public class AssessmentController : ControllerBase
     {
         var result = await assessmentService.CreateTeamAssessmentAsync(teamId, request);
 
-        return result.ToActionResult(this);
+        return result.ToActionResult(this, dto => CreatedAtAction("CreateForTeam", dto));
     }
 }

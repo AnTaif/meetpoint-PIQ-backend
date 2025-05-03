@@ -3,8 +3,13 @@ using System.Security.Claims;
 using Core.Results;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using PIQService.Api.Docs;
+using PIQService.Api.Docs.RequestExamples;
 using PIQService.Api.Docs.ResponseExamples;
+using PIQService.Application.Implementation.Assessments;
+using PIQService.Application.Implementation.Assessments.Requests;
 using PIQService.Application.Implementation.Events;
+using PIQService.Models.Dto;
 using PIQService.Models.Dto.Responses;
 using Swashbuckle.AspNetCore.Filters;
 
@@ -15,10 +20,15 @@ namespace PIQService.Api.Controllers;
 [Route("events")]
 public class EventsController : ControllerBase
 {
+    private readonly IAssessmentService assessmentService;
     private readonly IEventService eventService;
 
-    public EventsController(IEventService eventService)
+    public EventsController(
+        IAssessmentService assessmentService,
+        IEventService eventService
+    )
     {
+        this.assessmentService = assessmentService;
         this.eventService = eventService;
     }
 
@@ -37,12 +47,26 @@ public class EventsController : ControllerBase
     [ProducesResponseType<string>(StatusCodes.Status401Unauthorized)]
     public async Task<ActionResult<GetEventHierarchyResponse>> GetCurrentEvent()
     {
-        // var tutorId = GetContextUserId();
-
-        var tutorId = Guid.Parse("0c9e1791-96ea-4533-a2be-1691cfa8a368"); // TODO: ну а как же без хардкода на проектах ПП
+        var tutorId = GetContextUserId();
 
         var result = await eventService.GetEventHierarchyByUserIdAsync(tutorId);
         return result.ToActionResult(this);
+    }
+
+    /// <summary>
+    /// Создание нового оценивания для нескольких команд
+    /// </summary>
+    [HttpPost("assessments")]
+    [SwaggerRequestExample(typeof(CreateTeamsAssessmentRequest), typeof(CreateTeamsAssessmentRequestExample))]
+    [SwaggerResponseExample(StatusCodes.Status201Created, typeof(AssessmentDtoExample))]
+    [ProducesResponseType<AssessmentDto>(StatusCodes.Status201Created)]
+    [ProducesResponseType<string>(StatusCodes.Status404NotFound)]
+    [ProducesResponseType<string>(StatusCodes.Status401Unauthorized)]
+    public async Task<ActionResult<AssessmentDto>> CreateNewAssessment(CreateTeamsAssessmentRequest request)
+    {
+        var result = await assessmentService.CreateTeamsAssessmentAsync(request);
+
+        return result.ToActionResult(this, dto => CreatedAtAction("CreateNewAssessment", dto));
     }
 
     private Guid GetContextUserId()
