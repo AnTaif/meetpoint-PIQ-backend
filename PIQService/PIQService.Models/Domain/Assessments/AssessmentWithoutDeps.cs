@@ -10,7 +10,12 @@ public class AssessmentWithoutDeps
 
     public DateTime EndDate { get; private set; }
 
-    public AssessmentWithoutDeps(Guid id, string name, DateTime startDate, DateTime endDate)
+    public bool UseCircleAssessment { get; private set; }
+
+    public bool UseBehaviorAssessment { get; private set; }
+
+    public AssessmentWithoutDeps(Guid id, string name, DateTime startDate, DateTime endDate, bool useCircleAssessment,
+        bool useBehaviorAssessment)
     {
         Id = id;
         Name = name;

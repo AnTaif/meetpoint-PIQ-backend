@@ -41,18 +41,21 @@ public class AssessmentService : IAssessmentService
 
     public async Task<Result<AssessmentDto>> CreateTeamAssessmentAsync(Guid teamId, CreateTeamAssessmentRequest request)
     {
-        var newAssessmentResult = await CreateAssessmentForTeamsAsync([teamId], request.Name, request.StartDate, request.EndDate);
+        var newAssessmentResult = await CreateAssessmentForTeamsAsync([teamId], request.Name, request.StartDate, request.EndDate,
+            request.UseCircleAssessment, request.UseBehaviorAssessment);
         return newAssessmentResult.IsFailure ? newAssessmentResult.Error : newAssessmentResult.Value.ToDtoModel();
     }
 
     public async Task<Result<AssessmentDto>> CreateTeamsAssessmentAsync(CreateTeamsAssessmentRequest request)
     {
-        var newAssessmentResult = await CreateAssessmentForTeamsAsync(request.TeamIds, request.Name, request.StartDate, request.EndDate);
+        var newAssessmentResult = await CreateAssessmentForTeamsAsync(request.TeamIds, request.Name, request.StartDate, request.EndDate,
+            request.UseCircleAssessment, request.UseBehaviorAssessment);
         return newAssessmentResult.IsFailure ? newAssessmentResult.Error : newAssessmentResult.Value.ToDtoModel();
     }
 
     private async Task<Result<Assessment>> CreateAssessmentForTeamsAsync(
-        IReadOnlyCollection<Guid> teamIds, string name, DateTime startDate, DateTime endDate)
+        IReadOnlyCollection<Guid> teamIds, string name, DateTime startDate, DateTime endDate, bool useCircleAssessment,
+        bool useBehaviorAssessment)
     {
         if (teamIds.Count == 0)
         {
@@ -78,7 +81,8 @@ public class AssessmentService : IAssessmentService
             return HttpError.NotFound("Template not found");
         }
 
-        var newAssessment = new Assessment(Guid.NewGuid(), name, [], template, startDate, endDate);
+        var newAssessment = new Assessment(Guid.NewGuid(), name, [], template, startDate, endDate, useCircleAssessment,
+            useBehaviorAssessment);
 
         await assessmentRepository.CreateAsync(newAssessment, teams.ToArray());
         await assessmentRepository.SaveChangesAsync();

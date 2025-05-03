@@ -20,6 +20,12 @@ public class AssessmentDbo : EntityBase
     [Column("end_date")]
     public DateTime EndDate { get; set; }
 
+    [Column("use_circle_assessment")]
+    public bool UseCircleAssessment { get; set; }
+
+    [Column("use_behavior_assessment")]
+    public bool UseBehaviorAssessment { get; set; }
+
     public ICollection<TeamDbo> Teams { get; set; } = null!;
 
     [ForeignKey(nameof(TemplateId))]

@@ -6,8 +6,9 @@ public class Assessment : AssessmentWithoutDeps
 
     public Template Template { get; private set; }
 
-    public Assessment(Guid id, string name, List<Team> teams, Template template, DateTime startDate, DateTime endDate)
-        : base(id, name, startDate, endDate)
+    public Assessment(Guid id, string name, List<Team> teams, Template template, DateTime startDate, DateTime endDate,
+        bool useCircleAssessment, bool useBehaviorAssessment)
+        : base(id, name, startDate, endDate, useCircleAssessment, useBehaviorAssessment)
     {
         Teams = teams;
         Template = template;

@@ -14,6 +14,8 @@ public static class AssessmentConverter
             TemplateId = assessment.Template.Id,
             StartDate = assessment.StartDate,
             EndDate = assessment.EndDate,
+            UseCircleAssessment = assessment.UseCircleAssessment,
+            UseBehaviorAssessment = assessment.UseBehaviorAssessment,
             Teams = [],
         };
 
@@ -24,7 +26,9 @@ public static class AssessmentConverter
             assessmentDbo.Teams.Select(t => t.ToDomainModel()).ToList(), // TODO: зависимости не нужны
             assessmentDbo.Template.ToDomainModel(),
             assessmentDbo.StartDate,
-            assessmentDbo.EndDate
+            assessmentDbo.EndDate,
+            assessmentDbo.UseCircleAssessment,
+            assessmentDbo.UseBehaviorAssessment
         );
 
     public static AssessmentWithoutDeps ToDomainWithoutDepsModel(this AssessmentDbo assessmentDbo) =>
@@ -32,7 +36,9 @@ public static class AssessmentConverter
             assessmentDbo.Id,
             assessmentDbo.Name,
             assessmentDbo.StartDate,
-            assessmentDbo.EndDate
+            assessmentDbo.EndDate,
+            assessmentDbo.UseCircleAssessment,
+            assessmentDbo.UseBehaviorAssessment
         );
 
     public static AssessmentDto ToDtoModel(this AssessmentWithoutDeps assessment) =>
@@ -42,5 +48,7 @@ public static class AssessmentConverter
             Name = assessment.Name,
             StartDate = assessment.StartDate,
             EndDate = assessment.EndDate,
+            UseCircleAssessment = assessment.UseCircleAssessment,
+            UseBehaviorAssessment = assessment.UseBehaviorAssessment,
         };
 }

@@ -12,6 +12,8 @@ public class AssessmentDtoExample : IExamplesProvider<AssessmentDto>
             Name = "Неделя 1",
             StartDate = new DateTime(2025, 3, 11),
             EndDate = new DateTime(2025, 3, 18),
+            UseCircleAssessment = true,
+            UseBehaviorAssessment = false,
         };
 }
 
@@ -25,6 +27,8 @@ public class EnumerableAssessmentDtoExample : IExamplesProvider<IEnumerable<Asse
             Name = "Неделя 2",
             StartDate = new DateTime(2025, 3, 19),
             EndDate = new DateTime(2025, 3, 26),
+            UseCircleAssessment = true,
+            UseBehaviorAssessment = false,
         },
         new()
         {
@@ -32,6 +36,8 @@ public class EnumerableAssessmentDtoExample : IExamplesProvider<IEnumerable<Asse
             Name = "Неделя 1",
             StartDate = new DateTime(2025, 3, 11),
             EndDate = new DateTime(2025, 3, 18),
+            UseCircleAssessment = true,
+            UseBehaviorAssessment = false,
         },
     ];
 }
