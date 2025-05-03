@@ -33,4 +33,27 @@ public class TeamRepository(AppDbContext dbContext) : ITeamRepository
 
         return teams.Select(t => t.ToDomainModel()).ToList();
     }
+
+    public async Task<IEnumerable<Team>> SelectNotAssessedTeamsAsync(Guid tutorId)
+    {
+        var now = DateTime.UtcNow;
+
+        var teams = await dbContext.Teams
+            .Where(team => team.TutorId == tutorId)
+            .Where(team => dbContext.Assessments.Any(assessment =>
+                assessment.StartDate <= now &&
+                assessment.EndDate >= now &&
+                assessment.Teams.Any(aTeam => aTeam.Id == team.Id) &&
+                team.Members.Any(member =>
+                    !dbContext.AssessmentMarks.Any(mark =>
+                        mark.SessionId == assessment.Id &&
+                        mark.AssessorId == tutorId &&
+                        mark.AssessedId == member.Id
+                    )
+                )
+            ))
+            .ToListAsync();
+
+        return teams.Select(t => t.ToDomainModel()).ToList();
+    }
 }

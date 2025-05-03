@@ -42,6 +42,8 @@ public class EventService : IEventService
 
         var teams = await teamRepository.SelectByTutorIdAsync(userId, @event.Id);
 
+        var requiresEvaluationTeams = await teamRepository.SelectNotAssessedTeamsAsync(userId);
+
         return new GetEventHierarchyResponse
         {
             Event = new EventDto
@@ -52,15 +54,9 @@ public class EventService : IEventService
                 EndDate = @event.EndDate,
                 Directions = ConvertTeamsToDirectionDtos(teams),
             },
-            TeamIdsForEvaluation = requiresEvaluationTeams,
+            TeamIdsForEvaluation = requiresEvaluationTeams.Select(t => t.Id),
         };
     }
-
-    // TODO: получать из оцениваний
-    private readonly IEnumerable<Guid> requiresEvaluationTeams =
-    [
-        Guid.Parse("9d8ee7c8-c5af-46b5-8b09-df7fa5729ef5"),
-    ];
 
     private static IEnumerable<DirectionDto> ConvertTeamsToDirectionDtos(IEnumerable<Team> teams)
     {
