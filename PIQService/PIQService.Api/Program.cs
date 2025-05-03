@@ -3,6 +3,8 @@ using Core.Auth;
 using Core.Database;
 using Core.Swagger;
 using DotNetEnv;
+using FluentValidation;
+using FluentValidation.AspNetCore;
 using PIQService.Application;
 using PIQService.Infra;
 using PIQService.Infra.Data;
@@ -21,6 +23,10 @@ builder.Services
     .AddSwaggerExamplesFromAssemblies(Assembly.GetExecutingAssembly());
 
 builder.Services.AddControllers();
+builder.Services
+    .AddValidatorsFromAssembly(Assembly.GetExecutingAssembly())
+    .AddFluentValidationAutoValidation()
+    .AddFluentValidationClientsideAdapters();
 
 builder.Services.AddJwtAuth(builder.Configuration);
 builder.Services.AddServices();

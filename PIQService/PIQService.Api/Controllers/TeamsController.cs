@@ -12,12 +12,12 @@ namespace PIQService.Api.Controllers;
 
 [ApiController]
 [Authorize]
-[Route("teams/{teamId}/assessments")]
-public class AssessmentController : ControllerBase
+[Route("teams")]
+public class TeamsController : ControllerBase
 {
     private readonly IAssessmentService assessmentService;
 
-    public AssessmentController(IAssessmentService assessmentService)
+    public TeamsController(IAssessmentService assessmentService)
     {
         this.assessmentService = assessmentService;
     }
@@ -25,7 +25,7 @@ public class AssessmentController : ControllerBase
     /// <summary>
     /// Получение оцениваний команды
     /// </summary>
-    [HttpGet]
+    [HttpGet("{teamId}/assessments")]
     [SwaggerResponseExample(StatusCodes.Status200OK, typeof(EnumerableAssessmentDtoExample))]
     [ProducesResponseType<IEnumerable<AssessmentDto>>(StatusCodes.Status200OK)]
     [ProducesResponseType<string>(StatusCodes.Status404NotFound)]
@@ -39,7 +39,7 @@ public class AssessmentController : ControllerBase
     /// <summary>
     /// Создание оценивания для команды
     /// </summary>
-    [HttpPost]
+    [HttpPost("{teamId}/assessments")]
     [SwaggerRequestExample(typeof(CreateTeamAssessmentRequest), typeof(CreateTeamAssessmentRequestExample))]
     [SwaggerResponseExample(StatusCodes.Status201Created, typeof(AssessmentDtoExample))]
     [ProducesResponseType<AssessmentDto>(StatusCodes.Status201Created)]

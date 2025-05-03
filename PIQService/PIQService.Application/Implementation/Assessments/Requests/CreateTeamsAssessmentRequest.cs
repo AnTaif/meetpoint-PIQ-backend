@@ -15,5 +15,6 @@ public class CreateTeamsAssessmentRequest
 
     public bool UseBehaviorAssessment { get; init; }
 
+    [MinLength(1)]
     public IReadOnlyCollection<Guid> TeamIds { get; init; } = null!;
 }
