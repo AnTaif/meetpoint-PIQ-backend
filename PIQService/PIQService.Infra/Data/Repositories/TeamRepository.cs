@@ -29,6 +29,10 @@ public class TeamRepository(AppDbContext dbContext) : ITeamRepository
             .ThenInclude(d => d.Event)
             .Where(t => t.Project.Direction.Event.Id == eventId)
             .Where(t => t.TutorId == tutorId)
+            .OrderBy(t => t.Project.Direction.Event.Name)
+            .ThenBy(t => t.Project.Direction.Name)
+            .ThenBy(t => t.Project.Name)
+            .ThenBy(t => t.Name)
             .ToListAsync();
 
         return teams.Select(t => t.ToDomainModel()).ToList();
