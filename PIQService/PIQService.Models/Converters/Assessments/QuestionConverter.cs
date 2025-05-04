@@ -1,5 +1,6 @@
 using PIQService.Models.Dbo.Assessments;
 using PIQService.Models.Domain.Assessments;
+using PIQService.Models.Dto;
 
 namespace PIQService.Models.Converters.Assessments;
 
@@ -25,4 +26,15 @@ public static class QuestionConverter
             questionDbo.Criteria.ToDomainModel(),
             questionDbo.Choices.Select(c => c.ToDomainModel()).ToList()
         );
+
+    public static QuestionDto ToDtoModel(this Question question) =>
+        new()
+        {
+            Id = question.Id,
+            Text = question.Text,
+            Weight = question.Weight,
+            Order = question.Order,
+            CriteriaId = question.Criteria.Id,
+            Choices = question.Choices.Select(c => c.ToDtoModel()).ToList(),
+        };
 }

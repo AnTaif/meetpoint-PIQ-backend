@@ -41,4 +41,10 @@ public class AssessmentsController : ControllerBase
         var result = await assessmentService.EditAssessmentAsync(id, request, User.GetSid());
         return result.ToActionResult(this);
     }
+
+    [HttpGet("{id}/full-form")]
+    public async Task<ActionResult> GetAssessmentForms(Guid id)
+    {
+        throw new NotImplementedException();
+    }
 }

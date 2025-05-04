@@ -1,5 +1,6 @@
 using PIQService.Models.Dbo.Assessments;
 using PIQService.Models.Domain.Assessments;
+using PIQService.Models.Dto;
 
 namespace PIQService.Models.Converters.Assessments;
 
@@ -20,4 +21,13 @@ public static class FormConverter
             formDbo.CriteriaList.Select(c => c.ToDomainModel()).ToList(),
             formDbo.Questions.Select(q => q.ToDomainModel()).ToList()
         );
+
+    public static FormDto ToDtoModel(this Form form) =>
+        new()
+        {
+            Id = form.Id,
+            Type = form.Type,
+            CriteriaList = form.CriteriaList.Select(c => c.ToDtoModel()).ToList(),
+            Questions = form.Questions.Select(q => q.ToDtoModel()).ToList(),
+        };
 }
