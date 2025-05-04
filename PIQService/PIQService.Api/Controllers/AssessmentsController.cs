@@ -1,3 +1,5 @@
+using Core.Auth;
+using Core.Results;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PIQService.Api.Docs;
@@ -34,8 +36,9 @@ public class AssessmentsController : ControllerBase
     [ProducesResponseType<AssessmentDto>(StatusCodes.Status200OK)]
     [ProducesResponseType<string>(StatusCodes.Status404NotFound)]
     [ProducesResponseType<string>(StatusCodes.Status401Unauthorized)]
-    public Task<ActionResult<AssessmentDto>> EditAssessment(Guid id, EditAssessmentRequest request)
+    public async Task<ActionResult<AssessmentDto>> EditAssessment(Guid id, EditAssessmentRequest request)
     {
-        throw new NotImplementedException();
+        var result = await assessmentService.EditAssessmentAsync(id, request, User.GetSid());
+        return result.ToActionResult(this);
     }
 }

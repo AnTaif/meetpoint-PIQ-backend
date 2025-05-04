@@ -14,12 +14,32 @@ public class AssessmentWithoutDeps
 
     public bool UseBehaviorAssessment { get; private set; }
 
+    public Guid TemplateId { get; init; }
+
     public AssessmentWithoutDeps(Guid id, string name, DateTime startDate, DateTime endDate, bool useCircleAssessment,
-        bool useBehaviorAssessment)
+        bool useBehaviorAssessment, Guid templateId)
     {
         Id = id;
         Name = name;
         StartDate = startDate;
         EndDate = endDate;
+        UseCircleAssessment = useCircleAssessment;
+        UseBehaviorAssessment = useBehaviorAssessment;
+        TemplateId = templateId;
+    }
+
+    public void Edit(string? name, DateTime? startDate, DateTime? endDate, bool? useCircleAssessment, bool? useBehaviorAssessment)
+    {
+        var isFutureAssessment = StartDate > DateTime.UtcNow;
+
+        if (name != null) Name = name;
+        if (startDate != null) StartDate = startDate.Value;
+        if (endDate != null) EndDate = endDate.Value;
+
+        if (isFutureAssessment)
+        {
+            if (useCircleAssessment != null) UseCircleAssessment = useCircleAssessment.Value;
+            if (useBehaviorAssessment != null) UseBehaviorAssessment = useBehaviorAssessment.Value;
+        }
     }
 }

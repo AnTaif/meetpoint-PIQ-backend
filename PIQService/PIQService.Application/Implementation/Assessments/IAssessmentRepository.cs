@@ -5,9 +5,13 @@ namespace PIQService.Application.Implementation.Assessments;
 
 public interface IAssessmentRepository
 {
+    Task<AssessmentWithoutDeps?> FindWithoutDepsAsync(Guid id);
+
     Task<IEnumerable<AssessmentWithoutDeps>> SelectByTeamIdAsync(Guid teamId);
 
     Task CreateAsync(Assessment assessment, params Team[] teams);
+
+    void Update(AssessmentWithoutDeps assessmentWithoutDeps);
 
     Task SaveChangesAsync();
 }

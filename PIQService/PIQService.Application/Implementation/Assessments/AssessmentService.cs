@@ -89,4 +89,31 @@ public class AssessmentService : IAssessmentService
 
         return newAssessment;
     }
+
+    public async Task<Result<AssessmentDto>> EditAssessmentAsync(Guid id, EditAssessmentRequest request, Guid userId)
+    {
+        var assessment = await assessmentRepository.FindWithoutDepsAsync(id);
+        if (assessment == null)
+        {
+            return HttpError.NotFound("Assessment not found");
+        }
+
+        if (request.StartDate.HasValue ^ request.EndDate.HasValue)
+        {
+            var newStart = request.StartDate ?? assessment.StartDate;
+            var newEnd = request.EndDate ?? assessment.EndDate;
+
+            if (newStart > newEnd)
+            {
+                return HttpError.BadRequest("StartDate must be earlier than EndDate");
+            }
+        }
+
+        assessment.Edit(request.Name, request.StartDate, request.EndDate, request.UseCircleAssessment, request.UseBehaviorAssessment);
+
+        assessmentRepository.Update(assessment);
+        await assessmentRepository.SaveChangesAsync();
+
+        return assessment.ToDtoModel();
+    }
 }

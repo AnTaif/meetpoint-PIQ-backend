@@ -1,5 +1,4 @@
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
+using Core.Auth;
 using Core.Results;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -47,9 +46,7 @@ public class EventsController : ControllerBase
     [ProducesResponseType<string>(StatusCodes.Status401Unauthorized)]
     public async Task<ActionResult<GetEventHierarchyResponse>> GetCurrentEvent()
     {
-        var tutorId = GetContextUserId();
-
-        var result = await eventService.GetEventHierarchyByUserIdAsync(tutorId);
+        var result = await eventService.GetEventHierarchyByUserIdAsync(User.GetSid());
         return result.ToActionResult(this);
     }
 
@@ -67,15 +64,5 @@ public class EventsController : ControllerBase
         var result = await assessmentService.CreateTeamsAssessmentAsync(request);
 
         return result.ToActionResult(this, dto => CreatedAtAction("CreateNewAssessment", dto));
-    }
-
-    private Guid GetContextUserId()
-    {
-        var stringId = User.FindFirstValue(JwtRegisteredClaimNames.Sid);
-
-        if (stringId == null)
-            throw new Exception($"Failed when reading logged in userId: {stringId}");
-
-        return Guid.Parse(stringId);
     }
 }

@@ -8,7 +8,7 @@ public class Assessment : AssessmentWithoutDeps
 
     public Assessment(Guid id, string name, List<Team> teams, Template template, DateTime startDate, DateTime endDate,
         bool useCircleAssessment, bool useBehaviorAssessment)
-        : base(id, name, startDate, endDate, useCircleAssessment, useBehaviorAssessment)
+        : base(id, name, startDate, endDate, useCircleAssessment, useBehaviorAssessment, template.Id)
     {
         Teams = teams;
         Template = template;

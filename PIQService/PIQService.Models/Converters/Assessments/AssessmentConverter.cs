@@ -19,6 +19,19 @@ public static class AssessmentConverter
             Teams = [],
         };
 
+    public static AssessmentDbo ToDboModel(this AssessmentWithoutDeps assessment) =>
+        new()
+        {
+            Id = assessment.Id,
+            Name = assessment.Name,
+            TemplateId = assessment.TemplateId,
+            StartDate = assessment.StartDate,
+            EndDate = assessment.EndDate,
+            UseCircleAssessment = assessment.UseCircleAssessment,
+            UseBehaviorAssessment = assessment.UseBehaviorAssessment,
+            Teams = [],
+        };
+
     public static Assessment ToDomainModel(this AssessmentDbo assessmentDbo) =>
         new(
             assessmentDbo.Id,
@@ -38,7 +51,8 @@ public static class AssessmentConverter
             assessmentDbo.StartDate,
             assessmentDbo.EndDate,
             assessmentDbo.UseCircleAssessment,
-            assessmentDbo.UseBehaviorAssessment
+            assessmentDbo.UseBehaviorAssessment,
+            assessmentDbo.TemplateId
         );
 
     public static AssessmentDto ToDtoModel(this AssessmentWithoutDeps assessment) =>
