@@ -47,10 +47,10 @@ public class AssessmentsController : ControllerBase
         return result.ToActionResult(this);
     }
 
-    [HttpGet("{id}/full-form")]
-    public async Task<ActionResult<IEnumerable<FormShortDto>>> GetAssessmentForms(Guid id)
+    [HttpGet("{id}/used-forms")]
+    public async Task<ActionResult<IEnumerable<FormShortDto>>> GetAssessmentUsedForms(Guid id)
     {
-        var result = await assessmentFormsService.GetAssessmentFormsAsync(id);
+        var result = await assessmentFormsService.GetAssessmentUsedFormsAsync(id);
         return result.ToActionResult(this);
     }
 }

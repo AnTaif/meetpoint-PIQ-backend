@@ -5,5 +5,5 @@ namespace PIQService.Application.Implementation.Assessments;
 
 public interface IAssessmentFormsService
 {
-    Task<Result<IEnumerable<FormShortDto>>> GetAssessmentFormsAsync(Guid assessmentId);
+    Task<Result<IEnumerable<FormShortDto>>> GetAssessmentUsedFormsAsync(Guid assessmentId);
 }

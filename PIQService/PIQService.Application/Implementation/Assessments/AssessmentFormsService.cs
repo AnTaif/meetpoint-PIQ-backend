@@ -1,4 +1,5 @@
 using Core.Results;
+using Microsoft.Extensions.Logging;
 using PIQService.Application.Implementation.Templates;
 using PIQService.Models.Converters.Assessments;
 using PIQService.Models.Dto;
@@ -9,17 +10,20 @@ public class AssessmentFormsService : IAssessmentFormsService
 {
     private readonly ITemplateRepository templateRepository;
     private readonly IAssessmentRepository assessmentRepository;
+    private readonly ILogger<AssessmentFormsService> logger;
 
     public AssessmentFormsService(
         ITemplateRepository templateRepository,
-        IAssessmentRepository assessmentRepository
+        IAssessmentRepository assessmentRepository,
+        ILogger<AssessmentFormsService> logger
     )
     {
         this.templateRepository = templateRepository;
         this.assessmentRepository = assessmentRepository;
+        this.logger = logger;
     }
 
-    public async Task<Result<IEnumerable<FormShortDto>>> GetAssessmentFormsAsync(Guid assessmentId)
+    public async Task<Result<IEnumerable<FormShortDto>>> GetAssessmentUsedFormsAsync(Guid assessmentId)
     {
         var assessment = await assessmentRepository.FindWithoutDepsAsync(assessmentId);
 
@@ -32,7 +36,7 @@ public class AssessmentFormsService : IAssessmentFormsService
 
         if (template == null)
         {
-            Console.WriteLine($"ERROR: Assessment with id={assessment.Id} does not have template!");
+            logger.LogError("Assessment with id={assessmentId} does not have template!", assessment.Id);
             return Array.Empty<FormShortDto>();
         }
 
