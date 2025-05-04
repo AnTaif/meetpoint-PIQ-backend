@@ -1,21 +1,35 @@
+using Core.Database;
+using Microsoft.Extensions.Logging;
 using PIQService.Models.Dbo;
 using PIQService.Models.Dbo.Assessments;
 using PIQService.Models.Domain.Assessments;
 
 namespace PIQService.Infra.Data;
 
-public class DataSeeder(AppDbContext dbContext)
+public class DataSeeder : IDataSeeder
 {
     private readonly Guid tutorId = Guid.Parse("0c9e1791-96ea-4533-a2be-1691cfa8a368");
     private readonly Guid templateId = Guid.Parse("d85cf73a-b8c8-4b0d-85f0-4ff242bba9c1");
 
+    private readonly AppDbContext dbContext;
+    private readonly ILogger<DataSeeder> logger;
+
+    public DataSeeder(
+        AppDbContext dbContext,
+        ILogger<DataSeeder> logger
+    )
+    {
+        this.dbContext = dbContext;
+        this.logger = logger;
+    }
+
     public async Task SeedAsync()
     {
-        Console.WriteLine("Starting database seeding...");
+        logger.LogInformation("Starting database seeding...");
 
         if (!await dbContext.Database.EnsureCreatedAsync() && dbContext.Users.Any())
         {
-            Console.WriteLine("Database already has some data, skipping...");
+            logger.LogWarning("Database already has some data, skipping...");
             return;
         }
 
@@ -23,7 +37,7 @@ public class DataSeeder(AppDbContext dbContext)
         SeedAssessmentTemplates();
 
         await dbContext.SaveChangesAsync();
-        Console.WriteLine("Database seeding completed.");
+        logger.LogInformation("Database seeding completed.");
     }
 
     private void SeedEventRelatedData()

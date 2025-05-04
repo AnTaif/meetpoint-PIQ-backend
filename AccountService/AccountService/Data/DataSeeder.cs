@@ -1,45 +1,47 @@
 using AccountService.Models;
 using Core.Auth;
+using Core.Database;
 using Microsoft.AspNetCore.Identity;
 
 namespace AccountService.Data;
 
-public class DataSeeder
+public class DataSeeder : IDataSeeder
 {
-    private readonly IServiceProvider serviceProvider;
+    private readonly Guid tutorId = Guid.Parse("0c9e1791-96ea-4533-a2be-1691cfa8a368");
 
-    public DataSeeder(IServiceProvider serviceProvider)
+    private readonly AccountDbContext dbContext;
+    private readonly UserManager<User> userManager;
+    private readonly ILogger<DataSeeder> logger;
+
+    public DataSeeder(
+        AccountDbContext dbContext,
+        UserManager<User> userManager,
+        ILogger<DataSeeder> logger
+    )
     {
-        this.serviceProvider = serviceProvider;
+        this.dbContext = dbContext;
+        this.userManager = userManager;
+        this.logger = logger;
     }
 
     public async Task SeedAsync()
     {
-        using var scope = serviceProvider.CreateScope();
-        var dbContext = scope.ServiceProvider.GetRequiredService<AccountDbContext>();
-        var userManager = scope.ServiceProvider.GetRequiredService<UserManager<User>>();
+        logger.LogInformation("Starting database seeding...");
 
-        Console.WriteLine("Start seeding...");
-
-        if (!await dbContext.Database.EnsureCreatedAsync())
+        if (!await dbContext.Database.EnsureCreatedAsync() && dbContext.Users.Any())
         {
+            logger.LogWarning("Database already has some data, skipping...");
             return;
         }
 
-        await SeedUsersAsync(userManager, dbContext);
+        await SeedUsersAsync();
         await dbContext.SaveChangesAsync();
-        Console.WriteLine("Seeding ended...");
+        logger.LogInformation("Database seeding completed.");
     }
 
-    private static async Task SeedUsersAsync(UserManager<User> userManager, AccountDbContext dbContext)
+    private async Task SeedUsersAsync()
     {
-        var testUser = new User(
-            Guid.Parse("0c9e1791-96ea-4533-a2be-1691cfa8a368"),
-            "temp@mail.ru",
-            "Анна",
-            "Мациева",
-            null
-        );
+        var testUser = new User(tutorId, "temp@mail.ru", "Анна", "Мациева", null);
 
         var result = await userManager.CreateAsync(testUser, "password");
 

@@ -32,6 +32,7 @@ builder.Services.AddJwtAuth(builder.Configuration);
 builder.Services.AddServices();
 builder.Services.AddRepositories();
 builder.Services.AddMySqlDbContext<AppDbContext>(builder.Configuration);
+builder.Services.AddDataSeeder<DataSeeder>();
 
 var corsOrigins = builder.Configuration.GetSection("AllowedOrigins").Get<string[]?>();
 builder.Services.AddCors(options =>
@@ -46,12 +47,7 @@ builder.Services.AddCors(options =>
 });
 
 var app = builder.Build();
-
-await using (var scope = app.Services.CreateAsyncScope())
-{
-    var dataSeeder = new DataSeeder(scope.ServiceProvider.GetRequiredService<AppDbContext>());
-    await dataSeeder.SeedAsync();
-}
+await app.SeedDatabaseAsync();
 
 if (app.Environment.IsDevelopment())
 {

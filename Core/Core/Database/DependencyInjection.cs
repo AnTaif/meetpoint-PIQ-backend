@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -30,5 +31,19 @@ public static class DependencyInjection
         {
             options.UseMySql(dbOptions.GetConnectionString(), new MySqlServerVersion(dbOptions.Version));
         });
+    }
+
+    public static void AddDataSeeder<TDataSeeder>(this IServiceCollection services)
+        where TDataSeeder : class, IDataSeeder
+    {
+        services.AddTransient<IDataSeeder, TDataSeeder>();
+    }
+
+    public static async Task SeedDatabaseAsync(this WebApplication app)
+    {
+        await using var scope = app.Services.CreateAsyncScope();
+
+        var dataSeeder = scope.ServiceProvider.GetRequiredService<IDataSeeder>();
+        await dataSeeder.SeedAsync();
     }
 }

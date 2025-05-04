@@ -12,7 +12,11 @@ Env.Load("../../.env");
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services
-    .AddSwaggerGen(options => { options.AddDocs(); options.AddJwtSecurity(); })
+    .AddSwaggerGen(options =>
+    {
+        options.AddDocs();
+        options.AddJwtSecurity();
+    })
     .AddSwaggerExamplesFromAssemblies(Assembly.GetExecutingAssembly());
 
 builder.Services.AddControllers();
@@ -20,6 +24,7 @@ builder.Services.AddControllers();
 builder.Services.AddJwtAuth(builder.Configuration);
 builder.Services.AddIdentity();
 builder.Services.AddMySqlDbContext<AccountDbContext>(builder.Configuration);
+builder.Services.AddDataSeeder<DataSeeder>();
 builder.Services.AddServices();
 
 var corsOrigins = builder.Configuration.GetSection("AllowedOrigins").Get<string[]?>();
@@ -35,9 +40,7 @@ builder.Services.AddCors(options =>
 });
 
 var app = builder.Build();
-
-var dataSeeder = new DataSeeder(app.Services);
-await dataSeeder.SeedAsync();
+await app.SeedDatabaseAsync();
 
 if (app.Environment.IsDevelopment())
 {
