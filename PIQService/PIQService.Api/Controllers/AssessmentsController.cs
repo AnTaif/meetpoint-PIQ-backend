@@ -16,10 +16,15 @@ namespace PIQService.Api.Controllers;
 [Route("assessments")]
 public class AssessmentsController : ControllerBase
 {
+    private readonly IAssessmentFormsService assessmentFormsService;
     private readonly IAssessmentService assessmentService;
 
-    public AssessmentsController(IAssessmentService assessmentService)
+    public AssessmentsController(
+        IAssessmentFormsService assessmentFormsService,
+        IAssessmentService assessmentService
+    )
     {
+        this.assessmentFormsService = assessmentFormsService;
         this.assessmentService = assessmentService;
     }
 
@@ -43,8 +48,9 @@ public class AssessmentsController : ControllerBase
     }
 
     [HttpGet("{id}/full-form")]
-    public async Task<ActionResult> GetAssessmentForms(Guid id)
+    public async Task<ActionResult<IEnumerable<FormShortDto>>> GetAssessmentForms(Guid id)
     {
-        throw new NotImplementedException();
+        var result = await assessmentFormsService.GetAssessmentFormsAsync(id);
+        return result.ToActionResult(this);
     }
 }

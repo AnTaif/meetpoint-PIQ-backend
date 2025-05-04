@@ -22,12 +22,12 @@ public static class FormConverter
             formDbo.Questions.Select(q => q.ToDomainModel()).ToList()
         );
 
-    public static FormDto ToDtoModel(this Form form) =>
+    public static FormShortDto ToShortDtoModel(this Form form) =>
         new()
         {
             Id = form.Id,
             Type = form.Type,
             CriteriaList = form.CriteriaList.Select(c => c.ToDtoModel()).ToList(),
-            Questions = form.Questions.Select(q => q.ToDtoModel()).ToList(),
+            Questions = form.Questions.Select(q => q.ToShortDtoModel()).ToList(),
         };
 }

@@ -27,14 +27,13 @@ public static class QuestionConverter
             questionDbo.Choices.Select(c => c.ToDomainModel()).ToList()
         );
 
-    public static QuestionDto ToDtoModel(this Question question) =>
+    public static QuestionShortDto ToShortDtoModel(this Question question) =>
         new()
         {
             Id = question.Id,
             Text = question.Text,
-            Weight = question.Weight,
             Order = question.Order,
             CriteriaId = question.Criteria.Id,
-            Choices = question.Choices.Select(c => c.ToDtoModel()).ToList(),
+            Choices = question.Choices.Select(c => c.ToShortDtoModel()).ToList(),
         };
 }

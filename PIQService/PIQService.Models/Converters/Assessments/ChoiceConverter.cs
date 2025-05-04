@@ -18,11 +18,10 @@ public static class ChoiceConverter
     public static Choice ToDomainModel(this ChoiceDbo choiceDbo) =>
         new(choiceDbo.Id, choiceDbo.Text, choiceDbo.Value);
 
-    public static ChoiceDto ToDtoModel(this Choice choice) =>
+    public static ChoiceShortDto ToShortDtoModel(this Choice choice) =>
         new()
         {
             Id = choice.Id,
             Text = choice.Text,
-            Value = choice.Value,
         };
 }

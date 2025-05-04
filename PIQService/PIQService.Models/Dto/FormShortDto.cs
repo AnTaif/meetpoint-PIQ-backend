@@ -2,13 +2,13 @@ using PIQService.Models.Domain.Assessments;
 
 namespace PIQService.Models.Dto;
 
-public class FormDto
+public class FormShortDto
 {
     public Guid Id { get; init; }
 
     public AssessmentType Type { get; init; }
 
-    public List<CriteriaDto> CriteriaList { get; init; }
+    public List<CriteriaDto> CriteriaList { get; init; } = null!;
 
-    public List<QuestionDto> Questions { get; init; }
+    public List<QuestionShortDto> Questions { get; init; } = null!;
 }
