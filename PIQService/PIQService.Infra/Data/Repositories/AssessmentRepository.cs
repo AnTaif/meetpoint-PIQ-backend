@@ -55,7 +55,8 @@ public class AssessmentRepository(AppDbContext dbContext) : IAssessmentRepositor
 
     public void Delete(AssessmentWithoutDeps assessmentWithoutDeps)
     {
-        dbContext.Assessments.Remove(assessmentWithoutDeps.ToDboModel());
+        var dbo = dbContext.Assessments.Find(assessmentWithoutDeps.Id);
+        dbContext.Assessments.Remove(dbo!);
     }
 
     public async Task SaveChangesAsync()
