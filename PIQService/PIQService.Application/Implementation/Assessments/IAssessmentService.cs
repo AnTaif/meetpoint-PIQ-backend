@@ -13,4 +13,6 @@ public interface IAssessmentService
     Task<Result<AssessmentDto>> CreateTeamsAssessmentAsync(CreateTeamsAssessmentRequest request);
 
     Task<Result<AssessmentDto>> EditAssessmentAsync(Guid id, EditAssessmentRequest request, Guid userId);
+
+    Task<Result> DeleteAsync(Guid id);
 }

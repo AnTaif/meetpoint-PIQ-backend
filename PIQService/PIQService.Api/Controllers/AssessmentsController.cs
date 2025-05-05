@@ -41,4 +41,18 @@ public class AssessmentsController : ControllerBase
         var result = await assessmentService.EditAssessmentAsync(id, request, User.GetSid());
         return result.ToActionResult(this);
     }
+
+    /// <summary>
+    /// Удаление существующего оценивание
+    /// </summary>
+    [HttpDelete("{id}")]
+    [ProducesResponseType<AssessmentDto>(StatusCodes.Status204NoContent)]
+    [ProducesResponseType<string>(StatusCodes.Status404NotFound)]
+    [ProducesResponseType<string>(StatusCodes.Status409Conflict)]
+    [ProducesResponseType<string>(StatusCodes.Status401Unauthorized)]
+    public async Task<ActionResult> DeleteAssessment(Guid id)
+    {
+        var result = await assessmentService.DeleteAsync(id);
+        return result.ToActionResult(this);
+    }
 }

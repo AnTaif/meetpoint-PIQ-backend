@@ -13,5 +13,7 @@ public interface IAssessmentRepository
 
     void Update(AssessmentWithoutDeps assessmentWithoutDeps);
 
+    void Delete(AssessmentWithoutDeps assessmentWithoutDeps);
+
     Task SaveChangesAsync();
 }

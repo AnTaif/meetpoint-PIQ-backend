@@ -116,4 +116,24 @@ public class AssessmentService : IAssessmentService
 
         return assessment.ToDtoModel();
     }
+
+    public async Task<Result> DeleteAsync(Guid id)
+    {
+        var assessment = await assessmentRepository.FindWithoutDepsAsync(id);
+
+        if (assessment == null)
+        {
+            return HttpError.NotFound("Assessment not found");
+        }
+
+        if (assessment.EndDate <= DateTime.UtcNow)
+        {
+            return HttpError.Conflict("Cannot delete completed assessment");
+        }
+
+        assessmentRepository.Delete(assessment);
+        await assessmentRepository.SaveChangesAsync();
+
+        return Result.Success();
+    }
 }

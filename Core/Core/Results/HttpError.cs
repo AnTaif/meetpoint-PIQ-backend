@@ -14,4 +14,6 @@ public class HttpError : Error
     public static HttpError NotFound(string message = "") => new(message, HttpStatusCode.NotFound);
 
     public static HttpError BadRequest(string message = "") => new(message, HttpStatusCode.BadRequest);
+
+    public static HttpError Conflict(string message = "") => new(message, HttpStatusCode.Conflict);
 }

@@ -53,6 +53,11 @@ public class AssessmentRepository(AppDbContext dbContext) : IAssessmentRepositor
         }
     }
 
+    public void Delete(AssessmentWithoutDeps assessmentWithoutDeps)
+    {
+        dbContext.Assessments.Remove(assessmentWithoutDeps.ToDboModel());
+    }
+
     public async Task SaveChangesAsync()
     {
         await dbContext.SaveChangesAsync();
