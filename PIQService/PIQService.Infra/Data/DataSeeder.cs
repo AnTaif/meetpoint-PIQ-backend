@@ -1,5 +1,4 @@
-using Core.Database;
-using Microsoft.Extensions.Logging;
+using Core.Extensions;
 using PIQService.Models.Dbo;
 using PIQService.Models.Dbo.Assessments;
 using PIQService.Models.Domain.Assessments;
@@ -148,12 +147,13 @@ public class DataSeeder : IDataSeeder
         var forms = new[]
         {
             new FormDbo { Id = NewGuid(), Type = AssessmentType.Circle, CriteriaList = criteriaList },
+            new FormDbo { Id = NewGuid(), Type = AssessmentType.Behavior, CriteriaList = criteriaList },
         };
         dbContext.Forms.AddRange(forms);
 
         var templates = new[]
         {
-            new TemplateDbo { Id = templateId, Name = "Шаблон 360", CircleFormId = forms[0].Id },
+            new TemplateDbo { Id = templateId, Name = "Шаблон \"Стажировка\"", CircleFormId = forms[0].Id, BehaviorFormId = forms[1].Id },
         };
         dbContext.Templates.AddRange(templates);
 
@@ -161,24 +161,33 @@ public class DataSeeder : IDataSeeder
         {
             CreateQuestion("Проявляет инициативу в обсуждениях?", 0.5f, 0, forms[0].Id, criteriaList[0].Id),
             CreateQuestion("Делится знаниями с командой?", 0.5f, 1, forms[0].Id, criteriaList[0].Id),
-            CreateQuestion("Работает системно, без авралов?", 0.5f, 1, forms[0].Id, criteriaList[1].Id),
-            CreateQuestion("Документирует свои процессы?", 0.5f, 1, forms[0].Id, criteriaList[1].Id),
-            CreateQuestion("Быстро осваивает новые инструменты?", 0.5f, 1, forms[0].Id, criteriaList[2].Id),
-            CreateQuestion("Применяет новые знания на практике?", 0.5f, 1, forms[0].Id, criteriaList[2].Id),
-            CreateQuestion("Помогает коллегам без напоминаний?", 0.5f, 1, forms[0].Id, criteriaList[3].Id),
-            CreateQuestion("Конструктивно решает конфликты?", 0.5f, 1, forms[0].Id, criteriaList[3].Id),
+            CreateQuestion("Работает системно, без авралов?", 0.5f, 2, forms[0].Id, criteriaList[1].Id),
+            CreateQuestion("Документирует свои процессы?", 0.5f, 3, forms[0].Id, criteriaList[1].Id),
+            CreateQuestion("Быстро осваивает новые инструменты?", 0.5f, 4, forms[0].Id, criteriaList[2].Id),
+            CreateQuestion("Применяет новые знания на практике?", 0.5f, 5, forms[0].Id, criteriaList[2].Id),
+            CreateQuestion("Помогает коллегам без напоминаний?", 0.5f, 6, forms[0].Id, criteriaList[3].Id),
+            CreateQuestion("Конструктивно решает конфликты?", 0.5f, 7, forms[0].Id, criteriaList[3].Id),
         };
         dbContext.Questions.AddRange(questions);
 
         var choices = new List<ChoiceDbo>();
-        var choiceTextList = new Dictionary<string, short>() { { "A", -1 }, { "B", 0 }, { "C", 1 }, { "D", 2 }, { "E", 3 } };
         foreach (var question in questions)
         {
-            choices.AddRange(choiceTextList.Select(pairs =>
-                new ChoiceDbo
-                {
-                    Id = NewGuid(), QuestionId = question.Id, Text = pairs.Key, Value = pairs.Value,
-                }));
+            var tempChoices = new[]
+            {
+                new ChoiceDbo { Text = "-1", Value = -1, Description = "Описание выбора" },
+                new ChoiceDbo { Text = "0", Value = 0, Description = "Описание выбора" },
+                new ChoiceDbo { Text = "1", Value = 1, Description = "Описание выбора" },
+                new ChoiceDbo { Text = "2", Value = 2, Description = "Описание выбора" },
+                new ChoiceDbo { Text = "3", Value = 3, Description = "Описание выбора" },
+            };
+
+            tempChoices.Foreach(c =>
+            {
+                c.Id = NewGuid();
+                c.QuestionId = question.Id;
+                choices.Add(c);
+            });
         }
 
         dbContext.Choices.AddRange(choices);

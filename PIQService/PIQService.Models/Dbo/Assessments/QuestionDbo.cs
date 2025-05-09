@@ -27,5 +27,5 @@ public class QuestionDbo : EntityBase
     public CriteriaDbo Criteria { get; set; } = null!;
 
     [ForeignKey(nameof(ChoiceDbo.QuestionId))]
-    public ICollection<ChoiceDbo> Choices { get; private set; } = null!;
+    public ICollection<ChoiceDbo> Choices { get; set; } = null!;
 }
