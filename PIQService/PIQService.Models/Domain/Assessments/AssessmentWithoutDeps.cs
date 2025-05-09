@@ -14,10 +14,12 @@ public class AssessmentWithoutDeps
 
     public bool UseBehaviorAssessment { get; private set; }
 
+    public Guid TeamId { get; init; }
+
     public Guid TemplateId { get; init; }
 
     public AssessmentWithoutDeps(Guid id, string name, DateTime startDate, DateTime endDate, bool useCircleAssessment,
-        bool useBehaviorAssessment, Guid templateId)
+        bool useBehaviorAssessment, Guid templateId, Guid teamId)
     {
         Id = id;
         Name = name;
@@ -26,6 +28,7 @@ public class AssessmentWithoutDeps
         UseCircleAssessment = useCircleAssessment;
         UseBehaviorAssessment = useBehaviorAssessment;
         TemplateId = templateId;
+        TeamId = teamId;
     }
 
     public void Edit(string? name, DateTime? startDate, DateTime? endDate, bool? useCircleAssessment, bool? useBehaviorAssessment)

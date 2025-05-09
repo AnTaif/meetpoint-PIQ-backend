@@ -43,11 +43,6 @@ public class AppDbContext : DbContext
             .WithMany(t => t.Members)
             .HasForeignKey(u => u.TeamId);
 
-        modelBuilder.Entity<AssessmentDbo>()
-            .HasMany(f => f.Teams)
-            .WithMany()
-            .UsingEntity("assessments_teams");
-
         modelBuilder.Entity<FormDbo>()
             .HasMany(f => f.CriteriaList)
             .WithMany()

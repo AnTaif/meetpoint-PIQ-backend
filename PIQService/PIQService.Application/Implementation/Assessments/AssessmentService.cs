@@ -1,3 +1,4 @@
+using Core.Extensions;
 using Core.Results;
 using PIQService.Application.Implementation.Assessments.Requests;
 using PIQService.Application.Implementation.Teams;
@@ -43,17 +44,17 @@ public class AssessmentService : IAssessmentService
     {
         var newAssessmentResult = await CreateAssessmentForTeamsAsync([teamId], request.Name, request.StartDate, request.EndDate,
             request.UseCircleAssessment, request.UseBehaviorAssessment);
-        return newAssessmentResult.IsFailure ? newAssessmentResult.Error : newAssessmentResult.Value.ToDtoModel();
+        return newAssessmentResult.IsFailure ? newAssessmentResult.Error : newAssessmentResult.Value.First().ToDtoModel();
     }
 
-    public async Task<Result<AssessmentDto>> CreateTeamsAssessmentAsync(CreateTeamsAssessmentRequest request)
+    public async Task<Result<IEnumerable<AssessmentDto>>> CreateTeamsAssessmentAsync(CreateTeamsAssessmentRequest request)
     {
         var newAssessmentResult = await CreateAssessmentForTeamsAsync(request.TeamIds, request.Name, request.StartDate, request.EndDate,
             request.UseCircleAssessment, request.UseBehaviorAssessment);
-        return newAssessmentResult.IsFailure ? newAssessmentResult.Error : newAssessmentResult.Value.ToDtoModel();
+        return newAssessmentResult.IsFailure ? newAssessmentResult.Error : newAssessmentResult.Value.Select(a => a.ToDtoModel()).ToList();
     }
 
-    private async Task<Result<Assessment>> CreateAssessmentForTeamsAsync(
+    private async Task<Result<IEnumerable<Assessment>>> CreateAssessmentForTeamsAsync(
         IReadOnlyCollection<Guid> teamIds, string name, DateTime startDate, DateTime endDate, bool useCircleAssessment,
         bool useBehaviorAssessment)
     {
@@ -81,13 +82,18 @@ public class AssessmentService : IAssessmentService
             return HttpError.NotFound("Template not found");
         }
 
-        var newAssessment = new Assessment(Guid.NewGuid(), name, [], template, startDate, endDate, useCircleAssessment,
-            useBehaviorAssessment);
+        var assessments = new List<Assessment>();
+        teams.Foreach(t =>
+        {
+            var newAssessment = new Assessment(Guid.NewGuid(), name, t, template, startDate, endDate, useCircleAssessment,
+                useBehaviorAssessment);
 
-        await assessmentRepository.CreateAsync(newAssessment, teams.ToArray());
+            assessmentRepository.Create(newAssessment);
+            assessments.Add(newAssessment);
+        });
         await assessmentRepository.SaveChangesAsync();
 
-        return newAssessment;
+        return assessments;
     }
 
     public async Task<Result<AssessmentDto>> EditAssessmentAsync(Guid id, EditAssessmentRequest request, Guid userId)

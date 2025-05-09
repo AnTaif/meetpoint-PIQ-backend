@@ -55,11 +55,11 @@ public class EventsController : ControllerBase
     /// </summary>
     [HttpPost("assessments")]
     [SwaggerRequestExample(typeof(CreateTeamsAssessmentRequest), typeof(CreateTeamsAssessmentRequestExample))]
-    [SwaggerResponseExample(StatusCodes.Status201Created, typeof(AssessmentDtoExample))]
+    [SwaggerResponseExample(StatusCodes.Status201Created, typeof(EnumerableAssessmentDtoExample))]
     [ProducesResponseType<AssessmentDto>(StatusCodes.Status201Created)]
     [ProducesResponseType<string>(StatusCodes.Status404NotFound)]
     [ProducesResponseType<string>(StatusCodes.Status401Unauthorized)]
-    public async Task<ActionResult<AssessmentDto>> CreateNewAssessment(CreateTeamsAssessmentRequest request)
+    public async Task<ActionResult<IEnumerable<AssessmentDto>>> CreateNewAssessment(CreateTeamsAssessmentRequest request)
     {
         var result = await assessmentService.CreateTeamsAssessmentAsync(request);
 
