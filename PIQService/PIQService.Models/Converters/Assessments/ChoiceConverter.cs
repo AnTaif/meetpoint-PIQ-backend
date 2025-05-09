@@ -13,15 +13,17 @@ public static class ChoiceConverter
             QuestionId = questionId,
             Text = choice.Text,
             Value = choice.Value,
+            Description = choice.Description,
         };
 
     public static Choice ToDomainModel(this ChoiceDbo choiceDbo) =>
-        new(choiceDbo.Id, choiceDbo.Text, choiceDbo.Value);
+        new(choiceDbo.Id, choiceDbo.Text, choiceDbo.Value, choiceDbo.Description);
 
     public static ChoiceShortDto ToShortDtoModel(this Choice choice) =>
         new()
         {
             Id = choice.Id,
             Text = choice.Text,
+            Description = choice.Description,
         };
 }

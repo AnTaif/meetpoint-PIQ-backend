@@ -16,4 +16,8 @@ public class ChoiceDbo : EntityBase
 
     [Column("value")]
     public short Value { get; set; }
+
+    [Column("description")]
+    [MaxLength(255)]
+    public string Description { get; set; } = null!;
 }

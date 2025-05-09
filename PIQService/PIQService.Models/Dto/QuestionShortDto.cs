@@ -6,8 +6,6 @@ public class QuestionShortDto
 
     public string Text { get; init; } = null!;
 
-    public short Order { get; init; }
-
     public Guid CriteriaId { get; init; }
 
     public List<ChoiceShortDto> Choices { get; init; } = null!;

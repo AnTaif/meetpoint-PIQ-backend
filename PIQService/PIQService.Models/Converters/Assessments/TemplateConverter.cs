@@ -11,8 +11,9 @@ public static class TemplateConverter
             Id = template.Id,
             Name = template.Name,
             CircleFormId = template.CircleForm.Id,
+            BehaviorFormId = template.BehaviorForm.Id,
         };
 
     public static Template ToDomainModel(this TemplateDbo templateDbo) =>
-        new(templateDbo.Id, templateDbo.Name, templateDbo.CircleForm.ToDomainModel());
+        new(templateDbo.Id, templateDbo.Name, templateDbo.CircleForm.ToDomainModel(), templateDbo.BehaviorForm.ToDomainModel());
 }

@@ -8,10 +8,13 @@ public class Template
 
     public Form CircleForm { get; private set; }
 
-    public Template(Guid id, string name, Form circleForm)
+    public Form BehaviorForm { get; private set; }
+
+    public Template(Guid id, string name, Form circleForm, Form behaviorForm)
     {
         Id = id;
         Name = name;
         CircleForm = circleForm;
+        BehaviorForm = behaviorForm;
     }
 }

@@ -32,7 +32,6 @@ public static class QuestionConverter
         {
             Id = question.Id,
             Text = question.Text,
-            Order = question.Order,
             CriteriaId = question.Criteria.Id,
             Choices = question.Choices.Select(c => c.ToShortDtoModel()).ToList(),
         };

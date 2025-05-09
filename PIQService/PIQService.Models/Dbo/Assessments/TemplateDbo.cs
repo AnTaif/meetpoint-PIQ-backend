@@ -14,6 +14,12 @@ public class TemplateDbo : EntityBase
     [Column("circle_form_id")]
     public Guid CircleFormId { get; set; }
 
+    [Column("behavior_form_id")]
+    public Guid BehaviorFormId { get; set; }
+
     [ForeignKey(nameof(CircleFormId))]
     public FormDbo CircleForm { get; set; } = null!;
+
+    [ForeignKey(nameof(BehaviorFormId))]
+    public FormDbo BehaviorForm { get; set; } = null!;
 }

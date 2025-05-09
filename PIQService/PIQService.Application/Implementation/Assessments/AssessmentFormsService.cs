@@ -48,6 +48,12 @@ public class AssessmentFormsService : IAssessmentFormsService
             usedForms.Add(circleForm);
         }
 
+        if (assessment.UseBehaviorAssessment)
+        {
+            var behaviorForm = template.BehaviorForm.ToShortDtoModel();
+            usedForms.Add(behaviorForm);
+        }
+
         return usedForms;
     }
 }

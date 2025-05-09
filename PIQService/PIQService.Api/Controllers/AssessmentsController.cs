@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PIQService.Api.Docs;
 using PIQService.Api.Docs.RequestExamples;
+using PIQService.Api.Docs.ResponseExamples;
 using PIQService.Application.Implementation.Assessments;
 using PIQService.Application.Implementation.Assessments.Requests;
 using PIQService.Models.Dto;
@@ -47,7 +48,14 @@ public class AssessmentsController : ControllerBase
         return result.ToActionResult(this);
     }
 
+    /// <summary>
+    /// Получение выбранных в оценивании форм из текущего шаблона
+    /// </summary>
     [HttpGet("{id}/used-forms")]
+    [SwaggerResponseExample(StatusCodes.Status200OK, typeof(FormShortDtoExample))]
+    [ProducesResponseType<AssessmentDto>(StatusCodes.Status200OK)]
+    [ProducesResponseType<string>(StatusCodes.Status404NotFound)]
+    [ProducesResponseType<string>(StatusCodes.Status401Unauthorized)]
     public async Task<ActionResult<IEnumerable<FormShortDto>>> GetAssessmentUsedForms(Guid id)
     {
         var result = await assessmentFormsService.GetAssessmentUsedFormsAsync(id);
