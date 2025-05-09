@@ -1,4 +1,6 @@
+using Core.Database;
 using Core.Extensions;
+using Microsoft.Extensions.Logging;
 using PIQService.Models.Dbo;
 using PIQService.Models.Dbo.Assessments;
 using PIQService.Models.Domain.Assessments;
