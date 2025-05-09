@@ -19,20 +19,37 @@ public class TemplateRepository(AppDbContext dbContext) : ITemplateRepository
             .Include(t => t.CircleForm)
             .ThenInclude(f => f.Questions)
             .ThenInclude(q => q.Choices)
+            .Include(t => t.BehaviorForm)
+            .ThenInclude(f => f.CriteriaList)
+            .Include(t => t.BehaviorForm)
+            .ThenInclude(f => f.Questions)
+            .ThenInclude(q => q.Criteria)
+            .Include(t => t.BehaviorForm)
+            .ThenInclude(f => f.Questions)
+            .ThenInclude(q => q.Choices)
             .SingleOrDefaultAsync(t => t.Id == templateId);
 
         if (dbo == null) return null;
 
         dbo.CircleForm.CriteriaList = dbo.CircleForm.CriteriaList.OrderBy(c => c.Name).ToList();
+        dbo.BehaviorForm.CriteriaList = dbo.BehaviorForm.CriteriaList.OrderBy(c => c.Name).ToList();
 
-        var questions = new List<QuestionDbo>();
+        var circleQuestions = new List<QuestionDbo>();
         foreach (var question in dbo.CircleForm.Questions.OrderBy(q => q.Order))
         {
             question.Choices = question.Choices.OrderBy(c => c.Value).ToList();
-            questions.Add(question);
+            circleQuestions.Add(question);
         }
 
-        dbo.CircleForm.Questions = questions;
+        var behaviorQuestions = new List<QuestionDbo>();
+        foreach (var question in dbo.BehaviorForm.Questions.OrderBy(q => q.Order))
+        {
+            question.Choices = question.Choices.OrderBy(c => c.Value).ToList();
+            behaviorQuestions.Add(question);
+        }
+
+        dbo.CircleForm.Questions = circleQuestions;
+        dbo.BehaviorForm.Questions = behaviorQuestions;
 
         return dbo.ToDomainModel();
     }
