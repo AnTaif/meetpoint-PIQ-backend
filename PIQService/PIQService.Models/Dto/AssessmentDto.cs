@@ -10,6 +10,8 @@ public class AssessmentDto
 
     public DateTime EndDate { get; init; }
 
+    public Guid TeamId { get; init; }
+
     public bool UseCircleAssessment { get; init; }
 
     public bool UseBehaviorAssessment { get; init; }

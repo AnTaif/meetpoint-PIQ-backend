@@ -63,6 +63,7 @@ public static class AssessmentConverter
             Name = assessment.Name,
             StartDate = assessment.StartDate,
             EndDate = assessment.EndDate,
+            TeamId = assessment.TeamId,
             UseCircleAssessment = assessment.UseCircleAssessment,
             UseBehaviorAssessment = assessment.UseBehaviorAssessment,
         };
