@@ -2,6 +2,7 @@ using System.Reflection;
 using Core.Auth;
 using Core.Database;
 using Core.Swagger;
+using Core.Logger;
 using DotNetEnv;
 using FluentValidation;
 using FluentValidation.AspNetCore;
@@ -33,6 +34,8 @@ builder.Services.AddServices();
 builder.Services.AddRepositories();
 builder.Services.AddMySqlDbContext<AppDbContext>(builder.Configuration);
 builder.Services.AddDataSeeder<DataSeeder>();
+
+builder.Host.UseSerilogLogging(builder.Configuration);
 
 var corsOrigins = builder.Configuration.GetSection("AllowedOrigins").Get<string[]?>();
 builder.Services.AddCors(options =>

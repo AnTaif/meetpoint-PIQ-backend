@@ -30,7 +30,7 @@ public class DataSeeder : IDataSeeder
 
         if (!await dbContext.Database.EnsureCreatedAsync() && dbContext.Users.Any())
         {
-            logger.LogWarning("Database already has some data, skipping...");
+            logger.LogInformation("Database already has some data, skipping...");
             return;
         }
 
@@ -38,7 +38,7 @@ public class DataSeeder : IDataSeeder
         SeedAssessmentTemplates();
 
         await dbContext.SaveChangesAsync();
-        logger.LogInformation("Database seeding completed.");
+        logger.LogWarning("Database seeding completed.");
     }
 
     private void SeedEventRelatedData()

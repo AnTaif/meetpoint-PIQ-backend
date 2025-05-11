@@ -3,6 +3,7 @@ using AccountService;
 using AccountService.Data;
 using Core.Auth;
 using Core.Database;
+using Core.Logger;
 using Core.Swagger;
 using DotNetEnv;
 using Swashbuckle.AspNetCore.Filters;
@@ -38,6 +39,8 @@ builder.Services.AddCors(options =>
             policy.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod();
     });
 });
+
+builder.Host.UseSerilogLogging(builder.Configuration);
 
 var app = builder.Build();
 await app.SeedDatabaseAsync();
