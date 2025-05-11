@@ -17,4 +17,12 @@ public class Choice
         Value = value;
         Description = description;
     }
+
+    public Choice(Guid id)
+    {
+        Id = id;
+        Text = "";
+        Value = -1;
+        Description = "";
+    }
 }

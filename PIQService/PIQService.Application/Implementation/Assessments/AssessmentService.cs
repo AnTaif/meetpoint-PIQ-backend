@@ -15,6 +15,7 @@ namespace PIQService.Application.Implementation.Assessments;
 
 public class AssessmentService : IAssessmentService
 {
+    private readonly IAssessmentFormsService assessmentFormsService;
     private readonly IAssessmentMarkRepository markRepository;
     private readonly ITeamRepository teamRepository;
     private readonly ITemplateRepository templateRepository;
@@ -22,12 +23,14 @@ public class AssessmentService : IAssessmentService
     private readonly ILogger<AssessmentService> logger;
 
     public AssessmentService(
+        IAssessmentFormsService assessmentFormsService,
         IAssessmentMarkRepository markRepository,
         ITeamRepository teamRepository,
         ITemplateRepository templateRepository,
         IAssessmentRepository assessmentRepository,
         ILogger<AssessmentService> logger)
     {
+        this.assessmentFormsService = assessmentFormsService;
         this.markRepository = markRepository;
         this.teamRepository = teamRepository;
         this.templateRepository = templateRepository;
@@ -153,6 +156,61 @@ public class AssessmentService : IAssessmentService
         await assessmentRepository.SaveChangesAsync();
 
         return assessments;
+    }
+
+    public async Task<Result<AssessmentMarkDto>> AssessUserAsync(
+        Guid assessmentId, Guid assessorUserId, Guid assessedUserId, IEnumerable<Guid> selectedChoiceIds)
+    {
+        var usedFormsResult = await assessmentFormsService.GetAssessmentUsedFormsAsync(assessmentId);
+
+        if (usedFormsResult.IsFailure)
+            return usedFormsResult.Error;
+
+        var questions = usedFormsResult.Value.SelectMany(f => f.Questions).ToList();
+
+        var choiceToQuestion = questions
+            .SelectMany(q => q.Choices.Select(c => new { ChoiceId = c.Id, QuestionId = q.Id }))
+            .ToDictionary(x => x.ChoiceId, x => x.QuestionId);
+
+        var usedQuestionIds = new HashSet<Guid>();
+        var choiceIds = selectedChoiceIds.ToList();
+
+        foreach (var selectedChoiceId in choiceIds)
+        {
+            if (!choiceToQuestion.TryGetValue(selectedChoiceId, out var questionId))
+            {
+                return HttpError.NotFound($"Choice with id={selectedChoiceId} not found");
+            }
+
+            if (!usedQuestionIds.Add(questionId))
+            {
+                return HttpError.Conflict($"Для вопроса с id={questionId} выбрано несколько вариантов");
+            }
+        }
+
+        if (usedQuestionIds.Count != questions.Count)
+        {
+            return HttpError.BadRequest(
+                "Не все вопросы имеют выбранный вариант ответа, ids=" +
+                string.Join(',', questions.Select(q => q.Id).Except(usedQuestionIds)));
+        }
+
+        var mark = await markRepository.FindWithoutDepsAsync(assessmentId, assessorUserId, assessedUserId);
+        var newChoices = choiceIds.Select(id => new Choice(id)).ToList();
+
+        if (mark == null)
+        {
+            mark = new AssessmentMarkWithoutDeps(Guid.NewGuid(), assessorUserId, assessedUserId, assessmentId, newChoices);
+            markRepository.Create(mark, choiceIds);
+        }
+        else
+        {
+            mark.UpdateChoices(newChoices);
+            markRepository.UpdateChoices(mark, choiceIds);
+        }
+
+        await assessmentRepository.SaveChangesAsync();
+        return mark.ToDtoModel();
     }
 
     public async Task<Result<AssessmentDto>> EditAssessmentAsync(Guid id, EditAssessmentRequest request, Guid userId)

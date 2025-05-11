@@ -20,4 +20,9 @@ public class AssessmentMarkWithoutDeps
         AssessmentId = assessmentId;
         Choices = choices;
     }
+
+    public void UpdateChoices(List<Choice> newChoices)
+    {
+        Choices = newChoices;
+    }
 }

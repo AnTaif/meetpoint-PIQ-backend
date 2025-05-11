@@ -106,9 +106,10 @@ public class AssessmentsController : ControllerBase
         return result.ToActionResult(this);
     }
 
-    [HttpPost("{assessmentId}/assess-users/{userId}/assess")]
-    public async Task<ActionResult> AddChoicesForAssessedUser(Guid assessmentId, Guid userId, Guid[] selectedChoiceIds)
+    [HttpPost("{assessmentId}/assess-users/{assessedUserId}/assess")]
+    public async Task<ActionResult> AssessUser(Guid assessmentId, Guid assessedUserId, IEnumerable<Guid> selectedChoiceIds)
     {
-        throw new NotImplementedException();
+        var result = await assessmentService.AssessUserAsync(assessmentId, User.GetSid(), assessedUserId, selectedChoiceIds);
+        return result.ToActionResult(this, value => CreatedAtAction("AssessUser", value));
     }
 }

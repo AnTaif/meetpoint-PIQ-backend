@@ -21,6 +21,26 @@ public class AssessmentMarkRepository(AppDbContext dbContext) : IAssessmentMarkR
         return mark?.ToDomainModelWithoutDeps();
     }
 
+    public void Create(AssessmentMarkWithoutDeps mark, IEnumerable<Guid> choiceIds)
+    {
+        var dbo = mark.ToDboModel();
+
+        var choices = choiceIds.Select(id => dbContext.Choices.Find(id)!).ToList();
+        dbo.Choices = choices;
+
+        dbContext.AssessmentMarks.Add(dbo);
+    }
+
+    public void UpdateChoices(AssessmentMarkWithoutDeps mark, IEnumerable<Guid> choiceIds)
+    {
+        var markDbo = dbContext.AssessmentMarks.Find(mark.Id)!;
+
+        var choices = choiceIds.Select(id => dbContext.Choices.Find(id)!).ToList();
+        markDbo.Choices = choices;
+
+        dbContext.AssessmentMarks.Update(markDbo);
+    }
+
     public async Task<IEnumerable<User>> SelectAssessedUsersAsync(Guid assessorId, Guid assessmentId)
     {
         var assessedUsers = await dbContext.AssessmentMarks

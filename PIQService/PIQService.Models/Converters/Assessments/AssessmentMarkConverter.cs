@@ -1,17 +1,18 @@
 using PIQService.Models.Dbo.Assessments;
 using PIQService.Models.Domain.Assessments;
+using PIQService.Models.Dto;
 
 namespace PIQService.Models.Converters.Assessments;
 
 public static class AssessmentMarkConverter
 {
-    public static AssessmentMarkDbo ToDboModel(this AssessmentMark mark) =>
+    public static AssessmentMarkDbo ToDboModel(this AssessmentMarkWithoutDeps mark) =>
         new()
         {
             Id = mark.Id,
-            AssessorId = mark.Assessor.Id,
-            AssessedId = mark.Assessed.Id,
-            AssessmentId = mark.Assessment.Id,
+            AssessorId = mark.AssessorId,
+            AssessedId = mark.AssessedId,
+            AssessmentId = mark.AssessmentId,
             Choices = mark.Choices.Select(c => new ChoiceDbo() { Id = c.Id }).ToList(),
         };
 
@@ -32,4 +33,14 @@ public static class AssessmentMarkConverter
             markDbo.AssessmentId,
             markDbo.Choices.Select(c => c.ToDomainModel()).ToList()
         );
+
+    public static AssessmentMarkDto ToDtoModel(this AssessmentMarkWithoutDeps assessmentMark) =>
+        new()
+        {
+            Id = assessmentMark.Id,
+            AssessorId = assessmentMark.AssessorId,
+            AssessedId = assessmentMark.AssessedId,
+            AssessmentId = assessmentMark.AssessmentId,
+            Choices = assessmentMark.Choices.Select(c => c.Id).ToList(),
+        };
 }
