@@ -18,6 +18,7 @@ public class Choice
         Text = text;
         Value = value;
         Description = description;
+        QuestionId = questionId;
     }
 
     public Choice(Guid id)
