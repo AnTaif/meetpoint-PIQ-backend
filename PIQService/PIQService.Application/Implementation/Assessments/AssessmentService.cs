@@ -1,8 +1,11 @@
 using Core.Extensions;
 using Core.Results;
+using Microsoft.Extensions.Logging;
+using PIQService.Application.Implementation.Assessments.Marks;
 using PIQService.Application.Implementation.Assessments.Requests;
 using PIQService.Application.Implementation.Teams;
 using PIQService.Application.Implementation.Templates;
+using PIQService.Models.Converters;
 using PIQService.Models.Converters.Assessments;
 using PIQService.Models.Domain;
 using PIQService.Models.Domain.Assessments;
@@ -12,19 +15,24 @@ namespace PIQService.Application.Implementation.Assessments;
 
 public class AssessmentService : IAssessmentService
 {
+    private readonly IAssessmentMarkRepository assessmentMarkRepository;
     private readonly ITeamRepository teamRepository;
     private readonly ITemplateRepository templateRepository;
     private readonly IAssessmentRepository assessmentRepository;
+    private readonly ILogger<AssessmentService> logger;
 
     public AssessmentService(
+        IAssessmentMarkRepository assessmentMarkRepository,
         ITeamRepository teamRepository,
         ITemplateRepository templateRepository,
-        IAssessmentRepository assessmentRepository
-    )
+        IAssessmentRepository assessmentRepository,
+        ILogger<AssessmentService> logger)
     {
+        this.assessmentMarkRepository = assessmentMarkRepository;
         this.teamRepository = teamRepository;
         this.templateRepository = templateRepository;
         this.assessmentRepository = assessmentRepository;
+        this.logger = logger;
     }
 
     public async Task<Result<IEnumerable<AssessmentDto>>> GetTeamAssessments(Guid teamId)
@@ -38,6 +46,41 @@ public class AssessmentService : IAssessmentService
         var assessments = await assessmentRepository.SelectByTeamIdAsync(teamId);
 
         return assessments.Select(a => a.ToDtoModel()).ToList();
+    }
+
+    public async Task<Result<IEnumerable<AssessUserDto>>> SelectUsersToAssessAsync(Guid currentUserId, Guid assessmentId)
+    {
+        var assessment = await assessmentRepository.FindWithoutDepsAsync(assessmentId);
+
+        if (assessment == null)
+            return HttpError.NotFound("Assessment not found");
+
+        var team = await teamRepository.FindAsync(assessment.TeamId);
+
+        if (team == null)
+        {
+            logger.LogError(
+                "Assessment with id={assessmentId} does not have team with id={teamId}",
+                assessmentId,
+                assessment.TeamId);
+
+            return HttpError.NotFound("Team not found");
+        }
+
+        var assessedUsers = await assessmentMarkRepository.SelectAssessedUsersAsync(currentUserId, assessmentId);
+        var assessedUsersById = assessedUsers.ToLookup(u => u.Id);
+
+        var usersToAssess = team.Users
+            .OrderBy(u => u.LastName)
+            .Concat(team.Tutor.ToSingleArray())
+            .Where(u => u.Id != currentUserId)
+            .ToList();
+
+        return usersToAssess.Select(u => new AssessUserDto
+        {
+            User = u.ToDtoModel(),
+            Assessed = assessedUsersById.Contains(u.Id),
+        }).ToList();
     }
 
     public async Task<Result<AssessmentDto>> CreateTeamAssessmentAsync(Guid teamId, CreateTeamAssessmentRequest request)

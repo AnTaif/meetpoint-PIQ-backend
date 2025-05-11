@@ -66,7 +66,7 @@ public class AssessmentsController : ControllerBase
     /// Удаление существующего оценивание
     /// </summary>
     [HttpDelete("{id}")]
-    [ProducesResponseType<AssessmentDto>(StatusCodes.Status204NoContent)]
+    [ProducesResponseType<string>(StatusCodes.Status204NoContent)]
     [ProducesResponseType<string>(StatusCodes.Status404NotFound)]
     [ProducesResponseType<string>(StatusCodes.Status409Conflict)]
     [ProducesResponseType<string>(StatusCodes.Status401Unauthorized)]
@@ -74,5 +74,31 @@ public class AssessmentsController : ControllerBase
     {
         var result = await assessmentService.DeleteAsync(id);
         return result.ToActionResult(this);
+    }
+
+    /// <summary>
+    /// Получение пользователей для оценивания.
+    /// </summary>
+    [HttpGet("{assessmentId}/assess-users")]
+    [SwaggerResponseExample(StatusCodes.Status200OK, typeof(EnumerableAssessUserDtoExample))]
+    [ProducesResponseType<IEnumerable<AssessUserDto>>(StatusCodes.Status200OK)]
+    [ProducesResponseType<string>(StatusCodes.Status404NotFound)]
+    [ProducesResponseType<string>(StatusCodes.Status401Unauthorized)]
+    public async Task<ActionResult<IEnumerable<AssessUserDto>>> GetAssessUsers(Guid assessmentId)
+    {
+        var result = await assessmentService.SelectUsersToAssessAsync(User.GetSid(), assessmentId);
+        return result.ToActionResult(this);
+    }
+
+    [HttpGet("{assessmentId}/assess-users/{assessUserId}/choices")]
+    public async Task<ActionResult<IEnumerable<Guid>>> GetChoicesForAssessedUser(Guid assessmentId, Guid assessUserId)
+    {
+        throw new NotImplementedException();
+    }
+
+    [HttpPost("{assessmentId}/assess-users/{assessUserId}/choices")]
+    public async Task<ActionResult> AddChoicesForAssessedUser(Guid assessmentId, Guid assessUserId, Guid[] selectedChoiceIds)
+    {
+        throw new NotImplementedException();
     }
 }

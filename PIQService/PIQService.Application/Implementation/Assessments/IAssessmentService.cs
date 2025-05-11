@@ -8,6 +8,8 @@ public interface IAssessmentService
 {
     Task<Result<IEnumerable<AssessmentDto>>> GetTeamAssessments(Guid teamId);
 
+    Task<Result<IEnumerable<AssessUserDto>>> SelectUsersToAssessAsync(Guid currentUserId, Guid assessmentId);
+
     Task<Result<AssessmentDto>> CreateTeamAssessmentAsync(Guid teamId, CreateTeamAssessmentRequest request);
 
     Task<Result<IEnumerable<AssessmentDto>>> CreateTeamsAssessmentAsync(CreateTeamsAssessmentRequest request);
