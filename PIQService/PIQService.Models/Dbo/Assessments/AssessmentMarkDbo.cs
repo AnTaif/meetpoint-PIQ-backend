@@ -13,7 +13,7 @@ public class AssessmentMarkDbo : EntityBase
     public Guid AssessedId { get; set; }
 
     [Column("session_id")]
-    public Guid SessionId { get; set; }
+    public Guid AssessmentId { get; set; }
 
     [ForeignKey(nameof(AssessorId))]
     public UserDbo Assessor { get; set; } = null!;
@@ -21,7 +21,7 @@ public class AssessmentMarkDbo : EntityBase
     [ForeignKey(nameof(AssessedId))]
     public UserDbo Assessed { get; set; } = null!;
 
-    [ForeignKey(nameof(SessionId))]
+    [ForeignKey(nameof(AssessmentId))]
     public AssessmentDbo Assessment { get; set; } = null!;
 
     public ICollection<ChoiceDbo> Choices { get; set; } = null!;

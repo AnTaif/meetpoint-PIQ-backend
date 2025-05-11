@@ -47,10 +47,10 @@ public class TeamRepository(AppDbContext dbContext) : ITeamRepository
             .Where(team => dbContext.Assessments.Any(assessment =>
                 assessment.StartDate <= now &&
                 assessment.EndDate >= now &&
-                assessment.Teams.Any(aTeam => aTeam.Id == team.Id) &&
+                assessment.Team.Id == team.Id &&
                 team.Members.Any(member =>
                     !dbContext.AssessmentMarks.Any(mark =>
-                        mark.SessionId == assessment.Id &&
+                        mark.AssessmentId == assessment.Id &&
                         mark.AssessorId == tutorId &&
                         mark.AssessedId == member.Id
                     )

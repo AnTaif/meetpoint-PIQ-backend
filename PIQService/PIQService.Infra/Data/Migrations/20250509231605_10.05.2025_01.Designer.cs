@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PIQService.Infra.Data;
 
@@ -11,9 +12,11 @@ using PIQService.Infra.Data;
 namespace PIQService.Infra.Data.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250509231605_10.05.2025_01")]
+    partial class _10052025_01
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -81,26 +84,21 @@ namespace PIQService.Infra.Data.Migrations
                         .HasColumnType("char(36)")
                         .HasColumnName("assessed_id");
 
-                    b.Property<Guid>("AssessmentId")
-                        .HasColumnType("char(36)")
-                        .HasColumnName("session_id");
-
                     b.Property<Guid>("AssessorId")
                         .HasColumnType("char(36)")
                         .HasColumnName("assessor_id");
+
+                    b.Property<Guid>("SessionId")
+                        .HasColumnType("char(36)")
+                        .HasColumnName("session_id");
 
                     b.HasKey("Id");
 
                     b.HasIndex("AssessedId");
 
-                    b.HasIndex("AssessmentId")
-                        .HasDatabaseName("IX_assessmentId");
-
                     b.HasIndex("AssessorId");
 
-                    b.HasIndex("AssessmentId", "AssessorId", "AssessedId")
-                        .IsUnique()
-                        .HasDatabaseName("IX_assessmentId_assessorId_assessedId");
+                    b.HasIndex("SessionId");
 
                     b.ToTable("assessment_marks");
                 });
@@ -454,15 +452,15 @@ namespace PIQService.Infra.Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("PIQService.Models.Dbo.Assessments.AssessmentDbo", "Assessment")
-                        .WithMany()
-                        .HasForeignKey("AssessmentId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("PIQService.Models.Dbo.UserDbo", "Assessor")
                         .WithMany()
                         .HasForeignKey("AssessorId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("PIQService.Models.Dbo.Assessments.AssessmentDbo", "Assessment")
+                        .WithMany()
+                        .HasForeignKey("SessionId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 

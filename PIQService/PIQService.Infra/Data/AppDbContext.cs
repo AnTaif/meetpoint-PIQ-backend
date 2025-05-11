@@ -43,11 +43,6 @@ public class AppDbContext : DbContext
             .WithMany(t => t.Members)
             .HasForeignKey(u => u.TeamId);
 
-        modelBuilder.Entity<AssessmentDbo>()
-            .HasMany(f => f.Teams)
-            .WithMany()
-            .UsingEntity("assessments_teams");
-
         modelBuilder.Entity<FormDbo>()
             .HasMany(f => f.CriteriaList)
             .WithMany()
@@ -57,5 +52,14 @@ public class AppDbContext : DbContext
             .HasMany(f => f.Choices)
             .WithMany()
             .UsingEntity("marks_choices");
+
+        modelBuilder.Entity<AssessmentMarkDbo>()
+            .HasIndex(x => new { x.AssessmentId, x.AssessorId, x.AssessedId })
+            .IsUnique()
+            .HasDatabaseName("IX_assessmentId_assessorId_assessedId");
+
+        modelBuilder.Entity<AssessmentMarkDbo>()
+            .HasIndex(x => new { x.AssessmentId })
+            .HasDatabaseName("IX_assessmentId");
     }
 }

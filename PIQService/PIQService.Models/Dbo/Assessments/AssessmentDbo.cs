@@ -26,7 +26,11 @@ public class AssessmentDbo : EntityBase
     [Column("use_behavior_assessment")]
     public bool UseBehaviorAssessment { get; set; }
 
-    public ICollection<TeamDbo> Teams { get; set; } = null!;
+    [Column("team_id")]
+    public Guid TeamId { get; set; }
+
+    [ForeignKey(nameof(TeamId))]
+    public TeamDbo Team { get; set; } = null!;
 
     [ForeignKey(nameof(TemplateId))]
     public TemplateDbo Template { get; set; } = null!;

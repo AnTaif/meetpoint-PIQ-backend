@@ -19,7 +19,7 @@ public static class LinqExtensions
             action(item);
         }
     }
-    
+
     public static async Task ForeachAsync<T>(this IEnumerable<T> source, Func<T, Task> action)
     {
         if (source == null)
@@ -37,4 +37,6 @@ public static class LinqExtensions
             await action(item);
         }
     }
+
+    public static IEnumerable<T> ToSingleArray<T>(this T obj) => [obj];
 }

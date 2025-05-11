@@ -66,7 +66,7 @@ public class AssessmentsController : ControllerBase
     /// Удаление существующего оценивание
     /// </summary>
     [HttpDelete("{id}")]
-    [ProducesResponseType<AssessmentDto>(StatusCodes.Status204NoContent)]
+    [ProducesResponseType<string>(StatusCodes.Status204NoContent)]
     [ProducesResponseType<string>(StatusCodes.Status404NotFound)]
     [ProducesResponseType<string>(StatusCodes.Status409Conflict)]
     [ProducesResponseType<string>(StatusCodes.Status401Unauthorized)]
@@ -74,5 +74,42 @@ public class AssessmentsController : ControllerBase
     {
         var result = await assessmentService.DeleteAsync(id);
         return result.ToActionResult(this);
+    }
+
+    /// <summary>
+    /// Получение пользователей для оценивания
+    /// </summary>
+    [HttpGet("{assessmentId}/assess-users")]
+    [SwaggerResponseExample(StatusCodes.Status200OK, typeof(EnumerableAssessUserDtoExample))]
+    [ProducesResponseType<IEnumerable<AssessUserDto>>(StatusCodes.Status200OK)]
+    [ProducesResponseType<string>(StatusCodes.Status404NotFound)]
+    [ProducesResponseType<string>(StatusCodes.Status401Unauthorized)]
+    public async Task<ActionResult<IEnumerable<AssessUserDto>>> GetAssessUsers(Guid assessmentId)
+    {
+        var result = await assessmentService.SelectUsersToAssessAsync(User.GetSid(), assessmentId);
+        return result.ToActionResult(this);
+    }
+
+    /// <summary>
+    /// Получение выбранных вариантов оценивания для пользователя
+    /// </summary>
+    /// <param name="assessmentId"></param>
+    /// <param name="assessedUserId"></param>
+    /// <returns></returns>
+    [HttpGet("{assessmentId}/assess-users/{assessedUserId}/choices")]
+    [ProducesResponseType<IEnumerable<Guid>>(StatusCodes.Status200OK)]
+    [ProducesResponseType<string>(StatusCodes.Status404NotFound)]
+    [ProducesResponseType<string>(StatusCodes.Status401Unauthorized)]
+    public async Task<ActionResult<IEnumerable<Guid>>> GetChoicesForAssessedUser(Guid assessmentId, Guid assessedUserId)
+    {
+        var result = await assessmentService.SelectChoiceIdsAsync(assessmentId, User.GetSid(), assessedUserId);
+        return result.ToActionResult(this);
+    }
+
+    [HttpPost("{assessmentId}/assess-users/{assessedUserId}/assess")]
+    public async Task<ActionResult> AssessUser(Guid assessmentId, Guid assessedUserId, IEnumerable<Guid> selectedChoiceIds)
+    {
+        var result = await assessmentService.AssessUserAsync(assessmentId, User.GetSid(), assessedUserId, selectedChoiceIds);
+        return result.ToActionResult(this, value => CreatedAtAction("AssessUser", value));
     }
 }
