@@ -77,7 +77,7 @@ public class AssessmentsController : ControllerBase
     }
 
     /// <summary>
-    /// Получение пользователей для оценивания.
+    /// Получение пользователей для оценивания
     /// </summary>
     [HttpGet("{assessmentId}/assess-users")]
     [SwaggerResponseExample(StatusCodes.Status200OK, typeof(EnumerableAssessUserDtoExample))]
@@ -90,14 +90,24 @@ public class AssessmentsController : ControllerBase
         return result.ToActionResult(this);
     }
 
-    [HttpGet("{assessmentId}/assess-users/{assessUserId}/choices")]
-    public async Task<ActionResult<IEnumerable<Guid>>> GetChoicesForAssessedUser(Guid assessmentId, Guid assessUserId)
+    /// <summary>
+    /// Получение выбранных вариантов оценивания для пользователя
+    /// </summary>
+    /// <param name="assessmentId"></param>
+    /// <param name="assessedUserId"></param>
+    /// <returns></returns>
+    [HttpGet("{assessmentId}/assess-users/{assessedUserId}/choices")]
+    [ProducesResponseType<IEnumerable<Guid>>(StatusCodes.Status200OK)]
+    [ProducesResponseType<string>(StatusCodes.Status404NotFound)]
+    [ProducesResponseType<string>(StatusCodes.Status401Unauthorized)]
+    public async Task<ActionResult<IEnumerable<Guid>>> GetChoicesForAssessedUser(Guid assessmentId, Guid assessedUserId)
     {
-        throw new NotImplementedException();
+        var result = await assessmentService.SelectChoiceIdsAsync(assessmentId, User.GetSid(), assessedUserId);
+        return result.ToActionResult(this);
     }
 
-    [HttpPost("{assessmentId}/assess-users/{assessUserId}/choices")]
-    public async Task<ActionResult> AddChoicesForAssessedUser(Guid assessmentId, Guid assessUserId, Guid[] selectedChoiceIds)
+    [HttpPost("{assessmentId}/assess-users/{userId}/assess")]
+    public async Task<ActionResult> AddChoicesForAssessedUser(Guid assessmentId, Guid userId, Guid[] selectedChoiceIds)
     {
         throw new NotImplementedException();
     }

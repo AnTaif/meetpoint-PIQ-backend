@@ -50,7 +50,7 @@ public class TeamRepository(AppDbContext dbContext) : ITeamRepository
                 assessment.Team.Id == team.Id &&
                 team.Members.Any(member =>
                     !dbContext.AssessmentMarks.Any(mark =>
-                        mark.SessionId == assessment.Id &&
+                        mark.AssessmentId == assessment.Id &&
                         mark.AssessorId == tutorId &&
                         mark.AssessedId == member.Id
                     )

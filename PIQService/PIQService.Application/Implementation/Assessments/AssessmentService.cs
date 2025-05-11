@@ -15,20 +15,20 @@ namespace PIQService.Application.Implementation.Assessments;
 
 public class AssessmentService : IAssessmentService
 {
-    private readonly IAssessmentMarkRepository assessmentMarkRepository;
+    private readonly IAssessmentMarkRepository markRepository;
     private readonly ITeamRepository teamRepository;
     private readonly ITemplateRepository templateRepository;
     private readonly IAssessmentRepository assessmentRepository;
     private readonly ILogger<AssessmentService> logger;
 
     public AssessmentService(
-        IAssessmentMarkRepository assessmentMarkRepository,
+        IAssessmentMarkRepository markRepository,
         ITeamRepository teamRepository,
         ITemplateRepository templateRepository,
         IAssessmentRepository assessmentRepository,
         ILogger<AssessmentService> logger)
     {
-        this.assessmentMarkRepository = assessmentMarkRepository;
+        this.markRepository = markRepository;
         this.teamRepository = teamRepository;
         this.templateRepository = templateRepository;
         this.assessmentRepository = assessmentRepository;
@@ -67,7 +67,7 @@ public class AssessmentService : IAssessmentService
             return HttpError.NotFound("Team not found");
         }
 
-        var assessedUsers = await assessmentMarkRepository.SelectAssessedUsersAsync(currentUserId, assessmentId);
+        var assessedUsers = await markRepository.SelectAssessedUsersAsync(currentUserId, assessmentId);
         var assessedUsersById = assessedUsers.ToLookup(u => u.Id);
 
         var usersToAssess = team.Users
@@ -81,6 +81,22 @@ public class AssessmentService : IAssessmentService
             User = u.ToDtoModel(),
             Assessed = assessedUsersById.Contains(u.Id),
         }).ToList();
+    }
+
+    public async Task<Result<IEnumerable<Guid>>> SelectChoiceIdsAsync(Guid assessmentId, Guid assessorId, Guid assessedId)
+    {
+        var assessment = await assessmentRepository.FindWithoutDepsAsync(assessmentId);
+
+        if (assessment == null)
+            return HttpError.NotFound("Assessment not found");
+
+        var mark = await markRepository.FindWithoutDepsAsync(assessmentId, assessorId, assessedId);
+
+        if (mark == null)
+            return Array.Empty<Guid>();
+
+        var choiceIds = mark.Choices.Select(c => c.Id).ToList();
+        return choiceIds;
     }
 
     public async Task<Result<AssessmentDto>> CreateTeamAssessmentAsync(Guid teamId, CreateTeamAssessmentRequest request)
