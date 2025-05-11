@@ -10,7 +10,7 @@ public interface IAssessmentService
 
     Task<Result<IEnumerable<AssessUserDto>>> SelectUsersToAssessAsync(Guid currentUserId, Guid assessmentId);
 
-    Task<Result<IEnumerable<Guid>>> SelectChoiceIdsAsync(Guid assessmentId, Guid assessorId, Guid assessedId);
+    Task<Result<IEnumerable<AssessChoiceDto>>> SelectAssessChoicesAsync(Guid assessmentId, Guid assessorId, Guid assessedId);
 
     Task<Result<AssessmentDto>> CreateTeamAssessmentAsync(Guid teamId, CreateTeamAssessmentRequest request);
 

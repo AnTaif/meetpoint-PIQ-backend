@@ -97,17 +97,26 @@ public class AssessmentsController : ControllerBase
     /// <param name="assessedUserId"></param>
     /// <returns></returns>
     [HttpGet("{assessmentId}/assess-users/{assessedUserId}/choices")]
-    [ProducesResponseType<IEnumerable<Guid>>(StatusCodes.Status200OK)]
+    [SwaggerResponseExample(StatusCodes.Status200OK, typeof(EnumerableAssessChoiceDtoExample))]
+    [ProducesResponseType<IEnumerable<AssessChoiceDto>>(StatusCodes.Status200OK)]
     [ProducesResponseType<string>(StatusCodes.Status404NotFound)]
     [ProducesResponseType<string>(StatusCodes.Status401Unauthorized)]
-    public async Task<ActionResult<IEnumerable<Guid>>> GetChoicesForAssessedUser(Guid assessmentId, Guid assessedUserId)
+    public async Task<ActionResult<IEnumerable<AssessChoiceDto>>> GetChoicesForAssessedUser(Guid assessmentId, Guid assessedUserId)
     {
-        var result = await assessmentService.SelectChoiceIdsAsync(assessmentId, User.GetSid(), assessedUserId);
+        var result = await assessmentService.SelectAssessChoicesAsync(assessmentId, User.GetSid(), assessedUserId);
         return result.ToActionResult(this);
     }
 
+    /// <summary>
+    /// Оценка пользователя по выбранным вариантам из формы
+    /// </summary>
     [HttpPost("{assessmentId}/assess-users/{assessedUserId}/assess")]
-    public async Task<ActionResult> AssessUser(Guid assessmentId, Guid assessedUserId, IEnumerable<Guid> selectedChoiceIds)
+    [SwaggerResponseExample(StatusCodes.Status200OK, typeof(AssessmentMarkDtoExample))]
+    [ProducesResponseType<AssessmentMarkDto>(StatusCodes.Status200OK)]
+    [ProducesResponseType<string>(StatusCodes.Status404NotFound)]
+    [ProducesResponseType<string>(StatusCodes.Status409Conflict)]
+    [ProducesResponseType<string>(StatusCodes.Status401Unauthorized)]
+    public async Task<ActionResult<AssessmentMarkDto>> AssessUser(Guid assessmentId, Guid assessedUserId, IEnumerable<Guid> selectedChoiceIds)
     {
         var result = await assessmentService.AssessUserAsync(assessmentId, User.GetSid(), assessedUserId, selectedChoiceIds);
         return result.ToActionResult(this, value => CreatedAtAction("AssessUser", value));

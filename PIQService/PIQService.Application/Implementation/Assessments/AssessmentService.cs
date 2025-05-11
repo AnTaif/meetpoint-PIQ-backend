@@ -86,7 +86,7 @@ public class AssessmentService : IAssessmentService
         }).ToList();
     }
 
-    public async Task<Result<IEnumerable<Guid>>> SelectChoiceIdsAsync(Guid assessmentId, Guid assessorId, Guid assessedId)
+    public async Task<Result<IEnumerable<AssessChoiceDto>>> SelectAssessChoicesAsync(Guid assessmentId, Guid assessorId, Guid assessedId)
     {
         var assessment = await assessmentRepository.FindWithoutDepsAsync(assessmentId);
 
@@ -96,10 +96,11 @@ public class AssessmentService : IAssessmentService
         var mark = await markRepository.FindWithoutDepsAsync(assessmentId, assessorId, assessedId);
 
         if (mark == null)
-            return Array.Empty<Guid>();
+            return Array.Empty<AssessChoiceDto>();
 
-        var choiceIds = mark.Choices.Select(c => c.Id).ToList();
-        return choiceIds;
+        return mark.Choices
+            .Select(c => new AssessChoiceDto() { QuestionId = c.QuestionId, ChoiceId = c.Id })
+            .ToList();
     }
 
     public async Task<Result<AssessmentDto>> CreateTeamAssessmentAsync(Guid teamId, CreateTeamAssessmentRequest request)

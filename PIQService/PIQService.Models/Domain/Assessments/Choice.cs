@@ -10,7 +10,9 @@ public class Choice
 
     public string Description { get; private set; }
 
-    public Choice(Guid id, string text, short value, string description)
+    public Guid QuestionId { get; private set; }
+
+    public Choice(Guid id, string text, short value, string description, Guid questionId)
     {
         Id = id;
         Text = text;
