@@ -8,7 +8,6 @@ using FluentValidation;
 using FluentValidation.AspNetCore;
 using PIQService.Application;
 using PIQService.Infra;
-using PIQService.Infra.Data;
 using Swashbuckle.AspNetCore.Filters;
 
 Env.Load("../../.env");
@@ -31,9 +30,7 @@ builder.Services
 
 builder.Services.AddJwtAuth(builder.Configuration);
 builder.Services.AddServices();
-builder.Services.AddRepositories();
-builder.Services.AddMySqlDbContext<AppDbContext>(builder.Configuration);
-builder.Services.AddDataSeeder<DataSeeder>();
+builder.Services.AddInfraLayer(builder.Configuration);
 
 builder.Host.UseSerilogLogging(builder.Configuration);
 
@@ -50,7 +47,7 @@ builder.Services.AddCors(options =>
 });
 
 var app = builder.Build();
-await app.SeedDatabaseAsync();
+await app.TrySeedDatabaseAsync();
 
 if (app.Environment.IsDevelopment())
 {

@@ -7,11 +7,11 @@ namespace Core.Database;
 
 public static class DependencyInjection
 {
-    public static void AddMySqlDbContext<TContext>(this IServiceCollection services, ConfigurationManager configuration)
+    public static void AddMySqlDbContext<TContext>(this IServiceCollection services, IConfigurationManager config)
         where TContext : DbContext
     {
         var dbOptions = new DatabaseOptions();
-        configuration.GetSection("DatabaseOptions").Bind(dbOptions);
+        config.GetSection("DatabaseOptions").Bind(dbOptions);
         dbOptions.Host = Environment.GetEnvironmentVariable("DB_CONTAINER") ?? "localhost";
         dbOptions.Port = Environment.GetEnvironmentVariable("DATABASE_PORT") ?? "3306";
         dbOptions.User = Environment.GetEnvironmentVariable("DATABASE_USER")!;
@@ -39,7 +39,7 @@ public static class DependencyInjection
         services.AddTransient<IDataSeeder, TDataSeeder>();
     }
 
-    public static async Task SeedDatabaseAsync(this WebApplication app)
+    public static async Task TrySeedDatabaseAsync(this WebApplication app)
     {
         await using var scope = app.Services.CreateAsyncScope();
 

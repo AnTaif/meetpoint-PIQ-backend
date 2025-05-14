@@ -43,7 +43,7 @@ builder.Services.AddCors(options =>
 builder.Host.UseSerilogLogging(builder.Configuration);
 
 var app = builder.Build();
-await app.SeedDatabaseAsync();
+await app.TrySeedDatabaseAsync();
 
 if (app.Environment.IsDevelopment())
 {
