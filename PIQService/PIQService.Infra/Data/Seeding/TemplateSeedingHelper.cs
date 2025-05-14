@@ -1,3 +1,4 @@
+using System.Reflection;
 using System.Text.Json;
 using Microsoft.Extensions.Logging;
 using PIQService.Infra.Data.Seeding.Configs;
@@ -7,12 +8,23 @@ namespace PIQService.Infra.Data.Seeding;
 
 public class TemplateSeedingHelper(AppDbContext dbContext, ILogger<TemplateSeedingHelper> logger) : ITemplateSeedingHelper
 {
-    public async Task SeedTemplateFromJsonAsync(string jsonFilePath)
+    public async Task SeedTemplateFromJsonAsync(string templateFileName)
     {
         try
         {
-            var jsonText = await File.ReadAllTextAsync(jsonFilePath);
-            var templateConfig = JsonSerializer.Deserialize<TemplateConfig>(jsonText, new JsonSerializerOptions
+            var assembly = Assembly.GetExecutingAssembly();
+            var embeddedResourcePath = Path.Combine("Data", "Seeding", "Templates", templateFileName);
+            var resourceName = $"{assembly.GetName().Name}.{embeddedResourcePath.Replace("\\", ".").Replace("/", ".")}";
+
+            logger.LogDebug("Reading json template from resource {resourceName}", resourceName);
+            await using var stream = assembly.GetManifestResourceStream(resourceName);
+            if (stream == null)
+                throw new FileNotFoundException($"Resource '{resourceName}' not found.");
+
+            using var reader = new StreamReader(stream);
+            var json = await reader.ReadToEndAsync();
+            
+            var templateConfig = JsonSerializer.Deserialize<TemplateConfig>(json, new JsonSerializerOptions
             {
                 PropertyNameCaseInsensitive = true,
             });

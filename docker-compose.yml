@@ -5,7 +5,6 @@
 services:
   piq-service:
     container_name: piq-service
-    image: piq-service
     build:
       context: .
       dockerfile: PIQService/PIQService.Api/Dockerfile
@@ -22,7 +21,6 @@ services:
   
   account-service:
     container_name: account-service
-    image: piq-account-service
     build:
       context: .
       dockerfile: AccountService/AccountService/Dockerfile

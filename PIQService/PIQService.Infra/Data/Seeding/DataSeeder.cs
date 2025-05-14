@@ -27,10 +27,8 @@ public class DataSeeder(
         }
 
         SeedEventRelatedData();
-
-        var root = Path.Combine(Directory.GetParent(Directory.GetCurrentDirectory())!.ToString(), "PIQService.Infra");
-        var mainTemplateJsonPath = Path.Combine(root, "Data", "Seeding", mainTemplateFileName);
-        await templateSeedingHelper.SeedTemplateFromJsonAsync(mainTemplateJsonPath);
+        
+        await templateSeedingHelper.SeedTemplateFromJsonAsync(mainTemplateFileName);
 
         await dbContext.SaveChangesAsync();
         logger.LogWarning("Database seeding completed.");
