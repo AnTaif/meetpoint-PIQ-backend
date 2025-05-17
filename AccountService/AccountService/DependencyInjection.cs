@@ -3,9 +3,6 @@ using AccountService.Models;
 using AccountService.Options;
 using AccountService.Providers;
 using AccountService.Services;
-using Amazon;
-using Amazon.Extensions.NETCore.Setup;
-using Amazon.Runtime;
 using Amazon.S3;
 using Microsoft.AspNetCore.Identity;
 
@@ -26,23 +23,27 @@ public static class DependencyInjection
         var s3Options = new S3Options();
         configuration.GetSection("S3Options").Bind(s3Options);
 
+        s3Options.AccessKeyId = Environment.GetEnvironmentVariable("S3_ACCESS_KEY_ID") ??
+                                throw new Exception("S3_ACCESS_KEY_ID not found in env");
+        s3Options.SecretToken = Environment.GetEnvironmentVariable("S3_SECRET_TOKEN") ??
+                                throw new Exception("S3_SECRET_TOKEN not found in env");
+
         services.Configure<S3Options>(options =>
         {
             options.Profile = s3Options.Profile;
             options.Region = s3Options.Region;
-            options.AccessToken = Environment.GetEnvironmentVariable("S3_ACCESS_TOKEN") ??
-                                  throw new Exception("S3_ACCESS_TOKEN not found in env");
-            options.SecretToken = Environment.GetEnvironmentVariable("S3_SECRET_TOKEN") ??
-                                  throw new Exception("S3_SECRET_TOKEN not found in env");
-            options.Url = s3Options.Url;
+            options.ServiceUrl = s3Options.ServiceUrl;
+            options.AccessKeyId = s3Options.AccessKeyId;
+            options.SecretToken = s3Options.SecretToken;
+            options.BucketName = s3Options.BucketName;
         });
 
-        services.AddAWSService<IAmazonS3>(new AWSOptions
+        var config = new AmazonS3Config()
         {
-            Profile = s3Options.Profile,
-            Region = RegionEndpoint.GetBySystemName(s3Options.Region),
-            Credentials = new BasicAWSCredentials(s3Options.AccessToken, s3Options.SecretToken),
-        });
+            ServiceURL = s3Options.ServiceUrl,
+        };
+
+        services.AddSingleton<IAmazonS3>(new AmazonS3Client(s3Options.AccessKeyId, s3Options.SecretToken, config));
         services.AddTransient<IS3FileStorage, S3FileStorage>();
 
         return services;

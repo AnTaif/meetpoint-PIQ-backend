@@ -27,11 +27,11 @@ public class S3FileStorage(
             };
 
             var response = await s3Client.PutObjectAsync(putRequest);
-            return response.HttpStatusCode == HttpStatusCode.Created ? GetUrl(bucketName, fileName) : null;
+            return response.HttpStatusCode == HttpStatusCode.OK ? GetUrl(bucketName, fileName) : null;
         }
         catch (Exception e)
         {
-            logger.LogTrace(e, "Error when uploading file to S3");
+            logger.LogError(e, "Error when uploading file to S3");
             return null;
         }
     }
@@ -49,7 +49,7 @@ public class S3FileStorage(
         await s3Client.DeleteObjectAsync(request);
     }
 
-    private string GetUrl(string bucket, string key) => $"{s3Options.Url}/{bucket}/{key}";
+    private string GetUrl(string bucket, string key) => $"{s3Options.ServiceUrl}/{bucket}/{key}";
 
     private static (string, string) ReadBucketAndKey(string url)
     {

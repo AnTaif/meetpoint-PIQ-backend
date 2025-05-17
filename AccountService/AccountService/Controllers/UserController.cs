@@ -34,7 +34,8 @@ public class UserController(
     [HttpPost("upload-avatar")]
     public async Task<ActionResult<AvatarDto>> UploadAvatar(IFormFile file)
     {
-        var result = await avatarService.UploadAsync(file.OpenReadStream(), User.ReadSid());
+        var extension = Path.GetExtension(file.FileName);
+        var result = await avatarService.UploadAsync(file.OpenReadStream(), extension, User.ReadSid());
         return result.ToActionResult(this);
     }
 
