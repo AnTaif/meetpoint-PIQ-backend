@@ -36,4 +36,16 @@ public sealed class User : IdentityUser<Guid>
     {
         AvatarUrl = url;
     }
+    
+    public string GetFullName()
+    {
+        var fullname = $"{LastName} {FirstName}";
+
+        if (MiddleName != null)
+        {
+            fullname += $" {MiddleName}";
+        }
+
+        return fullname;
+    }
 }

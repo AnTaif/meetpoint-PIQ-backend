@@ -17,6 +17,8 @@ public static class DependencyInjection
     {
         services.AddScoped<ITokenProvider, JwtTokenProvider>();
         services.AddScoped<IAuthService, AuthService>();
+        services.AddScoped<IUserInfoService, UserInfoService>();
+        services.AddScoped<IUserAvatarService, UserAvatarService>();
     }
 
     public static IServiceCollection AddS3Storage(this IServiceCollection services, IConfiguration configuration)
@@ -28,10 +30,10 @@ public static class DependencyInjection
         {
             options.Profile = s3Options.Profile;
             options.Region = s3Options.Region;
-            options.AccessToken = Environment.GetEnvironmentVariable("S3_SECRET_TOKEN") ??
-                                  throw new Exception("S3_SECRET_TOKEN not found in env");
-            options.SecretToken = Environment.GetEnvironmentVariable("S3_ACCESS_TOKEN") ??
-                                  throw new Exception("S3_ACCESS_TOKEN not found in env");
+            // options.AccessToken = Environment.GetEnvironmentVariable("S3_ACCESS_TOKEN") ??
+            //                       throw new Exception("S3_ACCESS_TOKEN not found in env");
+            // options.SecretToken = Environment.GetEnvironmentVariable("S3_SECRET_TOKEN") ??
+            //                       throw new Exception("S3_SECRET_TOKEN not found in env");
             options.Url = s3Options.Url;
         });
 
