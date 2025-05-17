@@ -1,4 +1,4 @@
-using AccountService.Contracts.Models;
+using AccountService.Contracts;
 using Core.Results;
 
 namespace AccountService.Services;

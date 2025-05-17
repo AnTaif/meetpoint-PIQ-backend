@@ -6,15 +6,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace AccountService.Data;
 
-public class AccountDbContext : IdentityDbContext<User, IdentityRole<Guid>, Guid>
+public class AccountDbContext(DbContextOptions<AccountDbContext> options) : IdentityDbContext<User, IdentityRole<Guid>, Guid>(options)
 {
-    public AccountDbContext(DbContextOptions<AccountDbContext> options) : base(options)
-    {
-    }
-
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        var roles = new[] { RolesConstants.Admin, RolesConstants.Member, RolesConstants.Tutor };
+        var roles = RolesConstants.GetRoles();
         var identityRoles = roles.Select(role =>
             new IdentityRole<Guid>
             {

@@ -13,11 +13,7 @@ Env.Load("../../.env");
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services
-    .AddSwaggerGen(options =>
-    {
-        options.AddDocs();
-        options.AddJwtSecurity();
-    })
+    .AddSwaggerGen(options => { options.AddDocs(); })
     .AddSwaggerExamplesFromAssemblies(Assembly.GetExecutingAssembly());
 
 builder.Services.AddControllers();

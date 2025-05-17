@@ -1,4 +1,4 @@
-namespace AccountService.Contracts.Models;
+namespace AccountService.Contracts;
 
 public class LoginResponse
 {

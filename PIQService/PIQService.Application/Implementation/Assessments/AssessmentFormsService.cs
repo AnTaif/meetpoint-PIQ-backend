@@ -6,30 +6,20 @@ using PIQService.Models.Dto;
 
 namespace PIQService.Application.Implementation.Assessments;
 
-public class AssessmentFormsService : IAssessmentFormsService
+public class AssessmentFormsService(
+    ITemplateRepository templateRepository,
+    IAssessmentRepository assessmentRepository,
+    ILogger<AssessmentFormsService> logger
+)
+    : IAssessmentFormsService
 {
-    private readonly ITemplateRepository templateRepository;
-    private readonly IAssessmentRepository assessmentRepository;
-    private readonly ILogger<AssessmentFormsService> logger;
-
-    public AssessmentFormsService(
-        ITemplateRepository templateRepository,
-        IAssessmentRepository assessmentRepository,
-        ILogger<AssessmentFormsService> logger
-    )
-    {
-        this.templateRepository = templateRepository;
-        this.assessmentRepository = assessmentRepository;
-        this.logger = logger;
-    }
-
     public async Task<Result<IEnumerable<FormShortDto>>> GetAssessmentUsedFormsAsync(Guid assessmentId)
     {
         var assessment = await assessmentRepository.FindWithoutDepsAsync(assessmentId);
 
         if (assessment == null)
         {
-            return HttpError.NotFound("Assessment not found");
+            return StatusError.NotFound("Assessment not found");
         }
 
         var template = await templateRepository.FindAsync(assessment.TemplateId);

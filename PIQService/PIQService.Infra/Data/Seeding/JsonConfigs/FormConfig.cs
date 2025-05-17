@@ -1,6 +1,6 @@
 using PIQService.Models.Domain.Assessments;
 
-namespace PIQService.Infra.Data.Seeding.Configs;
+namespace PIQService.Infra.Data.Seeding.JsonConfigs;
 
 public class FormConfig
 {

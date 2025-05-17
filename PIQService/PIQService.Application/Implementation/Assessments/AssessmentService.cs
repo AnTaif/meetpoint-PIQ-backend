@@ -13,37 +13,22 @@ using PIQService.Models.Dto;
 
 namespace PIQService.Application.Implementation.Assessments;
 
-public class AssessmentService : IAssessmentService
+public class AssessmentService(
+    IAssessmentFormsService assessmentFormsService,
+    IAssessmentMarkRepository markRepository,
+    ITeamRepository teamRepository,
+    ITemplateRepository templateRepository,
+    IAssessmentRepository assessmentRepository,
+    ILogger<AssessmentService> logger
+)
+    : IAssessmentService
 {
-    private readonly IAssessmentFormsService assessmentFormsService;
-    private readonly IAssessmentMarkRepository markRepository;
-    private readonly ITeamRepository teamRepository;
-    private readonly ITemplateRepository templateRepository;
-    private readonly IAssessmentRepository assessmentRepository;
-    private readonly ILogger<AssessmentService> logger;
-
-    public AssessmentService(
-        IAssessmentFormsService assessmentFormsService,
-        IAssessmentMarkRepository markRepository,
-        ITeamRepository teamRepository,
-        ITemplateRepository templateRepository,
-        IAssessmentRepository assessmentRepository,
-        ILogger<AssessmentService> logger)
-    {
-        this.assessmentFormsService = assessmentFormsService;
-        this.markRepository = markRepository;
-        this.teamRepository = teamRepository;
-        this.templateRepository = templateRepository;
-        this.assessmentRepository = assessmentRepository;
-        this.logger = logger;
-    }
-
     public async Task<Result<IEnumerable<AssessmentDto>>> GetTeamAssessments(Guid teamId)
     {
         var team = await teamRepository.FindAsync(teamId);
         if (team == null)
         {
-            return HttpError.NotFound("Team not found");
+            return StatusError.NotFound("Team not found");
         }
 
         var assessments = await assessmentRepository.SelectByTeamIdAsync(teamId);
@@ -56,7 +41,7 @@ public class AssessmentService : IAssessmentService
         var assessment = await assessmentRepository.FindWithoutDepsAsync(assessmentId);
 
         if (assessment == null)
-            return HttpError.NotFound("Assessment not found");
+            return StatusError.NotFound("Assessment not found");
 
         var team = await teamRepository.FindAsync(assessment.TeamId);
 
@@ -67,7 +52,7 @@ public class AssessmentService : IAssessmentService
                 assessmentId,
                 assessment.TeamId);
 
-            return HttpError.NotFound("Team not found");
+            return StatusError.NotFound("Team not found");
         }
 
         var assessedUsers = await markRepository.SelectAssessedUsersAsync(currentUserId, assessmentId);
@@ -75,7 +60,7 @@ public class AssessmentService : IAssessmentService
 
         var usersToAssess = team.Users
             .OrderBy(u => u.LastName)
-            .Concat(team.Tutor.ToSingleArray())
+            .Concat([team.Tutor])
             .Where(u => u.Id != currentUserId)
             .ToList();
 
@@ -91,7 +76,7 @@ public class AssessmentService : IAssessmentService
         var assessment = await assessmentRepository.FindWithoutDepsAsync(assessmentId);
 
         if (assessment == null)
-            return HttpError.NotFound("Assessment not found");
+            return StatusError.NotFound("Assessment not found");
 
         var mark = await markRepository.FindWithoutDepsAsync(assessmentId, assessorId, assessedId);
 
@@ -105,25 +90,36 @@ public class AssessmentService : IAssessmentService
 
     public async Task<Result<AssessmentDto>> CreateTeamAssessmentAsync(Guid teamId, CreateTeamAssessmentRequest request)
     {
-        var newAssessmentResult = await CreateAssessmentForTeamsAsync([teamId], request.Name, request.StartDate, request.EndDate,
+        var result = await CreateAssessmentForTeamsAsync([teamId], request.Name, request.StartDate, request.EndDate,
             request.UseCircleAssessment, request.UseBehaviorAssessment);
-        return newAssessmentResult.IsFailure ? newAssessmentResult.Error : newAssessmentResult.Value.First().ToDtoModel();
+
+        return result.IsFailure
+            ? result.Error
+            : result.Value.Single();
     }
 
     public async Task<Result<IEnumerable<AssessmentDto>>> CreateTeamsAssessmentAsync(CreateTeamsAssessmentRequest request)
     {
-        var newAssessmentResult = await CreateAssessmentForTeamsAsync(request.TeamIds, request.Name, request.StartDate, request.EndDate,
+        return await CreateAssessmentForTeamsAsync(request.TeamIds, request.Name, request.StartDate, request.EndDate,
             request.UseCircleAssessment, request.UseBehaviorAssessment);
-        return newAssessmentResult.IsFailure ? newAssessmentResult.Error : newAssessmentResult.Value.Select(a => a.ToDtoModel()).ToList();
     }
 
-    private async Task<Result<IEnumerable<Assessment>>> CreateAssessmentForTeamsAsync(
-        IReadOnlyCollection<Guid> teamIds, string name, DateTime startDate, DateTime endDate, bool useCircleAssessment,
-        bool useBehaviorAssessment)
+    private async Task<Result<IEnumerable<AssessmentDto>>> CreateAssessmentForTeamsAsync(
+        IReadOnlyCollection<Guid> teamIds, string name, DateTime startDate, DateTime endDate, bool useCircle, bool useBehavior)
     {
         if (teamIds.Count == 0)
         {
-            return HttpError.BadRequest("TeamIds is empty");
+            return StatusError.BadRequest("TeamIds is empty");
+        }
+
+        if (startDate > endDate)
+        {
+            return StatusError.BadRequest("StartDate must be earlier than EndDate");
+        }
+
+        if (!useCircle && !useBehavior)
+        {
+            return StatusError.BadRequest("At least one form must be selected.");
         }
 
         var teams = new List<Team>();
@@ -132,7 +128,7 @@ public class AssessmentService : IAssessmentService
             var team = await teamRepository.FindAsync(teamId);
             if (team == null)
             {
-                return HttpError.NotFound($"Team with id={teamId} not found");
+                return StatusError.NotFound($"Team with id={teamId} not found");
             }
 
             teams.Add(team);
@@ -142,21 +138,20 @@ public class AssessmentService : IAssessmentService
         var template = await templateRepository.FindAsync(templateId);
         if (template == null)
         {
-            return HttpError.NotFound("Template not found");
+            return StatusError.NotFound("Template not found");
         }
 
         var assessments = new List<Assessment>();
         teams.Foreach(t =>
         {
-            var newAssessment = new Assessment(Guid.NewGuid(), name, t, template, startDate, endDate, useCircleAssessment,
-                useBehaviorAssessment);
+            var newAssessment = new Assessment(Guid.NewGuid(), name, t, template, startDate, endDate, useCircle, useBehavior);
 
             assessmentRepository.Create(newAssessment);
             assessments.Add(newAssessment);
         });
         await assessmentRepository.SaveChangesAsync();
 
-        return assessments;
+        return assessments.Select(a => a.ToDtoModel()).ToList();
     }
 
     public async Task<Result<AssessmentMarkDto>> AssessUserAsync(
@@ -180,18 +175,18 @@ public class AssessmentService : IAssessmentService
         {
             if (!choiceToQuestion.TryGetValue(selectedChoiceId, out var questionId))
             {
-                return HttpError.NotFound($"Choice with id={selectedChoiceId} not found");
+                return StatusError.NotFound($"Choice with id={selectedChoiceId} not found");
             }
 
             if (!usedQuestionIds.Add(questionId))
             {
-                return HttpError.Conflict($"Для вопроса с id={questionId} выбрано несколько вариантов");
+                return StatusError.Conflict($"Для вопроса с id={questionId} выбрано несколько вариантов");
             }
         }
 
         if (usedQuestionIds.Count != questions.Count)
         {
-            return HttpError.BadRequest(
+            return StatusError.BadRequest(
                 "Не все вопросы имеют выбранный вариант ответа, ids=" +
                 string.Join(',', questions.Select(q => q.Id).Except(usedQuestionIds)));
         }
@@ -219,7 +214,7 @@ public class AssessmentService : IAssessmentService
         var assessment = await assessmentRepository.FindWithoutDepsAsync(id);
         if (assessment == null)
         {
-            return HttpError.NotFound("Assessment not found");
+            return StatusError.NotFound("Assessment not found");
         }
 
         if (request.StartDate.HasValue ^ request.EndDate.HasValue)
@@ -229,7 +224,7 @@ public class AssessmentService : IAssessmentService
 
             if (newStart > newEnd)
             {
-                return HttpError.BadRequest("StartDate must be earlier than EndDate");
+                return StatusError.BadRequest("StartDate must be earlier than EndDate");
             }
         }
 
@@ -247,12 +242,12 @@ public class AssessmentService : IAssessmentService
 
         if (assessment == null)
         {
-            return HttpError.NotFound("Assessment not found");
+            return StatusError.NotFound("Assessment not found");
         }
 
         if (assessment.EndDate <= DateTime.UtcNow)
         {
-            return HttpError.Conflict("Cannot delete completed assessment");
+            return StatusError.Conflict("Cannot delete completed assessment");
         }
 
         assessmentRepository.Delete(assessment);

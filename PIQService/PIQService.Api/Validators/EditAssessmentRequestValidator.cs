@@ -10,5 +10,13 @@ public class EditAssessmentRequestValidator : AbstractValidator<EditAssessmentRe
         RuleFor(x => x)
             .Must(x => x.StartDate == null || x.EndDate == null || x.StartDate < x.EndDate)
             .WithMessage("StartDate must be earlier than EndDate");
+
+        RuleFor(x => x)
+            .Must(x =>
+                x.UseCircleAssessment == null
+                || x.UseBehaviorAssessment == null
+                || x.UseCircleAssessment.Value
+                || x.UseBehaviorAssessment.Value)
+            .WithMessage("At least one form must be selected");
     }
 }

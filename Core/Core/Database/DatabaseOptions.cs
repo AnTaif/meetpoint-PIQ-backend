@@ -14,8 +14,5 @@ public class DatabaseOptions
 
     public string Port { get; set; } = null!;
 
-    public string GetConnectionString()
-    {
-        return $"Host={Host};Port={Port};Database={Name};Username={User};Password={Password}";
-    }
+    public string GetConnectionString() => $"Host={Host};Port={Port};Database={Name};Username={User};Password={Password}";
 }

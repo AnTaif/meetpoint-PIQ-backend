@@ -1,7 +1,7 @@
 using System.Reflection;
 using System.Text.Json;
 using Microsoft.Extensions.Logging;
-using PIQService.Infra.Data.Seeding.Configs;
+using PIQService.Infra.Data.Seeding.JsonConfigs;
 using PIQService.Models.Dbo.Assessments;
 
 namespace PIQService.Infra.Data.Seeding;
@@ -18,8 +18,11 @@ public class TemplateSeedingHelper(AppDbContext dbContext, ILogger<TemplateSeedi
 
             logger.LogDebug("Reading json template from resource {resourceName}", resourceName);
             await using var stream = assembly.GetManifestResourceStream(resourceName);
+            
             if (stream == null)
+            {
                 throw new FileNotFoundException($"Resource '{resourceName}' not found.");
+            }
 
             using var reader = new StreamReader(stream);
             var json = await reader.ReadToEndAsync();
@@ -98,7 +101,9 @@ public class TemplateSeedingHelper(AppDbContext dbContext, ILogger<TemplateSeedi
         foreach (var questionConfig in formConfig.Questions)
         {
             if (!criteriaMap.TryGetValue(questionConfig.CriteriaName, out var criteria))
+            {
                 throw new Exception($"Criteria '{questionConfig.CriteriaName}' not found for question: {questionConfig.Text}");
+            }
 
             var question = new QuestionDbo
             {

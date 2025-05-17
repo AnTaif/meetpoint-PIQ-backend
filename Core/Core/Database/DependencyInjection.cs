@@ -39,11 +39,11 @@ public static class DependencyInjection
         services.AddTransient<IDataSeeder, TDataSeeder>();
     }
 
-    public static async Task TrySeedDatabaseAsync(this WebApplication app)
+    public static async Task<bool> TrySeedDatabaseAsync(this WebApplication app)
     {
         await using var scope = app.Services.CreateAsyncScope();
 
         var dataSeeder = scope.ServiceProvider.GetRequiredService<IDataSeeder>();
-        await dataSeeder.SeedAsync();
+        return await dataSeeder.TrySeedAsync();
     }
 }

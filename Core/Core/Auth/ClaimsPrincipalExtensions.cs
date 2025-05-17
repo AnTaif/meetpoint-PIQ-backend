@@ -5,13 +5,15 @@ namespace Core.Auth;
 
 public static class ClaimsPrincipalExtensions
 {
-    public static Guid GetSid(this ClaimsPrincipal claimsPrincipal)
+    public static Guid ReadSid(this ClaimsPrincipal claimsPrincipal)
     {
-        var stringId = claimsPrincipal.FindFirstValue(JwtRegisteredClaimNames.Sid);
+        var sid = claimsPrincipal.FindFirstValue(JwtRegisteredClaimNames.Sid);
 
-        if (stringId == null)
-            throw new Exception($"Failed when reading logged in userId: {stringId}");
+        if (sid == null)
+        {
+            throw new Exception($"Failed when reading logged-in user's SID: {sid}");
+        }
 
-        return Guid.Parse(stringId);
+        return Guid.Parse(sid);
     }
 }

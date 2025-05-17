@@ -7,20 +7,12 @@ using PIQService.Models.Dto.Responses;
 
 namespace PIQService.Application.Implementation.Events;
 
-public class EventService : IEventService
+public class EventService(
+    IEventRepository eventRepository,
+    ITeamRepository teamRepository
+)
+    : IEventService
 {
-    private readonly IEventRepository eventRepository;
-    private readonly ITeamRepository teamRepository;
-
-    public EventService(
-        IEventRepository eventRepository,
-        ITeamRepository teamRepository
-    )
-    {
-        this.eventRepository = eventRepository;
-        this.teamRepository = teamRepository;
-    }
-
     public async Task<Result<GetEventHierarchyResponse>> GetEventHierarchyByUserIdAsync(Guid userId, Guid? eventId = null)
     {
         Event? @event;
@@ -37,7 +29,7 @@ public class EventService : IEventService
 
         if (@event == null)
         {
-            return HttpError.NotFound("Event not found");
+            return StatusError.NotFound("Event not found");
         }
 
         var teams = await teamRepository.SelectByTutorIdAsync(userId, @event.Id);
@@ -58,6 +50,7 @@ public class EventService : IEventService
         };
     }
 
+    // TODO(!!!): сто процентов здесь неоптимальные перечисления
     private static IEnumerable<DirectionDto> ConvertTeamsToDirectionDtos(IEnumerable<Team> teams)
     {
         var teamList = teams.ToList();

@@ -13,15 +13,11 @@ namespace PIQService.Api.Controllers;
 [ApiController]
 [Authorize]
 [Route("teams")]
-public class TeamsController : ControllerBase
+public class TeamsController(
+    IAssessmentService assessmentService
+)
+    : ControllerBase
 {
-    private readonly IAssessmentService assessmentService;
-
-    public TeamsController(IAssessmentService assessmentService)
-    {
-        this.assessmentService = assessmentService;
-    }
-
     /// <summary>
     /// Получение оцениваний команды
     /// </summary>

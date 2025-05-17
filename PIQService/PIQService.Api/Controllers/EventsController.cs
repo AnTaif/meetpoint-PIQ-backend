@@ -17,20 +17,12 @@ namespace PIQService.Api.Controllers;
 [ApiController]
 [Authorize]
 [Route("events")]
-public class EventsController : ControllerBase
+public class EventsController(
+    IAssessmentService assessmentService,
+    IEventService eventService
+)
+    : ControllerBase
 {
-    private readonly IAssessmentService assessmentService;
-    private readonly IEventService eventService;
-
-    public EventsController(
-        IAssessmentService assessmentService,
-        IEventService eventService
-    )
-    {
-        this.assessmentService = assessmentService;
-        this.eventService = eventService;
-    }
-
     /// <summary>
     /// Получение иерархии текущего мероприятия
     /// </summary>
@@ -46,7 +38,7 @@ public class EventsController : ControllerBase
     [ProducesResponseType<string>(StatusCodes.Status401Unauthorized)]
     public async Task<ActionResult<GetEventHierarchyResponse>> GetCurrentEvent()
     {
-        var result = await eventService.GetEventHierarchyByUserIdAsync(User.GetSid());
+        var result = await eventService.GetEventHierarchyByUserIdAsync(User.ReadSid());
         return result.ToActionResult(this);
     }
 

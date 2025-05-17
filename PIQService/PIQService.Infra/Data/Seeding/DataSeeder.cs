@@ -12,26 +12,27 @@ public class DataSeeder(
     : IDataSeeder
 {
     private const string mainTemplateFileName = "mainTemplate.json";
-    
+
     private readonly Guid tutorId = Guid.Parse("0c9e1791-96ea-4533-a2be-1691cfa8a368");
     private readonly Guid templateId = Guid.Parse("d85cf73a-b8c8-4b0d-85f0-4ff242bba9c1");
 
-    public async Task SeedAsync()
+    public async Task<bool> TrySeedAsync()
     {
         logger.LogInformation("Starting database seeding...");
 
         if (!await dbContext.Database.EnsureCreatedAsync() && dbContext.Users.Any())
         {
             logger.LogInformation("Database already has some data, skipping...");
-            return;
+            return false;
         }
 
         SeedEventRelatedData();
-        
+
         await templateSeedingHelper.SeedTemplateFromJsonAsync(mainTemplateFileName);
 
         await dbContext.SaveChangesAsync();
         logger.LogWarning("Database seeding completed.");
+        return true;
     }
 
     private void SeedEventRelatedData()

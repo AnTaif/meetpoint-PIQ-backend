@@ -1,4 +1,4 @@
-using AccountService.Contracts.Models;
+using AccountService.Contracts;
 using AccountService.Models;
 using AccountService.Providers;
 using Core.Results;
@@ -6,32 +6,24 @@ using Microsoft.AspNetCore.Identity;
 
 namespace AccountService.Services;
 
-public class AuthService : IAuthService
+public class AuthService(
+    UserManager<User> userManager,
+    ITokenProvider tokenProvider
+)
+    : IAuthService
 {
-    private readonly UserManager<User> userManager;
-    private readonly ITokenProvider tokenProvider;
-
-    public AuthService(
-        UserManager<User> userManager,
-        ITokenProvider tokenProvider
-    )
-    {
-        this.userManager = userManager;
-        this.tokenProvider = tokenProvider;
-    }
-
     public async Task<Result<LoginResponse>> LoginAsync(LoginRequest request)
     {
         var user = await userManager.FindByEmailAsync(request.Email);
         if (user == null)
         {
-            return HttpError.NotFound($"User with email {request.Email} not found");
+            return StatusError.NotFound($"User with email {request.Email} not found");
         }
 
         var isSuccess = await userManager.CheckPasswordAsync(user, request.Password);
         if (!isSuccess)
         {
-            return HttpError.BadRequest("Bad credentials.");
+            return StatusError.BadRequest("Bad credentials.");
         }
 
         var roles = await userManager.GetRolesAsync(user);
@@ -40,7 +32,7 @@ public class AuthService : IAuthService
         return new LoginResponse
         {
             Email = user.Email!,
-            Token = token
+            Token = token,
         };
     }
 }

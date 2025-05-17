@@ -1,6 +1,4 @@
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using AccountService.Contracts.Models;
+using AccountService.Contracts;
 using AccountService.Docs.RequestExamples;
 using AccountService.Docs.ResponseExamples;
 using AccountService.Services;
@@ -12,17 +10,11 @@ namespace AccountService.Controllers;
 
 [ApiController]
 [Route("auth")]
-public class AuthController : ControllerBase
+public class AuthController(
+    IAuthService authService
+)
+    : ControllerBase
 {
-    private readonly IAuthService authService;
-
-    public AuthController(
-        IAuthService authService
-    )
-    {
-        this.authService = authService;
-    }
-
     [HttpPost("login")]
     [SwaggerRequestExample(typeof(LoginRequest), typeof(LoginRequestExample))]
     [SwaggerResponseExample(StatusCodes.Status200OK, typeof(LoginResponseExample))]
@@ -33,15 +25,5 @@ public class AuthController : ControllerBase
     {
         var result = await authService.LoginAsync(loginRequest);
         return result.ToActionResult(this);
-    }
-
-    private Guid GetContextUserId()
-    {
-        var stringId = User.FindFirstValue(JwtRegisteredClaimNames.Sid);
-
-        if (stringId == null)
-            throw new Exception($"Failed when reading logged in userId: {stringId}");
-
-        return Guid.Parse(stringId);
     }
 }

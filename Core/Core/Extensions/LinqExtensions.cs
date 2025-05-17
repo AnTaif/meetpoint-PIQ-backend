@@ -37,6 +37,4 @@ public static class LinqExtensions
             await action(item);
         }
     }
-
-    public static IEnumerable<T> ToSingleArray<T>(this T obj) => [obj];
 }

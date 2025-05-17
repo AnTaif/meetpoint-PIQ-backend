@@ -24,19 +24,20 @@ public class DataSeeder : IDataSeeder
         this.logger = logger;
     }
 
-    public async Task SeedAsync()
+    public async Task<bool> TrySeedAsync()
     {
         logger.LogInformation("Starting database seeding...");
 
         if (!await dbContext.Database.EnsureCreatedAsync() && dbContext.Users.Any())
         {
             logger.LogInformation("Database already has some data, skipping...");
-            return;
+            return false;
         }
 
         await SeedUsersAsync();
         await dbContext.SaveChangesAsync();
         logger.LogWarning("Database seeding completed.");
+        return true;
     }
 
     private async Task SeedUsersAsync()
