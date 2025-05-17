@@ -1,3 +1,4 @@
+using System.Net;
 using AccountService.Options;
 using Amazon.S3;
 using Amazon.S3.Model;
@@ -7,23 +8,32 @@ namespace AccountService.Services;
 
 public class S3FileStorage(
     IOptions<S3Options> options,
-    IAmazonS3 s3Client
+    IAmazonS3 s3Client,
+    ILogger<S3FileStorage> logger
 )
     : IS3FileStorage
 {
     private readonly S3Options s3Options = options.Value;
 
-    public async Task<string> UploadAsync(Stream fileStream, string bucketName, string fileName)
+    public async Task<string?> UploadAsync(Stream fileStream, string bucketName, string fileName)
     {
-        var putRequest = new PutObjectRequest
+        try
         {
-            BucketName = bucketName,
-            Key = fileName,
-            InputStream = fileStream,
-        };
+            var putRequest = new PutObjectRequest
+            {
+                BucketName = bucketName,
+                Key = fileName,
+                InputStream = fileStream,
+            };
 
-        await s3Client.PutObjectAsync(putRequest);
-        return GetUrl(bucketName, fileName);
+            var response = await s3Client.PutObjectAsync(putRequest);
+            return response.HttpStatusCode == HttpStatusCode.Created ? GetUrl(bucketName, fileName) : null;
+        }
+        catch (Exception e)
+        {
+            logger.LogTrace(e, "Error when uploading file to S3");
+            return null;
+        }
     }
 
     public async Task DeleteAsync(string fileUrl)
@@ -48,7 +58,7 @@ public class S3FileStorage(
 
         var bucket = url.Substring(bucketIndex, keyIndex - bucketIndex);
         var key = url[keyIndex..];
-        
+
         return (bucket, key);
     }
 }

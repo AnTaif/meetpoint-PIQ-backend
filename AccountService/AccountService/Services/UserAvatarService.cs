@@ -24,6 +24,14 @@ public class UserAvatarService(
 
         var url = await s3FileStorage.UploadAsync(imageStream, bucketName, Guid.NewGuid().ToString());
 
+        if (url == null)
+        {
+            return StatusError.BadRequest("Cannot upload this file");
+        }
+
+        user.SetAvatar(url);
+        await userManager.UpdateAsync(user);
+
         return new AvatarDto
         {
             Url = url,
@@ -45,7 +53,7 @@ public class UserAvatarService(
 
         await userManager.UpdateAsync(user);
         await s3FileStorage.DeleteAsync(user.AvatarUrl);
-        
+
         return Result.Success;
     }
 }
