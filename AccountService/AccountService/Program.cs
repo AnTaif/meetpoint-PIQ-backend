@@ -24,6 +24,8 @@ builder.Services.AddMySqlDbContext<AccountDbContext>(builder.Configuration);
 builder.Services.AddDataSeeder<DataSeeder>();
 builder.Services.AddServices();
 
+builder.Services.AddS3Storage(builder.Configuration);
+
 var corsOrigins = builder.Configuration.GetSection("AllowedOrigins").Get<string[]?>();
 builder.Services.AddCors(options =>
 {

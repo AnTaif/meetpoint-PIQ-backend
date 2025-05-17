@@ -14,6 +14,9 @@ public sealed class User : IdentityUser<Guid>
     [MaxLength(255)]
     public string? MiddleName { get; private set; }
 
+    [MaxLength(255)]
+    public string? AvatarUrl { get; private set; }
+
     public User()
     {
         Id = Guid.NewGuid();
@@ -27,5 +30,10 @@ public sealed class User : IdentityUser<Guid>
         FirstName = firstName;
         LastName = lastName;
         MiddleName = middleName;
+    }
+
+    public void SetAvatar(string? url)
+    {
+        AvatarUrl = url;
     }
 }
