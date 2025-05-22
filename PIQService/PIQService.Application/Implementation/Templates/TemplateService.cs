@@ -8,6 +8,7 @@ namespace PIQService.Application.Implementation.Templates;
 
 public class TemplateService(
     IEventService eventService,
+    IEventRepository eventRepository,
     ITemplateRepository templateRepository
 )
     : ITemplateService
@@ -24,14 +25,18 @@ public class TemplateService(
             eventId = eventResult.Value!.Id;
         }
 
-        var template = await templateRepository.FindAsync(eventId.Value);
+        var @event = await eventRepository.FindAsync(eventId.Value);
+        if (@event == null)
+            return StatusError.NotFound("Event not found");
+
+        var template = await templateRepository.FindAsync(@event.TemplateId);
         if (template == null)
             return StatusError.NotFound("Template not found");
 
-        return GetFormWithCriteriaDtos(template);
+        return GetFormWithCriteriaDtosByTemplate(template);
     }
 
-    private static List<FormWithCriteriaDto> GetFormWithCriteriaDtos(Template template)
+    private static List<FormWithCriteriaDto> GetFormWithCriteriaDtosByTemplate(Template template)
     {
         return
         [
@@ -46,7 +51,7 @@ public class TemplateService(
         return new FormWithCriteriaDto
         {
             Id = form.Id,
-            Type = AssessmentType.Circle,
+            Type = form.Type,
             CriteriaList = criteria,
         };
     }
