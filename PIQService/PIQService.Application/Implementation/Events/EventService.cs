@@ -13,14 +13,23 @@ public class EventService(
 )
     : IEventService
 {
+    public async Task<Result<Event?>> FindCurrentEventAsync()
+    {
+        var activeEvents = await eventRepository.SelectActiveAsync(DateTime.UtcNow);
+        return activeEvents.FirstOrDefault(); // TODO: сравнивать с командой юзера, чтобы гарантированно выбрать именно его меро
+    }
+    
     public async Task<Result<GetEventHierarchyResponse>> GetEventHierarchyByUserIdAsync(Guid userId, Guid? eventId = null)
     {
         Event? @event;
         if (!eventId.HasValue)
         {
-            var activeEvents = await eventRepository.SelectActiveAsync(DateTime.UtcNow);
+            var findCurrentEventResult = await FindCurrentEventAsync();
 
-            @event = activeEvents.FirstOrDefault(); // TODO: сравнивать с командой юзера, чтобы гарантированно выбрать именно его меро
+            if (findCurrentEventResult.IsFailure)
+                return findCurrentEventResult.Error;
+            
+            @event = findCurrentEventResult.Value;
         }
         else
         {
