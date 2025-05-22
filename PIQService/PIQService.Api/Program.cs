@@ -32,6 +32,8 @@ builder.Services.AddJwtAuth(builder.Configuration);
 builder.Services.AddServices();
 builder.Services.AddInfraLayer(builder.Configuration);
 
+builder.Services.AddHealthChecks();
+
 builder.Host.UseSerilogLogging(builder.Configuration);
 
 var corsOrigins = builder.Configuration.GetSection("AllowedOrigins").Get<string[]?>();
@@ -51,9 +53,10 @@ await app.TrySeedDatabaseAsync();
 
 if (app.Environment.IsDevelopment())
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
 }
+
+app.UseSwagger();
+app.UseSwaggerUI();
 
 app.UseHttpsRedirection();
 
@@ -62,6 +65,7 @@ app.UseCors("FrontendPolicy");
 app.UseAuthentication();
 app.UseAuthorization();
 
+app.MapHealthChecks("/health");
 app.MapControllers();
 
 app.Run();

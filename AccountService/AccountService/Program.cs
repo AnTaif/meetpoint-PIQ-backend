@@ -27,6 +27,7 @@ builder.Services.AddIdentity();
 builder.Services.AddMySqlDbContext<AccountDbContext>(builder.Configuration);
 builder.Services.AddDataSeeder<DataSeeder>();
 builder.Services.AddServices();
+builder.Services.AddHealthChecks();
 
 builder.Services.AddS3Storage(builder.Configuration);
 
@@ -49,9 +50,10 @@ await app.TrySeedDatabaseAsync();
 
 if (app.Environment.IsDevelopment())
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
 }
+
+app.UseSwagger();
+app.UseSwaggerUI();
 
 app.UseHttpsRedirection();
 
@@ -60,6 +62,7 @@ app.UseCors("FrontendPolicy");
 app.UseAuthentication();
 app.UseAuthorization();
 
+app.MapHealthChecks("/health");
 app.MapControllers();
 
 app.Run();
