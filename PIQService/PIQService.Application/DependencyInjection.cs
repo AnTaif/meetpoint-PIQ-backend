@@ -1,6 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using PIQService.Application.Implementation.Assessments;
 using PIQService.Application.Implementation.Events;
+using PIQService.Application.Implementation.Scores;
 using PIQService.Application.Implementation.Templates;
 
 namespace PIQService.Application;
@@ -13,5 +14,6 @@ public static class DependencyInjection
         services.AddScoped<IAssessmentService, AssessmentService>();
         services.AddScoped<IAssessmentFormsService, AssessmentFormsService>();
         services.AddScoped<ITemplateService, TemplateService>();
+        services.AddScoped<IScoreService, ScoreService>();
     }
 }

@@ -12,4 +12,6 @@ public interface IAssessmentMarkRepository
     void UpdateChoices(AssessmentMarkWithoutDeps mark, IEnumerable<Guid> choiceIds);
 
     Task<IEnumerable<User>> SelectAssessedUsersAsync(Guid assessorId, Guid assessmentId);
+
+    Task<IReadOnlyCollection<AssessmentMarkWithoutDeps>> SelectByAssessedUserIdAsync(Guid assessedUserId);
 }
