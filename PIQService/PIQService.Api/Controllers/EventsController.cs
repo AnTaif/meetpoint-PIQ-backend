@@ -36,9 +36,9 @@ public class EventsController(
     [ProducesResponseType<GetEventHierarchyResponse>(StatusCodes.Status200OK)]
     [ProducesResponseType<string>(StatusCodes.Status404NotFound)]
     [ProducesResponseType<string>(StatusCodes.Status401Unauthorized)]
-    public async Task<ActionResult<GetEventHierarchyResponse>> GetCurrentEvent()
+    public async Task<ActionResult<GetEventHierarchyResponse>> GetCurrentEvent([FromQuery] bool onlyByTutor = true)
     {
-        var result = await eventService.GetEventHierarchyByUserIdAsync(User.ReadSid());
+        var result = await eventService.GetEventHierarchyForUserAsync(User.ReadContextUser());
         return result.ToActionResult(this);
     }
 
@@ -46,6 +46,7 @@ public class EventsController(
     /// Создание нового оценивания для нескольких команд
     /// </summary>
     [HttpPost("assessments")]
+    [Authorize(Roles = RolesConstants.AdminTutor)]
     [SwaggerRequestExample(typeof(CreateTeamsAssessmentRequest), typeof(CreateTeamsAssessmentRequestExample))]
     [SwaggerResponseExample(StatusCodes.Status201Created, typeof(EnumerableAssessmentDtoExample))]
     [ProducesResponseType<AssessmentDto>(StatusCodes.Status201Created)]
@@ -53,7 +54,7 @@ public class EventsController(
     [ProducesResponseType<string>(StatusCodes.Status401Unauthorized)]
     public async Task<ActionResult<IEnumerable<AssessmentDto>>> CreateNewAssessment(CreateTeamsAssessmentRequest request)
     {
-        var result = await assessmentService.CreateTeamsAssessmentAsync(request);
+        var result = await assessmentService.CreateTeamsAssessmentAsync(request, User.ReadContextUser());
 
         return result.ToActionResult(this, dto => CreatedAtAction("CreateNewAssessment", dto));
     }

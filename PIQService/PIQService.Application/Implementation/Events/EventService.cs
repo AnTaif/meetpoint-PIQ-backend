@@ -1,3 +1,4 @@
+using Core.Auth;
 using Core.Results;
 using PIQService.Application.Implementation.Teams;
 using PIQService.Models.Converters;
@@ -16,10 +17,11 @@ public class EventService(
     public async Task<Result<Event?>> FindCurrentEventAsync()
     {
         var activeEvents = await eventRepository.SelectActiveAsync(DateTime.UtcNow);
-        return activeEvents.FirstOrDefault(); // TODO: сравнивать с командой юзера, чтобы гарантированно выбрать именно его меро
+        return activeEvents.FirstOrDefault();
     }
     
-    public async Task<Result<GetEventHierarchyResponse>> GetEventHierarchyByUserIdAsync(Guid userId, Guid? eventId = null)
+    public async Task<Result<GetEventHierarchyResponse>> GetEventHierarchyForUserAsync(ContextUser contextUser, Guid? eventId = null,
+        bool onlyWhereTutor = true)
     {
         Event? @event;
         if (!eventId.HasValue)
@@ -28,7 +30,7 @@ public class EventService(
 
             if (findCurrentEventResult.IsFailure)
                 return findCurrentEventResult.Error;
-            
+
             @event = findCurrentEventResult.Value;
         }
         else
@@ -41,9 +43,17 @@ public class EventService(
             return StatusError.NotFound("Event not found");
         }
 
-        var teams = await teamRepository.SelectByTutorIdAsync(userId, @event.Id);
+        List<Team> teams;
+        if (contextUser.Roles.Contains(RolesConstants.Admin) && !onlyWhereTutor)
+        {
+            teams = await teamRepository.SelectAsync(@event.Id);
+        }
+        else
+        {
+            teams = await teamRepository.SelectByTutorIdAsync(contextUser.Id, @event.Id);
+        }
 
-        var requiresEvaluationTeams = await teamRepository.SelectNotAssessedTeamsAsync(userId);
+        var requiresEvaluationTeams = await teamRepository.SelectNotAssessedTeamsAsync(contextUser.Id);
 
         return new GetEventHierarchyResponse
         {

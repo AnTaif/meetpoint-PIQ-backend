@@ -1,3 +1,4 @@
+using Core.Auth;
 using Core.Results;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -36,6 +37,7 @@ public class TeamsController(
     /// Создание оценивания для команды
     /// </summary>
     [HttpPost("{teamId}/assessments")]
+    [Authorize(Roles = RolesConstants.AdminTutor)]
     [SwaggerRequestExample(typeof(CreateTeamAssessmentRequest), typeof(CreateTeamAssessmentRequestExample))]
     [SwaggerResponseExample(StatusCodes.Status201Created, typeof(AssessmentDtoExample))]
     [ProducesResponseType<AssessmentDto>(StatusCodes.Status201Created)]
@@ -43,7 +45,7 @@ public class TeamsController(
     [ProducesResponseType<string>(StatusCodes.Status401Unauthorized)]
     public async Task<ActionResult<AssessmentDto>> CreateForTeam(Guid teamId, CreateTeamAssessmentRequest request)
     {
-        var result = await assessmentService.CreateTeamAssessmentAsync(teamId, request);
+        var result = await assessmentService.CreateTeamAssessmentAsync(teamId, request, User.ReadContextUser());
 
         return result.ToActionResult(this, dto => CreatedAtAction("CreateForTeam", dto));
     }

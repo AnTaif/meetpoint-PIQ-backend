@@ -29,6 +29,7 @@ public class AssessmentsController(
     /// Редактирование вариантов оценивания возможно только для предстоящих оцениваний.
     /// </remarks>
     [HttpPut("{id}")]
+    [Authorize(Roles = RolesConstants.AdminTutor)]
     [SwaggerRequestExample(typeof(EditAssessmentRequest), typeof(EditAssessmentRequestExample))]
     [SwaggerResponseExample(StatusCodes.Status200OK, typeof(AssessmentDtoExample))]
     [ProducesResponseType<AssessmentDto>(StatusCodes.Status200OK)]
@@ -36,7 +37,7 @@ public class AssessmentsController(
     [ProducesResponseType<string>(StatusCodes.Status401Unauthorized)]
     public async Task<ActionResult<AssessmentDto>> EditAssessment(Guid id, EditAssessmentRequest request)
     {
-        var result = await assessmentService.EditAssessmentAsync(id, request, User.ReadSid());
+        var result = await assessmentService.EditAssessmentAsync(id, request, User.ReadContextUser());
         return result.ToActionResult(this);
     }
 
@@ -58,13 +59,14 @@ public class AssessmentsController(
     /// Удаление существующего оценивание
     /// </summary>
     [HttpDelete("{id}")]
+    [Authorize(Roles = RolesConstants.AdminTutor)]
     [ProducesResponseType<string>(StatusCodes.Status204NoContent)]
     [ProducesResponseType<string>(StatusCodes.Status404NotFound)]
     [ProducesResponseType<string>(StatusCodes.Status409Conflict)]
     [ProducesResponseType<string>(StatusCodes.Status401Unauthorized)]
     public async Task<ActionResult> DeleteAssessment(Guid id)
     {
-        var result = await assessmentService.DeleteAsync(id);
+        var result = await assessmentService.DeleteAsync(id, User.ReadContextUser());
         return result.ToActionResult(this);
     }
 

@@ -6,7 +6,9 @@ public interface ITeamRepository
 {
     Task<Team?> FindAsync(Guid teamId);
 
-    Task<IEnumerable<Team>> SelectByTutorIdAsync(Guid tutorId, Guid eventId);
+    Task<List<Team>> SelectAsync(Guid eventId);
+    
+    Task<List<Team>> SelectByTutorIdAsync(Guid tutorId, Guid eventId);
 
-    Task<IEnumerable<Team>> SelectNotAssessedTeamsAsync(Guid tutorId);
+    Task<List<Team>> SelectNotAssessedTeamsAsync(Guid tutorId);
 }
