@@ -37,7 +37,7 @@ public class AssessmentsController(
     [ProducesResponseType<string>(StatusCodes.Status401Unauthorized)]
     public async Task<ActionResult<AssessmentDto>> EditAssessment(Guid id, EditAssessmentRequest request)
     {
-        var result = await assessmentService.EditAssessmentAsync(id, request, User.ReadSid());
+        var result = await assessmentService.EditAssessmentAsync(id, request, User.ReadContextUser());
         return result.ToActionResult(this);
     }
 
@@ -66,7 +66,7 @@ public class AssessmentsController(
     [ProducesResponseType<string>(StatusCodes.Status401Unauthorized)]
     public async Task<ActionResult> DeleteAssessment(Guid id)
     {
-        var result = await assessmentService.DeleteAsync(id);
+        var result = await assessmentService.DeleteAsync(id, User.ReadContextUser());
         return result.ToActionResult(this);
     }
 

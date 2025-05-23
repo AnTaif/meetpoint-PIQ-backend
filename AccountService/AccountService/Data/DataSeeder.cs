@@ -35,20 +35,32 @@ public class DataSeeder(
 
     private async Task SeedUsersAsync()
     {
-        var tutors = new List<User>
+        var tutors = new List<(User, string[])>
         {
-            new(tutorId1, "temp@mail.ru", "Алина", "Евсеева", null),
-            new(tutorId2, "pushkar@mail.ru", "Юрий", "Пушкарь", null),
-            new(tutorId3, "matsieva@mail.ru", "Анна", "Мациева", null),
-            new(tutorId4, "smirnov@mail.ru", "Денис", "Смирнов", null),
+            (
+                new User(tutorId1, "temp@mail.ru", "Алина", "Евсеева", null),
+                [RolesConstants.Tutor]
+            ),
+            (
+                new User(tutorId2, "pushkar@mail.ru", "Юрий", "Пушкарь", null),
+                [RolesConstants.Tutor]
+            ),
+            (
+                new User(tutorId3, "matsieva@mail.ru", "Анна", "Мациева", null),
+                [RolesConstants.Tutor]
+            ),
+            (
+                new User(tutorId4, "smirnov@mail.ru", "Денис", "Смирнов", null),
+                [RolesConstants.Tutor, RolesConstants.Admin]
+            ),
         };
 
-        await CreateUsersAsync(tutors, [RolesConstants.Tutor]);
+        await CreateUsersAsync(tutors);
     }
 
-    private async Task CreateUsersAsync(IEnumerable<User> users, IReadOnlyCollection<string> roles)
+    private async Task CreateUsersAsync(IEnumerable<(User, string[])> users)
     {
-        foreach (var user in users)
+        foreach (var (user, roles) in users)
         {
             var result = await userManager.CreateAsync(user, "password");
 

@@ -1,3 +1,4 @@
+using Core.Auth;
 using Core.Extensions;
 using Core.Results;
 using Microsoft.Extensions.Logging;
@@ -88,24 +89,24 @@ public class AssessmentService(
             .ToList();
     }
 
-    public async Task<Result<AssessmentDto>> CreateTeamAssessmentAsync(Guid teamId, CreateTeamAssessmentRequest request)
+    public async Task<Result<AssessmentDto>> CreateTeamAssessmentAsync(Guid teamId, CreateTeamAssessmentRequest request, ContextUser contextUser)
     {
         var result = await CreateAssessmentForTeamsAsync([teamId], request.Name, request.StartDate, request.EndDate,
-            request.UseCircleAssessment, request.UseBehaviorAssessment);
+            request.UseCircleAssessment, request.UseBehaviorAssessment, contextUser);
 
         return result.IsFailure
             ? result.Error
             : result.Value.Single();
     }
 
-    public async Task<Result<IEnumerable<AssessmentDto>>> CreateTeamsAssessmentAsync(CreateTeamsAssessmentRequest request)
+    public async Task<Result<IEnumerable<AssessmentDto>>> CreateTeamsAssessmentAsync(CreateTeamsAssessmentRequest request, ContextUser contextUser)
     {
         return await CreateAssessmentForTeamsAsync(request.TeamIds, request.Name, request.StartDate, request.EndDate,
-            request.UseCircleAssessment, request.UseBehaviorAssessment);
+            request.UseCircleAssessment, request.UseBehaviorAssessment, contextUser);
     }
 
     private async Task<Result<IEnumerable<AssessmentDto>>> CreateAssessmentForTeamsAsync(
-        IReadOnlyCollection<Guid> teamIds, string name, DateTime startDate, DateTime endDate, bool useCircle, bool useBehavior)
+        IReadOnlyCollection<Guid> teamIds, string name, DateTime startDate, DateTime endDate, bool useCircle, bool useBehavior, ContextUser contextUser)
     {
         if (teamIds.Count == 0)
         {
@@ -129,6 +130,11 @@ public class AssessmentService(
             if (team == null)
             {
                 return StatusError.NotFound($"Team with id={teamId} not found");
+            }
+
+            if (!CanCreateAssessment(team, contextUser))
+            {
+                return StatusError.Forbidden("Вы не можете создать оценивание для данной команды"); 
             }
 
             teams.Add(team);
@@ -202,7 +208,7 @@ public class AssessmentService(
         return mark.ToDtoModel();
     }
 
-    public async Task<Result<AssessmentDto>> EditAssessmentAsync(Guid id, EditAssessmentRequest request, Guid userId)
+    public async Task<Result<AssessmentDto>> EditAssessmentAsync(Guid id, EditAssessmentRequest request, ContextUser contextUser)
     {
         var assessment = await assessmentRepository.FindWithoutDepsAsync(id);
         if (assessment == null)
@@ -210,15 +216,17 @@ public class AssessmentService(
             return StatusError.NotFound("Assessment not found");
         }
 
-        if (request.StartDate.HasValue ^ request.EndDate.HasValue)
+        if (!await CanManageAssessmentAsync(assessment, contextUser))
         {
-            var newStart = request.StartDate ?? assessment.StartDate;
-            var newEnd = request.EndDate ?? assessment.EndDate;
+            return StatusError.Forbidden("Вы не можете редактировать данное оценивание");
+        }
 
-            if (newStart > newEnd)
-            {
-                return StatusError.BadRequest("StartDate must be earlier than EndDate");
-            }
+        var newStart = request.StartDate ?? assessment.StartDate;
+        var newEnd = request.EndDate ?? assessment.EndDate;
+
+        if (newStart > newEnd)
+        {
+            return StatusError.BadRequest("StartDate must be earlier than EndDate");
         }
 
         assessment.Edit(request.Name, request.StartDate, request.EndDate, request.UseCircleAssessment, request.UseBehaviorAssessment);
@@ -229,13 +237,18 @@ public class AssessmentService(
         return assessment.ToDtoModel();
     }
 
-    public async Task<Result> DeleteAsync(Guid id)
+    public async Task<Result> DeleteAsync(Guid id, ContextUser contextUser)
     {
         var assessment = await assessmentRepository.FindWithoutDepsAsync(id);
 
         if (assessment == null)
         {
             return StatusError.NotFound("Assessment not found");
+        }
+
+        if (!await CanManageAssessmentAsync(assessment, contextUser))
+        {
+            return StatusError.Forbidden("Вы не можете редактировать данное оценивание");
         }
 
         if (assessment.EndDate <= DateTime.UtcNow)
@@ -247,5 +260,18 @@ public class AssessmentService(
         await assessmentRepository.SaveChangesAsync();
 
         return Result.Success();
+    }
+
+    private async Task<bool> CanManageAssessmentAsync(AssessmentWithoutDeps assessment, ContextUser user)
+    {
+        var team = await teamRepository.FindAsync(assessment.TeamId)
+                   ?? throw new Exception("Error when finding assessment's team");
+
+        return team.Tutor.Id == user.Id || user.Roles.Contains(RolesConstants.Admin);
+    }
+
+    private bool CanCreateAssessment(Team team, ContextUser user)
+    {
+        return team.Tutor.Id == user.Id || user.Roles.Contains(RolesConstants.Admin);
     }
 }

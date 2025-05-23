@@ -15,5 +15,7 @@ public class StatusError : Error
 
     public static StatusError BadRequest(string message = "") => new(message, HttpStatusCode.BadRequest);
 
+    public static StatusError Forbidden(string message = "") => new(message, HttpStatusCode.Forbidden);
+
     public static StatusError Conflict(string message = "") => new(message, HttpStatusCode.Conflict);
 }

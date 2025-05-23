@@ -45,7 +45,7 @@ public class TeamsController(
     [ProducesResponseType<string>(StatusCodes.Status401Unauthorized)]
     public async Task<ActionResult<AssessmentDto>> CreateForTeam(Guid teamId, CreateTeamAssessmentRequest request)
     {
-        var result = await assessmentService.CreateTeamAssessmentAsync(teamId, request);
+        var result = await assessmentService.CreateTeamAssessmentAsync(teamId, request, User.ReadContextUser());
 
         return result.ToActionResult(this, dto => CreatedAtAction("CreateForTeam", dto));
     }

@@ -20,9 +20,9 @@ public class UserScoresController(IScoreService scoreService) : ControllerBase
     [ProducesResponseType<List<UserMeanScoreDto>>(StatusCodes.Status200OK)]
     [ProducesResponseType<string>(StatusCodes.Status404NotFound)]
     [ProducesResponseType<string>(StatusCodes.Status401Unauthorized)]
-    public async Task<ActionResult<List<UserMeanScoreDto>>> GetUsersMeanScoresByForm(Guid formId)
+    public async Task<ActionResult<List<UserMeanScoreDto>>> GetUsersMeanScoresByForm(Guid formId, [FromQuery] bool onlyWhereTutor = true)
     {
-        var result = await scoreService.GetUsersMeanScoresByFormIdAsync(formId, User.ReadSid());
+        var result = await scoreService.GetUsersMeanScoresByFormIdAsync(formId, User.ReadContextUser(), onlyWhereTutor);
         return result.ToActionResult(this);
     }
 }

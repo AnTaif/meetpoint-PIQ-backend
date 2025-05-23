@@ -5,6 +5,13 @@ namespace Core.Auth;
 
 public static class ClaimsPrincipalExtensions
 {
+    public static ContextUser ReadContextUser(this ClaimsPrincipal claimsPrincipal) =>
+        new()
+        {
+            Id = claimsPrincipal.ReadSid(),
+            Roles = claimsPrincipal.ReadRoles(),
+        };
+
     public static Guid ReadSid(this ClaimsPrincipal claimsPrincipal)
     {
         var sid = claimsPrincipal.FindFirstValue(JwtRegisteredClaimNames.Sid);
@@ -15,5 +22,11 @@ public static class ClaimsPrincipalExtensions
         }
 
         return Guid.Parse(sid);
+    }
+
+    public static IReadOnlyCollection<string> ReadRoles(this ClaimsPrincipal claimsPrincipal)
+    {
+        var roles = claimsPrincipal.Claims.Where(c => c.Type == ClaimTypes.Role).Select(c => c.Value).ToHashSet();
+        return roles;
     }
 }

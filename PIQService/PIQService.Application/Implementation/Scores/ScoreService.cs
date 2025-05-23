@@ -1,3 +1,4 @@
+using Core.Auth;
 using Core.Results;
 using PIQService.Application.Implementation.Assessments.Marks;
 using PIQService.Application.Implementation.Events;
@@ -13,23 +14,24 @@ public class ScoreService(
 )
     : IScoreService
 {
-    public async Task<Result<List<UserMeanScoreDto>>> GetUsersMeanScoresByFormIdAsync(Guid formId, Guid contextUserId)
+    public async Task<Result<List<UserMeanScoreDto>>> GetUsersMeanScoresByFormIdAsync(Guid formId, ContextUser contextUser,
+        bool onlyWhereTutor = true)
     {
         var form = await formRepository.FindAsync(formId);
         if (form == null)
             return StatusError.NotFound("Form not found");
 
-        var hierarchyResult = await eventService.GetEventHierarchyByUserIdAsync(contextUserId);
+        var hierarchyResult = await eventService.GetEventHierarchyForUserAsync(contextUser, onlyWhereTutor: onlyWhereTutor);
         if (hierarchyResult.IsFailure)
             return hierarchyResult.Error;
 
         var hierarchy = hierarchyResult.Value;
-        
+
         var teams = hierarchy.Event.Directions
             .SelectMany(d => d.Projects)
             .SelectMany(p => p.Teams)
             .ToList();
-        
+
         var userTeamPairs = teams
             .SelectMany(team => team.Members.Select(member => (User: member, Team: team))
             )
