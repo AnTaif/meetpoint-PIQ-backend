@@ -60,7 +60,7 @@ public class ScoreService(
             {
                 if (!questionToCriteriaIds.TryGetValue(choice.QuestionId, out var criteriaId))
                 {
-                    throw new Exception("Unknown questionId: " + choice.QuestionId);
+                    continue;
                 }
 
                 if (criteriaToValues.TryGetValue(criteriaId, out var value))
