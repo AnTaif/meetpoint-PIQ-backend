@@ -46,6 +46,7 @@ public class EventsController(
     /// Создание нового оценивания для нескольких команд
     /// </summary>
     [HttpPost("assessments")]
+    [Authorize(Roles = RolesConstants.AdminTutor)]
     [SwaggerRequestExample(typeof(CreateTeamsAssessmentRequest), typeof(CreateTeamsAssessmentRequestExample))]
     [SwaggerResponseExample(StatusCodes.Status201Created, typeof(EnumerableAssessmentDtoExample))]
     [ProducesResponseType<AssessmentDto>(StatusCodes.Status201Created)]

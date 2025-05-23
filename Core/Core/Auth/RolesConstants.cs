@@ -8,6 +8,8 @@ public static class RolesConstants
     public const string Tutor = "Tutor";
     public const string Member = "Member";
 
+    public const string AdminTutor = $"{Admin},{Tutor}";
+
     public static IReadOnlyCollection<string> GetRoles()
     {
         return typeof(RolesConstants)

@@ -1,3 +1,4 @@
+using Core.Auth;
 using Core.Results;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -36,6 +37,7 @@ public class TeamsController(
     /// Создание оценивания для команды
     /// </summary>
     [HttpPost("{teamId}/assessments")]
+    [Authorize(Roles = RolesConstants.AdminTutor)]
     [SwaggerRequestExample(typeof(CreateTeamAssessmentRequest), typeof(CreateTeamAssessmentRequestExample))]
     [SwaggerResponseExample(StatusCodes.Status201Created, typeof(AssessmentDtoExample))]
     [ProducesResponseType<AssessmentDto>(StatusCodes.Status201Created)]

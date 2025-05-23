@@ -15,6 +15,7 @@ namespace PIQService.Api.Controllers;
 public class UserScoresController(IScoreService scoreService) : ControllerBase
 {
     [HttpGet("forms/{formId}/criteria-mean")]
+    [Authorize(Roles = RolesConstants.AdminTutor)]
     [SwaggerResponseExample(StatusCodes.Status200OK, typeof(EnumerableUserMeanScoreDtoExample))]
     [ProducesResponseType<List<UserMeanScoreDto>>(StatusCodes.Status200OK)]
     [ProducesResponseType<string>(StatusCodes.Status404NotFound)]

@@ -29,6 +29,7 @@ public class AssessmentsController(
     /// Редактирование вариантов оценивания возможно только для предстоящих оцениваний.
     /// </remarks>
     [HttpPut("{id}")]
+    [Authorize(Roles = RolesConstants.AdminTutor)]
     [SwaggerRequestExample(typeof(EditAssessmentRequest), typeof(EditAssessmentRequestExample))]
     [SwaggerResponseExample(StatusCodes.Status200OK, typeof(AssessmentDtoExample))]
     [ProducesResponseType<AssessmentDto>(StatusCodes.Status200OK)]
@@ -58,6 +59,7 @@ public class AssessmentsController(
     /// Удаление существующего оценивание
     /// </summary>
     [HttpDelete("{id}")]
+    [Authorize(Roles = RolesConstants.AdminTutor)]
     [ProducesResponseType<string>(StatusCodes.Status204NoContent)]
     [ProducesResponseType<string>(StatusCodes.Status404NotFound)]
     [ProducesResponseType<string>(StatusCodes.Status409Conflict)]
