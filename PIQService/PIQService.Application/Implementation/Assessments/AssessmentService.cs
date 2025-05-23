@@ -184,13 +184,6 @@ public class AssessmentService(
             }
         }
 
-        if (usedQuestionIds.Count != questions.Count)
-        {
-            return StatusError.BadRequest(
-                "Не все вопросы имеют выбранный вариант ответа, ids=" +
-                string.Join(',', questions.Select(q => q.Id).Except(usedQuestionIds)));
-        }
-
         var mark = await markRepository.FindWithoutDepsAsync(assessmentId, assessorUserId, assessedUserId);
         var newChoices = choiceIds.Select(id => new Choice(id)).ToList();
 
