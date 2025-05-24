@@ -44,9 +44,11 @@ public class AssessmentMarkRepository(AppDbContext dbContext) : IAssessmentMarkR
     public async Task<IEnumerable<User>> SelectAssessedUsersAsync(Guid assessorId, Guid assessmentId)
     {
         var assessedUsers = await dbContext.AssessmentMarks
+            .Include(m => m.Assessed)
+            .Include(m => m.Choices)
             .Where(m => m.AssessmentId == assessmentId)
             .Where(m => m.AssessorId == assessorId)
-            .Include(m => m.Assessed)
+            .Where(m => m.Choices.Any())
             .Select(m => m.Assessed)
             .ToListAsync();
 

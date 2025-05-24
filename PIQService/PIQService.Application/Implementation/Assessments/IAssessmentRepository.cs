@@ -6,7 +6,7 @@ public interface IAssessmentRepository
 {
     Task<AssessmentWithoutDeps?> FindWithoutDepsAsync(Guid id);
 
-    Task<IEnumerable<AssessmentWithoutDeps>> SelectByTeamIdAsync(Guid teamId);
+    Task<IReadOnlyList<AssessmentWithoutDeps>> SelectByTeamIdAsync(Guid teamId);
 
     void Create(Assessment assessment);
 

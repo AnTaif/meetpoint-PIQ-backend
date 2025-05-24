@@ -28,8 +28,7 @@ public class TeamsController(
     [ProducesResponseType<string>(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<IEnumerable<AssessmentDto>>> GetTeamAssessments(Guid teamId)
     {
-        var result = await assessmentService.GetTeamAssessments(teamId);
-
+        var result = await assessmentService.GetTeamAssessments(teamId, User.ReadContextUser());
         return result.ToActionResult(this);
     }
 

@@ -15,4 +15,15 @@ public class AssessmentDto
     public bool UseCircleAssessment { get; init; }
 
     public bool UseBehaviorAssessment { get; init; }
+    
+    /// <summary>
+    /// Количество пользователей, которое может оценить текущий пользователь
+    /// </summary>
+    public int AssessUsersCount { get; init; }
+    
+    /// <summary>
+    /// Количество неоцененных пользователей
+    /// </summary>
+    /// <returns></returns>
+    public int NotAssessedCount { get; init; }
 }

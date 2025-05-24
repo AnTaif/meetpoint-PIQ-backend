@@ -24,7 +24,7 @@ public class AssessmentService(
 )
     : IAssessmentService
 {
-    public async Task<Result<IEnumerable<AssessmentDto>>> GetTeamAssessments(Guid teamId)
+    public async Task<Result<IEnumerable<AssessmentDto>>> GetTeamAssessments(Guid teamId, ContextUser contextUser)
     {
         var team = await teamRepository.FindAsync(teamId);
         if (team == null)
@@ -33,11 +33,22 @@ public class AssessmentService(
         }
 
         var assessments = await assessmentRepository.SelectByTeamIdAsync(teamId);
+        var dtos = new List<AssessmentDto>();
+        foreach (var assessment in assessments)
+        {
+            var assessUsersResult = await SelectUsersToAssessAsync(contextUser.Id, assessment.Id);
+            if (assessUsersResult.IsFailure)
+                return assessUsersResult.Error;
 
-        return assessments.Select(a => a.ToDtoModel()).ToList();
+            var assessUsers = assessUsersResult.Value;
+
+            dtos.Add(assessment.ToDtoModel(assessUsers.Count, assessUsers.Count(u => !u.Assessed)));
+        }
+
+        return dtos;
     }
 
-    public async Task<Result<IEnumerable<AssessUserDto>>> SelectUsersToAssessAsync(Guid currentUserId, Guid assessmentId)
+    public async Task<Result<List<AssessUserDto>>> SelectUsersToAssessAsync(Guid currentUserId, Guid assessmentId)
     {
         var assessment = await assessmentRepository.FindWithoutDepsAsync(assessmentId);
 
@@ -89,7 +100,8 @@ public class AssessmentService(
             .ToList();
     }
 
-    public async Task<Result<AssessmentDto>> CreateTeamAssessmentAsync(Guid teamId, CreateTeamAssessmentRequest request, ContextUser contextUser)
+    public async Task<Result<AssessmentDto>> CreateTeamAssessmentAsync(Guid teamId, CreateTeamAssessmentRequest request,
+        ContextUser contextUser)
     {
         var result = await CreateAssessmentForTeamsAsync([teamId], request.Name, request.StartDate, request.EndDate,
             request.UseCircleAssessment, request.UseBehaviorAssessment, contextUser);
@@ -99,14 +111,16 @@ public class AssessmentService(
             : result.Value.Single();
     }
 
-    public async Task<Result<IEnumerable<AssessmentDto>>> CreateTeamsAssessmentAsync(CreateTeamsAssessmentRequest request, ContextUser contextUser)
+    public async Task<Result<IEnumerable<AssessmentDto>>> CreateTeamsAssessmentAsync(CreateTeamsAssessmentRequest request,
+        ContextUser contextUser)
     {
         return await CreateAssessmentForTeamsAsync(request.TeamIds, request.Name, request.StartDate, request.EndDate,
             request.UseCircleAssessment, request.UseBehaviorAssessment, contextUser);
     }
 
     private async Task<Result<IEnumerable<AssessmentDto>>> CreateAssessmentForTeamsAsync(
-        IReadOnlyCollection<Guid> teamIds, string name, DateTime startDate, DateTime endDate, bool useCircle, bool useBehavior, ContextUser contextUser)
+        IReadOnlyCollection<Guid> teamIds, string name, DateTime startDate, DateTime endDate, bool useCircle, bool useBehavior,
+        ContextUser contextUser)
     {
         if (teamIds.Count == 0)
         {
@@ -134,7 +148,7 @@ public class AssessmentService(
 
             if (!CanCreateAssessment(team, contextUser))
             {
-                return StatusError.Forbidden("Вы не можете создать оценивание для данной команды"); 
+                return StatusError.Forbidden("Вы не можете создать оценивание для данной команды");
             }
 
             teams.Add(team);
@@ -157,7 +171,7 @@ public class AssessmentService(
         });
         await assessmentRepository.SaveChangesAsync();
 
-        return assessments.Select(a => a.ToDtoModel()).ToList();
+        return assessments.Select(a => a.ToDtoModel(-1, -1)).ToList();
     }
 
     public async Task<Result<AssessmentMarkDto>> AssessUserAsync(
@@ -234,7 +248,7 @@ public class AssessmentService(
         assessmentRepository.Update(assessment);
         await assessmentRepository.SaveChangesAsync();
 
-        return assessment.ToDtoModel();
+        return assessment.ToDtoModel(-1, -1);
     }
 
     public async Task<Result> DeleteAsync(Guid id, ContextUser contextUser)
