@@ -13,7 +13,7 @@ public class AssessmentRepository(AppDbContext dbContext) : IAssessmentRepositor
         return dbo?.ToDomainWithoutDepsModel();
     }
 
-    public async Task<IEnumerable<AssessmentWithoutDeps>> SelectByTeamIdAsync(Guid teamId)
+    public async Task<IReadOnlyList<AssessmentWithoutDeps>> SelectByTeamIdAsync(Guid teamId)
     {
         var dbos = await dbContext.Assessments
             .Where(a => a.Team.Id == teamId)

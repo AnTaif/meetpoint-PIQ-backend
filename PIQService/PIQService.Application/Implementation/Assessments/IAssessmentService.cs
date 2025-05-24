@@ -7,9 +7,9 @@ namespace PIQService.Application.Implementation.Assessments;
 
 public interface IAssessmentService
 {
-    Task<Result<IEnumerable<AssessmentDto>>> GetTeamAssessments(Guid teamId);
+    Task<Result<IEnumerable<AssessmentDto>>> GetTeamAssessments(Guid teamId, ContextUser contextUser);
 
-    Task<Result<IEnumerable<AssessUserDto>>> SelectUsersToAssessAsync(Guid currentUserId, Guid assessmentId);
+    Task<Result<List<AssessUserDto>>> SelectUsersToAssessAsync(Guid currentUserId, Guid assessmentId);
 
     Task<Result<IEnumerable<AssessChoiceDto>>> SelectAssessChoicesAsync(Guid assessmentId, Guid assessorId, Guid assessedId);
 

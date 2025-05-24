@@ -56,7 +56,7 @@ public static class AssessmentConverter
             assessmentDbo.TeamId
         );
 
-    public static AssessmentDto ToDtoModel(this AssessmentWithoutDeps assessment) =>
+    public static AssessmentDto ToDtoModel(this AssessmentWithoutDeps assessment, int assessUsersCount, int notAssessedCount) =>
         new()
         {
             Id = assessment.Id,
@@ -66,5 +66,7 @@ public static class AssessmentConverter
             TeamId = assessment.TeamId,
             UseCircleAssessment = assessment.UseCircleAssessment,
             UseBehaviorAssessment = assessment.UseBehaviorAssessment,
+            AssessUsersCount = assessUsersCount,
+            NotAssessedCount = notAssessedCount,
         };
 }
