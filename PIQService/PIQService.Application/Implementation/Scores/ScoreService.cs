@@ -22,7 +22,7 @@ public class ScoreService(
 )
     : IScoreService
 {
-    public async Task<Result<UserMeanScoreDto>> GetUserMeanScoresAsync(Guid userId, ContextUser contextUser)
+    public async Task<Result<UserMeanScoreDto>> GetUserMeanScoresAsync(Guid userId, ContextUser contextUser, Guid? byAssessment)
     {
         var user = await userRepository.FindAsync(userId);
 
@@ -50,7 +50,7 @@ public class ScoreService(
 
         return await GetUserMeanScoreDtoAsync(
             (new UserDto { Id = user.Id, FullName = user.GetFullName(), }, new TeamDto { Id = team.Id, Name = team.Name, }),
-            template.CircleForm, template.BehaviorForm);
+            [template.CircleForm, template.BehaviorForm]);
     }
 
     public async Task<Result<List<UserMeanScoreDto>>> GetUsersMeanScoresByFormIdAsync(Guid formId, ContextUser contextUser,
@@ -79,18 +79,18 @@ public class ScoreService(
         var dtos = new List<UserMeanScoreDto>();
         foreach (var userTeamPair in userTeamPairs)
         {
-            dtos.Add(await GetUserMeanScoreDtoAsync(userTeamPair, form));
+            dtos.Add(await GetUserMeanScoreDtoAsync(userTeamPair, [form]));
         }
 
         return dtos;
     }
 
     private async Task<UserMeanScoreDto> GetUserMeanScoreDtoAsync((UserDto User, TeamDto Team) userTeamPair,
-        params Form[] forms)
+        IEnumerable<Form> forms, Guid? byAssessment = null)
     {
         var questionToCriteriaIds = GetQuestionToCriteriaIds(forms);
 
-        var marks = await markRepository.SelectByAssessedUserIdAsync(userTeamPair.User.Id);
+        var marks = await markRepository.SelectByAssessedUserIdAsync(userTeamPair.User.Id, byAssessment);
 
         var criteriaToValues = new Dictionary<Guid, List<int>>();
         foreach (var mark in marks)
@@ -128,7 +128,7 @@ public class ScoreService(
         };
     }
 
-    private Dictionary<Guid, Guid> GetQuestionToCriteriaIds(params Form[] forms)
+    private Dictionary<Guid, Guid> GetQuestionToCriteriaIds(IEnumerable<Form> forms)
     {
         return forms
             .SelectMany(f => f.Questions)
