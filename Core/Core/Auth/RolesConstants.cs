@@ -6,7 +6,7 @@ public static class RolesConstants
 {
     public const string Admin = "Admin";
     public const string Tutor = "Tutor";
-    public const string Member = "Member";
+    public const string Student = "Member";
 
     public const string AdminTutor = $"{Admin},{Tutor}";
 
