@@ -47,10 +47,11 @@ public class UserScoresController(IScoreService scoreService) : ControllerBase
     /// <summary>
     /// Получение средних результатов всех студентов, доступных пользователю
     /// </summary>
-    /// <remarks>
-    /// onlyWhereTutor - необязательный параметр, доступный только админам.
+    /// <param name="formId"></param>
+    /// <param name="onlyWhereTutor">
+    /// Необязательный параметр, доступный только админам.
     /// Если true - возвращаются студенты, где текущий пользователь куратор, false - возвращаются все студенты со всех команд
-    /// </remarks>
+    /// </param>
     [HttpGet("forms/{formId}/criteria-mean")]
     [Authorize(Roles = RolesConstants.AdminTutor)]
     [SwaggerResponseExample(StatusCodes.Status200OK, typeof(EnumerableUserMeanScoreDtoExample))]

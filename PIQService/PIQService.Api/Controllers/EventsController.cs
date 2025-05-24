@@ -28,17 +28,21 @@ public class EventsController(
     /// </summary>
     /// <remarks>
     /// Иерархия строится на основе команд, которые доступны текущему пользователю.
-    /// Куратору - команды, в которых он куратор, руководителю - все команды.
+    /// Студентам и кураторам - команды, в которых они состоят; руководителю - все команды.
     /// </remarks>
+    /// <param name="onlyWhereTutor">
+    /// Необязательный параметр, доступный только кураторам и админам.
+    /// Если true - возвращаются команды, где текущий пользователь куратор
+    /// </param>
     [HttpGet("current")]
     [Authorize]
     [SwaggerResponseExample(StatusCodes.Status200OK, typeof(GetEventHierarchyResponseExample))]
     [ProducesResponseType<GetEventHierarchyResponse>(StatusCodes.Status200OK)]
     [ProducesResponseType<string>(StatusCodes.Status404NotFound)]
     [ProducesResponseType<string>(StatusCodes.Status401Unauthorized)]
-    public async Task<ActionResult<GetEventHierarchyResponse>> GetCurrentEvent([FromQuery] bool onlyByTutor = true)
+    public async Task<ActionResult<GetEventHierarchyResponse>> GetCurrentEvent([FromQuery] bool onlyWhereTutor = true)
     {
-        var result = await eventService.GetEventHierarchyForUserAsync(User.ReadContextUser());
+        var result = await eventService.GetEventHierarchyForUserAsync(User.ReadContextUser(), onlyWhereTutor: onlyWhereTutor);
         return result.ToActionResult(this);
     }
 
