@@ -44,6 +44,25 @@ public class TeamRepository(AppDbContext dbContext) : ITeamRepository
         return teams.Select(t => t.ToDomainModel()).ToList();
     }
 
+    public async Task<List<Team>> SelectByStudentIdAsync(Guid studentId, Guid eventId)
+    {
+        var teams = await dbContext.Teams
+            .Include(t => t.Tutor)
+            .Include(t => t.Members)
+            .Include(t => t.Project)
+            .ThenInclude(p => p.Direction)
+            .ThenInclude(d => d.Event)
+            .Where(t => t.Project.Direction.Event.Id == eventId)
+            .Where(t => t.Members.Any(m => m.Id == studentId))
+            .OrderBy(t => t.Project.Direction.Event.Name)
+            .ThenBy(t => t.Project.Direction.Name)
+            .ThenBy(t => t.Project.Name)
+            .ThenBy(t => t.Name)
+            .ToListAsync();
+
+        return teams.Select(t => t.ToDomainModel()).ToList();
+    }
+
     public async Task<List<Team>> SelectByTutorIdAsync(Guid tutorId, Guid eventId)
     {
         var teams = await dbContext.Teams

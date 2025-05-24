@@ -9,6 +9,8 @@ public interface ITeamRepository
     Task<TeamWithoutDeps?> FindWithoutDepsAsync(Guid teamId);
 
     Task<List<Team>> SelectAsync(Guid eventId);
+
+    Task<List<Team>> SelectByStudentIdAsync(Guid studentId, Guid eventId);
     
     Task<List<Team>> SelectByTutorIdAsync(Guid tutorId, Guid eventId);
 

@@ -61,7 +61,7 @@ public class AssessmentService(
 
         var usersToAssess = team.Users
             .OrderBy(u => u.LastName)
-            .Concat([team.Tutor])
+            //.Concat([team.Tutor]) //TODO: подумать над тем, должны ли студенты оценивать куратора по тем же вопросам
             .Where(u => u.Id != currentUserId)
             .ToList();
 

@@ -1,5 +1,6 @@
 using Core.Auth;
 using Core.Results;
+using Microsoft.Extensions.Logging;
 using PIQService.Application.Implementation.Teams;
 using PIQService.Models.Converters;
 using PIQService.Models.Domain;
@@ -10,7 +11,8 @@ namespace PIQService.Application.Implementation.Events;
 
 public class EventService(
     IEventRepository eventRepository,
-    ITeamRepository teamRepository
+    ITeamRepository teamRepository,
+    ILogger<EventService> logger
 )
     : IEventService
 {
@@ -19,7 +21,7 @@ public class EventService(
         var activeEvents = await eventRepository.SelectActiveAsync(DateTime.UtcNow);
         return activeEvents.FirstOrDefault();
     }
-    
+
     public async Task<Result<GetEventHierarchyResponse>> GetEventHierarchyForUserAsync(ContextUser contextUser, Guid? eventId = null,
         bool onlyWhereTutor = true)
     {
@@ -48,9 +50,23 @@ public class EventService(
         {
             teams = await teamRepository.SelectAsync(@event.Id);
         }
-        else
+        else if (contextUser.Roles.Contains(RolesConstants.Tutor) && onlyWhereTutor)
         {
             teams = await teamRepository.SelectByTutorIdAsync(contextUser.Id, @event.Id);
+        }
+        else if (contextUser.Roles.Contains(RolesConstants.Student))
+        {
+            teams = await teamRepository.SelectByStudentIdAsync(contextUser.Id, @event.Id);
+        }
+        else
+        {
+            logger.LogWarning(
+                "Не смогли разобраться, какую иерархию мероприятия ({eventId}) вернуть юзеру: contextUserId = {userId}, contextUserRoles = {roles}",
+                @event.Id,
+                contextUser.Id,
+                string.Join(',', contextUser.Roles)
+            );
+            teams = [];
         }
 
         var requiresEvaluationTeams = await teamRepository.SelectNotAssessedTeamsAsync(contextUser.Id);
