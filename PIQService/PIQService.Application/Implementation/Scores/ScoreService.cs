@@ -50,7 +50,7 @@ public class ScoreService(
 
         return await GetUserMeanScoreDtoAsync(
             (new UserDto { Id = user.Id, FullName = user.GetFullName(), }, new TeamDto { Id = team.Id, Name = team.Name, }),
-            [template.CircleForm, template.BehaviorForm]);
+            [template.CircleForm, template.BehaviorForm], byAssessment);
     }
 
     public async Task<Result<List<UserMeanScoreDto>>> GetUsersMeanScoresByFormIdAsync(Guid formId, ContextUser contextUser,
