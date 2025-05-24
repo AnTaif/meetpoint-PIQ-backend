@@ -7,6 +7,7 @@ using PIQService.Application.Implementation.Events;
 using PIQService.Application.Implementation.Forms;
 using PIQService.Application.Implementation.Teams;
 using PIQService.Application.Implementation.Templates;
+using PIQService.Application.Implementation.Users;
 using PIQService.Infra.Data;
 using PIQService.Infra.Data.Repositories;
 using PIQService.Infra.Data.Seeding;
@@ -33,5 +34,6 @@ public static class DependencyInjection
         services.AddScoped<ITemplateRepository, TemplateRepository>();
         services.AddScoped<IAssessmentMarkRepository, AssessmentMarkRepository>();
         services.AddScoped<IFormRepository, FormRepository>();
+        services.AddScoped<IUserRepository, UserRepository>();
     }
 }

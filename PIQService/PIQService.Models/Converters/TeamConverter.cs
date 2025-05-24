@@ -26,4 +26,14 @@ public static class TeamConverter
             teamDbo.Members.Select(u => u.ToDomainModel(false)).ToArray()
         );
     }
+    
+    public static TeamWithoutDeps ToDomainModelWithoutDeps(this TeamDbo teamDbo)
+    {
+        return new TeamWithoutDeps(
+            teamDbo.Id,
+            teamDbo.ProjectId,
+            teamDbo.TutorId,
+            teamDbo.Name
+        );
+    }
 }

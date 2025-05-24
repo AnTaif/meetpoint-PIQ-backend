@@ -13,5 +13,5 @@ public interface IAssessmentMarkRepository
 
     Task<IEnumerable<User>> SelectAssessedUsersAsync(Guid assessorId, Guid assessmentId);
 
-    Task<IReadOnlyCollection<AssessmentMarkWithoutDeps>> SelectByAssessedUserIdAsync(Guid assessedUserId);
+    Task<IReadOnlyCollection<AssessmentMarkWithoutDeps>> SelectByAssessedUserIdAsync(Guid assessedUserId, Guid? byAssessment);
 }
