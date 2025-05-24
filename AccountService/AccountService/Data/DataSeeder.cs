@@ -39,7 +39,7 @@ public class DataSeeder(
         var tutors = new List<(User, string[])>
         {
             (
-                new User(tutorId1, "temp@mail.ru", "Алина", "Евсеева", null),
+                new User(tutorId1, "evseeva@mail.ru", "Алина", "Евсеева", null),
                 [RolesConstants.Tutor]
             ),
             (
