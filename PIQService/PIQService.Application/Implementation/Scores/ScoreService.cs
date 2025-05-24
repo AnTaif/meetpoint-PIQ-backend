@@ -53,6 +53,46 @@ public class ScoreService(
             [template.CircleForm, template.BehaviorForm], byAssessment);
     }
 
+    public async Task<Result<List<UserMeanScoreDto>>> GetTeamMeanScoresAsync(Guid teamId, ContextUser contextUser, Guid? byAssessment)
+    {
+        var team = await teamRepository.FindAsync(teamId);
+
+        if (team == null)
+            return StatusError.NotFound("Team not found");
+
+        if (!(contextUser.Roles.Contains(RolesConstants.Admin) ||
+              (contextUser.Roles.Contains(RolesConstants.Tutor) && team.TutorId == contextUser.Id) ||
+              team.Users.Any(u => u.Id == contextUser.Id)))
+        {
+            return StatusError.Forbidden("Вы не можете просматривать результаты оцениваний данной команды");
+        }
+
+        var activeEvents = await eventRepository.SelectActiveAsync(DateTime.UtcNow);
+        var currentEvent = activeEvents.FirstOrDefault();
+
+        if (currentEvent == null)
+            return StatusError.NotFound("Event not found");
+
+        var template = await templateRepository.FindAsync(currentEvent.TemplateId);
+
+        if (template == null)
+            return StatusError.NotFound("Template not found");
+
+        var userTeamPairs = team.Users.Select(u =>
+            (
+                new UserDto { Id = u.Id, FullName = u.GetFullName() }, new TeamDto { Id = team.Id, Name = team.Name }
+            )
+        ).ToList();
+
+        var dtos = new List<UserMeanScoreDto>();
+        foreach (var userTeamPair in userTeamPairs)
+        {
+            dtos.Add(await GetUserMeanScoreDtoAsync(userTeamPair, [template.CircleForm, template.BehaviorForm], byAssessment));
+        }
+
+        return dtos;
+    }
+
     public async Task<Result<List<UserMeanScoreDto>>> GetUsersMeanScoresByFormIdAsync(Guid formId, ContextUser contextUser,
         bool onlyWhereTutor = true)
     {

@@ -55,12 +55,17 @@ public class AssessmentMarkRepository(AppDbContext dbContext) : IAssessmentMarkR
 
     public async Task<IReadOnlyCollection<AssessmentMarkWithoutDeps>> SelectByAssessedUserIdAsync(Guid assessedUserId, Guid? byAssessment)
     {
-        var assessedUsers = await dbContext.AssessmentMarks
+        var query = dbContext.AssessmentMarks
             .Include(m => m.Choices)
-            .Where(m => m.AssessedId == assessedUserId)
-            .Where(m => m.AssessmentId == byAssessment)
-            .ToListAsync();
-        
+            .Where(m => m.AssessedId == assessedUserId);
+
+        if (byAssessment != null)
+        {
+            query = query.Where(m => m.AssessmentId == byAssessment);
+        }
+
+        var assessedUsers = await query.ToListAsync();
+
         return assessedUsers.Select(u => u.ToDomainModelWithoutDeps()).ToList();
     }
 }

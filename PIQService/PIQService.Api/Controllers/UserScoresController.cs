@@ -25,7 +25,14 @@ public class UserScoresController(IScoreService scoreService) : ControllerBase
         var result = await scoreService.GetUserMeanScoresAsync(userId, User.ReadContextUser(), byAssessment);
         return result.ToActionResult(this);
     }
-    
+
+    [HttpGet("teams/{teamId}/criteria-mean")]
+    public async Task<ActionResult<List<UserMeanScoreDto>>> GetTeamMeanScores(Guid teamId, [FromQuery] Guid? byAssessment = null)
+    {
+        var result = await scoreService.GetTeamMeanScoresAsync(teamId, User.ReadContextUser(), byAssessment);
+        return result.ToActionResult(this);
+    }
+
     [HttpGet("forms/{formId}/criteria-mean")]
     [Authorize(Roles = RolesConstants.AdminTutor)]
     [SwaggerResponseExample(StatusCodes.Status200OK, typeof(EnumerableUserMeanScoreDtoExample))]
