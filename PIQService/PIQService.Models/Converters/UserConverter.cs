@@ -21,6 +21,11 @@ public static class UserConverter
             shouldLoadTeam ? userDbo.Team?.ToDomainModel() : null);
     }
 
+    public static UserWithoutDeps ToDomainModelWithoutDeps(this UserDbo userDbo)
+    {
+        return new UserWithoutDeps(userDbo.Id, userDbo.FirstName, userDbo.LastName, userDbo.MiddleName, userDbo.TeamId);
+    }
+
     public static UserDto ToDtoModel(this User user)
     {
         return new UserDto

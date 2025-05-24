@@ -14,6 +14,17 @@ namespace PIQService.Api.Controllers;
 [Route("user-scores")]
 public class UserScoresController(IScoreService scoreService) : ControllerBase
 {
+    [HttpGet("{userId}/criteria-mean")]
+    [SwaggerResponseExample(StatusCodes.Status200OK, typeof(UserMeanScoreDtoExample))]
+    [ProducesResponseType<UserMeanScoreDto>(StatusCodes.Status200OK)]
+    [ProducesResponseType<string>(StatusCodes.Status404NotFound)]
+    [ProducesResponseType<string>(StatusCodes.Status401Unauthorized)]
+    public async Task<ActionResult<UserMeanScoreDto>> GetUserMeanScoresByForm(Guid userId)
+    {
+        var result = await scoreService.GetUserMeanScoresAsync(userId, User.ReadContextUser());
+        return result.ToActionResult(this);
+    }
+    
     [HttpGet("forms/{formId}/criteria-mean")]
     [Authorize(Roles = RolesConstants.AdminTutor)]
     [SwaggerResponseExample(StatusCodes.Status200OK, typeof(EnumerableUserMeanScoreDtoExample))]
