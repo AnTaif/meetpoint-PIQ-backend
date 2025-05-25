@@ -12,7 +12,7 @@ resource "yandex_resourcemanager_folder_iam_member" "piq_roles" {
     "container-registry.images.puller", # Для скачивания образов контейнеров
     "mdb.viewer",                       # Для подключения к кластеру MySQL (без администрирования)
     "vpc.publicAdmin",                  # Для NAT и публичного доступа ВМ
-    "compute.editor",                   # Для создания/управления ВМ (Prometheus, Grafana)
+    "compute.editor",                   # Для создания/управления ВМ
     "monitoring.editor",                # Для мониторинга (дашборды и метрики)
     "storage.uploader",                 # Для загрузки данных в Object Storage
     "api-gateway.editor",               # Для управления API Gateway
