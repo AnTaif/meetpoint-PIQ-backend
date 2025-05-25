@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using PIQService.Application.Attributes;
 
 namespace PIQService.Application.Implementation.Assessments.Requests;
 
@@ -9,6 +10,7 @@ public class EditAssessmentRequest
 
     public DateTime? StartDate { get; init; }
 
+    [NotPastDateTime]
     public DateTime? EndDate { get; init; }
 
     /// <summary>
