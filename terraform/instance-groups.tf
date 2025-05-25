@@ -33,7 +33,7 @@ resource "yandex_compute_instance_group" "account" {
     resources {
       memory = 2
       cores  = 2
-      core_fraction = 20
+      core_fraction = 100
     }
 
     boot_disk {
@@ -101,12 +101,13 @@ resource "yandex_compute_instance_group" "account" {
       measurement_duration   = 60
       warmup_duration        = 60
       stabilization_duration = 120
+      cpu_utilization_target = 70
 
       custom_rule {
         rule_type   = "WORKLOAD"
         metric_type = "GAUGE"
-        metric_name = "app_requests_per_second"
-        target      = 40 # Если >40 RPS
+        metric_name = "cpu.load"
+        target      = 70
       }
     }
   }
@@ -137,7 +138,7 @@ resource "yandex_compute_instance_group" "piq" {
     resources {
       memory = 2
       cores  = 2
-      core_fraction = 20
+      core_fraction = 100
     }
 
     boot_disk {
@@ -199,17 +200,18 @@ resource "yandex_compute_instance_group" "piq" {
   scale_policy {
     auto_scale {
       initial_size           = 1
-      max_size               = 3
+      max_size               = 2
       min_zone_size          = 1
       measurement_duration   = 60
       warmup_duration        = 60
       stabilization_duration = 120
+      cpu_utilization_target = 70
 
       custom_rule {
         rule_type   = "WORKLOAD"
         metric_type = "GAUGE"
-        metric_name = "app_requests_per_second"
-        target      = 40 # Если >40 RPS
+        metric_name = "cpu.load"
+        target      = 70
       }
     }
   }
