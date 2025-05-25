@@ -5,6 +5,14 @@
 
 .idea
 
+# terraform
+.terraform
+*.hcl
+*.tfstate*
+*.tfvars
+id_rsa
+*.pub
+
 # dotenv files
 .env
 
