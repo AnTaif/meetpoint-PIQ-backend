@@ -33,6 +33,6 @@ public static class QuestionConverter
             Id = question.Id,
             Text = question.Text,
             CriteriaId = question.Criteria.Id,
-            Choices = question.Choices.Select(c => c.ToShortDtoModel()).ToList(),
+            Choices = question.Choices.OrderBy(c => c.Value).Select(c => c.ToShortDtoModel()).ToList(),
         };
 }
