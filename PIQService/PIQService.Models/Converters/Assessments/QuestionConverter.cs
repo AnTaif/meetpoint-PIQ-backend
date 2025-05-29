@@ -24,7 +24,7 @@ public static class QuestionConverter
             questionDbo.Weight,
             questionDbo.Order,
             questionDbo.Criteria.ToDomainModel(),
-            questionDbo.Choices.Select(c => c.ToDomainModel()).ToList()
+            questionDbo.Choices.OrderBy(c => c.Value).Select(c => c.ToDomainModel()).ToList()
         );
 
     public static QuestionShortDto ToShortDtoModel(this Question question) =>
