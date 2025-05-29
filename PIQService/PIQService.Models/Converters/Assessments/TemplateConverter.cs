@@ -16,4 +16,7 @@ public static class TemplateConverter
 
     public static Template ToDomainModel(this TemplateDbo templateDbo) =>
         new(templateDbo.Id, templateDbo.Name, templateDbo.CircleForm.ToDomainModel(), templateDbo.BehaviorForm.ToDomainModel());
+
+    public static TemplateBase ToDomainBaseModel(this TemplateDbo templateDbo) =>
+        new(templateDbo.Id, templateDbo.Name, templateDbo.CircleFormId, templateDbo.BehaviorFormId);
 }

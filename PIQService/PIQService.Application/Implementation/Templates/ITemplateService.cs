@@ -5,5 +5,5 @@ namespace PIQService.Application.Implementation.Templates;
 
 public interface ITemplateService
 {
-    Task<Result<IReadOnlyCollection<FormWithCriteriaDto>>> GetFormsWithCriteriaAsync(Guid? eventId = null);
+    Task<Result<List<FormWithCriteriaDto>>> GetFormsWithCriteriaAsync(Guid? eventId = null);
 }

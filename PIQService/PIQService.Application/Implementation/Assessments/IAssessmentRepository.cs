@@ -8,7 +8,7 @@ public interface IAssessmentRepository
 
     Task<IReadOnlyList<AssessmentWithoutDeps>> SelectByTeamIdAsync(Guid teamId);
 
-    void Create(Assessment assessment);
+    void Create(AssessmentWithoutDeps assessment);
 
     void Update(AssessmentWithoutDeps assessmentWithoutDeps);
 

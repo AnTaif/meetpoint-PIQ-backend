@@ -4,5 +4,5 @@ namespace PIQService.Application.Implementation.Templates;
 
 public interface ITemplateRepository
 {
-    Task<Template?> FindAsync(Guid templateId);
+    Task<TemplateBase?> FindAsync(Guid templateId);
 }

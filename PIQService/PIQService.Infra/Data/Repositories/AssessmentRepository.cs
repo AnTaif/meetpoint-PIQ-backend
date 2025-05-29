@@ -25,7 +25,7 @@ public class AssessmentRepository(AppDbContext dbContext) : IAssessmentRepositor
         return dbos.Select(x => x.ToDomainWithoutDepsModel()).ToList();
     }
 
-    public void Create(Assessment assessment)
+    public void Create(AssessmentWithoutDeps assessment)
     {
         var assessmentDbo = assessment.ToDboModel();
         dbContext.Assessments.Add(assessmentDbo);

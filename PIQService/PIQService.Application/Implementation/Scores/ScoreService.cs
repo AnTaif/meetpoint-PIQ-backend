@@ -41,6 +41,15 @@ public class ScoreService(
         if (template == null)
             return StatusError.NotFound("Template not found");
 
+        var forms = new List<Form>();
+        var circleForm = await formRepository.FindAsync(template.CircleFormId);
+        if (circleForm != null)
+            forms.Add(circleForm);
+
+        var behaviorForm = await formRepository.FindAsync(template.BehaviorFormId);
+        if (behaviorForm != null)
+            forms.Add(behaviorForm);
+
         if (user.TeamId == null)
             return StatusError.BadRequest("Этот пользователь не состоит ни в одной команде, у него не может быть результатов оцениваний");
 
@@ -51,7 +60,8 @@ public class ScoreService(
 
         return await GetUserMeanScoreDtoAsync(
             (new UserDto { Id = user.Id, FullName = user.GetFullName(), }, new TeamDto { Id = team.Id, Name = team.Name, }),
-            [template.CircleForm, template.BehaviorForm], byAssessment);
+            forms, byAssessment
+        );
     }
 
     public async Task<Result<List<UserMeanScoreDto>>> GetTeamMeanScoresAsync(Guid teamId, ContextUser contextUser, Guid? byAssessment)
@@ -79,6 +89,15 @@ public class ScoreService(
         if (template == null)
             return StatusError.NotFound("Template not found");
 
+        var forms = new List<Form>();
+        var circleForm = await formRepository.FindAsync(template.CircleFormId);
+        if (circleForm != null)
+            forms.Add(circleForm);
+
+        var behaviorForm = await formRepository.FindAsync(template.BehaviorFormId);
+        if (behaviorForm != null)
+            forms.Add(behaviorForm);
+        
         var userTeamPairs = team.Users.Select(u =>
             (
                 new UserDto { Id = u.Id, FullName = u.GetFullName() }, new TeamDto { Id = team.Id, Name = team.Name }
@@ -88,7 +107,7 @@ public class ScoreService(
         var dtos = new List<UserMeanScoreDto>();
         foreach (var userTeamPair in userTeamPairs)
         {
-            dtos.Add(await GetUserMeanScoreDtoAsync(userTeamPair, [template.CircleForm, template.BehaviorForm], byAssessment));
+            dtos.Add(await GetUserMeanScoreDtoAsync(userTeamPair, forms, byAssessment));
         }
 
         return dtos;

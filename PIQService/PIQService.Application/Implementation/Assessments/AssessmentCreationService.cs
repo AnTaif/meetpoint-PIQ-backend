@@ -80,10 +80,10 @@ public class AssessmentCreationService(
             return StatusError.NotFound("Template not found");
         }
 
-        var assessments = new List<Assessment>();
+        var assessments = new List<AssessmentWithoutDeps>();
         teams.Foreach(t =>
         {
-            var newAssessment = new Assessment(Guid.NewGuid(), name, t, template, startDate, endDate, useCircle, useBehavior);
+            var newAssessment = new AssessmentWithoutDeps(Guid.NewGuid(), name, startDate, endDate, useCircle, useBehavior, template.Id, t.Id);
 
             assessmentRepository.Create(newAssessment);
             assessments.Add(newAssessment);
