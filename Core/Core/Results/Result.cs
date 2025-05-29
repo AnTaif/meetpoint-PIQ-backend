@@ -52,7 +52,7 @@ public class Result
         this.error = error;
     }
     
-    public static Result Success() => new();
+    public static Result Success => new();
 
     public static implicit operator Result(Error error)
     {

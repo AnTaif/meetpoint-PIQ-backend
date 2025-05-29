@@ -102,7 +102,7 @@ public class AssessmentService(
         assessmentRepository.Delete(assessment);
         await assessmentRepository.SaveChangesAsync();
 
-        return Result.Success();
+        return Result.Success;
     }
 
     private async Task<bool> CanManageAssessmentAsync(AssessmentWithoutDeps assessment, ContextUser user)

@@ -13,7 +13,11 @@ Env.Load("../../.env");
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services
-    .AddSwaggerGen(options => { options.AddDocs(); })
+    .AddSwaggerGen(options =>
+    {
+        options.AddDocs();
+        options.AddJwtSecurity();
+    })
     .AddSwaggerExamplesFromAssemblies(Assembly.GetExecutingAssembly());
 
 builder.Services.AddControllers();
@@ -23,6 +27,9 @@ builder.Services.AddIdentity();
 builder.Services.AddMySqlDbContext<AccountDbContext>(builder.Configuration);
 builder.Services.AddDataSeeder<DataSeeder>();
 builder.Services.AddServices();
+builder.Services.AddHealthChecks();
+
+builder.Services.AddS3Storage(builder.Configuration);
 
 var corsOrigins = builder.Configuration.GetSection("AllowedOrigins").Get<string[]?>();
 builder.Services.AddCors(options =>
@@ -43,9 +50,10 @@ await app.TrySeedDatabaseAsync();
 
 if (app.Environment.IsDevelopment())
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
 }
+
+app.UseSwagger();
+app.UseSwaggerUI();
 
 app.UseHttpsRedirection();
 
@@ -54,6 +62,7 @@ app.UseCors("FrontendPolicy");
 app.UseAuthentication();
 app.UseAuthorization();
 
+app.MapHealthChecks("/health");
 app.MapControllers();
 
 app.Run();
