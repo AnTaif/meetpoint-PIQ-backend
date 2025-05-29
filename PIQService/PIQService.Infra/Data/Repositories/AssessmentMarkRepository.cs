@@ -7,6 +7,7 @@ using PIQService.Models.Domain.Assessments;
 
 namespace PIQService.Infra.Data.Repositories;
 
+[RegisterScoped]
 public class AssessmentMarkRepository(AppDbContext dbContext) : IAssessmentMarkRepository
 {
     public async Task<AssessmentMarkWithoutDeps?> FindWithoutDepsAsync(Guid assessmentId, Guid assessorId, Guid assessedId)

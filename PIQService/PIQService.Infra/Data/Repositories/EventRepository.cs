@@ -5,6 +5,7 @@ using PIQService.Models.Domain;
 
 namespace PIQService.Infra.Data.Repositories;
 
+[RegisterScoped]
 public class EventRepository(AppDbContext dbContext) : IEventRepository
 {
     public async Task<Event?> FindAsync(Guid id)

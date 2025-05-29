@@ -6,6 +6,7 @@ using Microsoft.Extensions.Options;
 
 namespace AccountService.Services;
 
+[RegisterTransient]
 public class S3FileStorage(
     IOptions<S3Options> options,
     IAmazonS3 s3Client,

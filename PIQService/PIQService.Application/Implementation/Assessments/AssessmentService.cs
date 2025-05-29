@@ -9,6 +9,7 @@ using PIQService.Models.Dto;
 
 namespace PIQService.Application.Implementation.Assessments;
 
+[RegisterScoped]
 public class AssessmentService(
     IAssessmentScoringService assessmentScoringService,
     ITeamRepository teamRepository,

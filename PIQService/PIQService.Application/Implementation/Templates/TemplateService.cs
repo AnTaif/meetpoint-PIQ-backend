@@ -6,6 +6,7 @@ using PIQService.Models.Dto;
 
 namespace PIQService.Application.Implementation.Templates;
 
+[RegisterScoped]
 public class TemplateService(
     IEventService eventService,
     IEventRepository eventRepository,

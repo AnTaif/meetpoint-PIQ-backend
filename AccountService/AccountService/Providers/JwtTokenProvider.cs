@@ -8,6 +8,7 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace AccountService.Providers;
 
+[RegisterScoped]
 public class JwtTokenProvider(IOptions<JwtOptions> options) : ITokenProvider
 {
     private readonly JwtOptions options = options.Value;

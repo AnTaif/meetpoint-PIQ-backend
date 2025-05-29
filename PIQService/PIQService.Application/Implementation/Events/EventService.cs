@@ -9,6 +9,7 @@ using PIQService.Models.Dto.Responses;
 
 namespace PIQService.Application.Implementation.Events;
 
+[RegisterScoped]
 public class EventService(
     IEventRepository eventRepository,
     ITeamRepository teamRepository,

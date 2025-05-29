@@ -10,6 +10,7 @@ using PIQService.Models.Dto;
 
 namespace PIQService.Application.Implementation.Assessments;
 
+[RegisterScoped]
 public class AssessmentScoringService(
     IAssessmentMarkRepository markRepository,
     IAssessmentRepository assessmentRepository,

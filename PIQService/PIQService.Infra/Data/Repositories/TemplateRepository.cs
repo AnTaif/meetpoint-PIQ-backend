@@ -6,6 +6,7 @@ using PIQService.Models.Domain.Assessments;
 
 namespace PIQService.Infra.Data.Repositories;
 
+[RegisterScoped]
 public class TemplateRepository(AppDbContext dbContext) : ITemplateRepository
 {
     public async Task<Template?> FindAsync(Guid templateId)

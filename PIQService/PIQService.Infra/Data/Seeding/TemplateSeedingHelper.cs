@@ -6,6 +6,7 @@ using PIQService.Models.Dbo.Assessments;
 
 namespace PIQService.Infra.Data.Seeding;
 
+[RegisterTransient]
 public class TemplateSeedingHelper(AppDbContext dbContext, ILogger<TemplateSeedingHelper> logger) : ITemplateSeedingHelper
 {
     public async Task SeedTemplateFromJsonAsync(string templateFileName)

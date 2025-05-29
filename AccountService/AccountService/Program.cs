@@ -26,10 +26,10 @@ builder.Services.AddJwtAuth(builder.Configuration);
 builder.Services.AddIdentity();
 builder.Services.AddMySqlDbContext<AccountDbContext>(builder.Configuration);
 builder.Services.AddDataSeeder<DataSeeder>();
-builder.Services.AddServices();
-builder.Services.AddHealthChecks();
+builder.Services.AddS3Client(builder.Configuration);
 
-builder.Services.AddS3Storage(builder.Configuration);
+builder.Services.AddAccountService();
+builder.Services.AddHealthChecks();
 
 var corsOrigins = builder.Configuration.GetSection("AllowedOrigins").Get<string[]?>();
 builder.Services.AddCors(options =>

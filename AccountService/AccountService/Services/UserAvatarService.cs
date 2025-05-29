@@ -7,6 +7,7 @@ using Microsoft.Extensions.Options;
 
 namespace AccountService.Services;
 
+[RegisterScoped]
 public class UserAvatarService(
     IOptions<S3Options> options,
     IS3FileStorage s3FileStorage,

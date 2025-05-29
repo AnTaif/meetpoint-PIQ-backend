@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Identity;
 
 namespace AccountService.Services;
 
+[RegisterScoped]
 public class UserInfoService(UserManager<User> userManager) : IUserInfoService
 {
     public async Task<Result<UserInfoDto>> GetUserInfoAsync(Guid userId)

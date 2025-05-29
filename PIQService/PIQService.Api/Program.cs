@@ -29,7 +29,8 @@ builder.Services
     .AddFluentValidationClientsideAdapters();
 
 builder.Services.AddJwtAuth(builder.Configuration);
-builder.Services.AddServices();
+
+builder.Services.AddApplicationLayer();
 builder.Services.AddInfraLayer(builder.Configuration);
 
 builder.Services.AddHealthChecks();

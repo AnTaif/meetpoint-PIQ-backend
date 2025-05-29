@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Identity;
 
 namespace AccountService.Services;
 
+[RegisterScoped]
 public class AuthService(
     UserManager<User> userManager,
     ITokenProvider tokenProvider

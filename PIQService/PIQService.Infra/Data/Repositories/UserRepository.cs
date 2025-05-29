@@ -5,6 +5,7 @@ using PIQService.Models.Domain;
 
 namespace PIQService.Infra.Data.Repositories;
 
+[RegisterScoped]
 public class UserRepository(AppDbContext dbContext) : IUserRepository
 {
     public async Task<UserWithoutDeps?> FindAsync(Guid id)

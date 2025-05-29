@@ -6,6 +6,7 @@ using PIQService.Models.Dto;
 
 namespace PIQService.Application.Implementation.Assessments;
 
+[RegisterScoped]
 public class AssessmentFormsService(
     ITemplateRepository templateRepository,
     IAssessmentRepository assessmentRepository,

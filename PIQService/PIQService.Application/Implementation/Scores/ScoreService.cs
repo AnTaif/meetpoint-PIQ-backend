@@ -11,6 +11,7 @@ using PIQService.Models.Dto;
 
 namespace PIQService.Application.Implementation.Scores;
 
+[RegisterScoped]
 public class ScoreService(
     ITeamRepository teamRepository,
     IUserRepository userRepository,

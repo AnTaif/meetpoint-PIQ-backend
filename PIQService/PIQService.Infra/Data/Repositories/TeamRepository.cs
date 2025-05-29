@@ -5,6 +5,7 @@ using PIQService.Models.Domain;
 
 namespace PIQService.Infra.Data.Repositories;
 
+[RegisterScoped]
 public class TeamRepository(AppDbContext dbContext) : ITeamRepository
 {
     public async Task<Team?> FindAsync(Guid teamId)

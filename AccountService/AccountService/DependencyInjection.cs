@@ -1,8 +1,6 @@
 using AccountService.Data;
 using AccountService.Models;
 using AccountService.Options;
-using AccountService.Providers;
-using AccountService.Services;
 using Amazon.S3;
 using Microsoft.AspNetCore.Identity;
 
@@ -10,15 +8,7 @@ namespace AccountService;
 
 public static class DependencyInjection
 {
-    public static void AddServices(this IServiceCollection services)
-    {
-        services.AddScoped<ITokenProvider, JwtTokenProvider>();
-        services.AddScoped<IAuthService, AuthService>();
-        services.AddScoped<IUserInfoService, UserInfoService>();
-        services.AddScoped<IUserAvatarService, UserAvatarService>();
-    }
-
-    public static IServiceCollection AddS3Storage(this IServiceCollection services, IConfiguration configuration)
+    public static IServiceCollection AddS3Client(this IServiceCollection services, IConfiguration configuration)
     {
         var s3Options = new S3Options();
         configuration.GetSection("S3Options").Bind(s3Options);
@@ -42,7 +32,6 @@ public static class DependencyInjection
         };
 
         services.AddSingleton<IAmazonS3>(new AmazonS3Client(s3Options.AccessKeyId, s3Options.SecretToken, config));
-        services.AddTransient<IS3FileStorage, S3FileStorage>();
 
         return services;
     }
