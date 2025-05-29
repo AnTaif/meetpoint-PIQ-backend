@@ -23,10 +23,8 @@ public static class DependencyInjection
         var s3Options = new S3Options();
         configuration.GetSection("S3Options").Bind(s3Options);
 
-        s3Options.AccessKeyId = Environment.GetEnvironmentVariable("S3_ACCESS_KEY_ID") ??
-                                throw new Exception("S3_ACCESS_KEY_ID not found in env");
-        s3Options.SecretToken = Environment.GetEnvironmentVariable("S3_SECRET_TOKEN") ??
-                                throw new Exception("S3_SECRET_TOKEN not found in env");
+        s3Options.AccessKeyId = Environment.GetEnvironmentVariable("S3_ACCESS_KEY_ID") ?? "";
+        s3Options.SecretToken = Environment.GetEnvironmentVariable("S3_SECRET_TOKEN") ?? "";
 
         services.Configure<S3Options>(options =>
         {

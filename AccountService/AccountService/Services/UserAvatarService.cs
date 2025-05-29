@@ -29,7 +29,7 @@ public class UserAvatarService(
 
         if (url == null)
         {
-            return StatusError.BadRequest("Cannot upload this file");
+            return StatusError.BadRequest("Error when uploading file");
         }
 
         user.SetAvatar(url);
