@@ -12,6 +12,9 @@ public static class DependencyInjection
     {
         services.AddScoped<IEventService, EventService>();
         services.AddScoped<IAssessmentService, AssessmentService>();
+        services.AddScoped<IAssessmentCreationService, AssessmentCreationService>();
+        services.AddScoped<IAssessmentScoringService, AssessmentScoringService>();
+        services.AddScoped<IAssessmentService, AssessmentService>();
         services.AddScoped<IAssessmentFormsService, AssessmentFormsService>();
         services.AddScoped<ITemplateService, TemplateService>();
         services.AddScoped<IScoreService, ScoreService>();

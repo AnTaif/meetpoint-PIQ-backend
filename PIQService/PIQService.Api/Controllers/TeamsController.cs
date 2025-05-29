@@ -15,6 +15,7 @@ namespace PIQService.Api.Controllers;
 [Authorize]
 [Route("teams")]
 public class TeamsController(
+    IAssessmentCreationService assessmentCreationService,
     IAssessmentService assessmentService
 )
     : ControllerBase
@@ -28,7 +29,7 @@ public class TeamsController(
     [ProducesResponseType<string>(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<IEnumerable<AssessmentDto>>> GetTeamAssessments(Guid teamId)
     {
-        var result = await assessmentService.GetTeamAssessments(teamId, User.ReadContextUser());
+        var result = await assessmentService.GetTeamAssessmentsAsync(teamId, User.ReadContextUser());
         return result.ToActionResult(this);
     }
 
@@ -44,7 +45,7 @@ public class TeamsController(
     [ProducesResponseType<string>(StatusCodes.Status401Unauthorized)]
     public async Task<ActionResult<AssessmentDto>> CreateForTeam(Guid teamId, CreateTeamAssessmentRequest request)
     {
-        var result = await assessmentService.CreateTeamAssessmentAsync(teamId, request, User.ReadContextUser());
+        var result = await assessmentCreationService.CreateTeamAssessmentAsync(teamId, request, User.ReadContextUser());
 
         return result.ToActionResult(this, dto => CreatedAtAction("CreateForTeam", dto));
     }

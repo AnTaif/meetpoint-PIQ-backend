@@ -18,6 +18,7 @@ namespace PIQService.Api.Controllers;
 [Authorize]
 [Route("events")]
 public class EventsController(
+    IAssessmentCreationService assessmentCreationService,
     IAssessmentService assessmentService,
     IEventService eventService
 )
@@ -58,7 +59,7 @@ public class EventsController(
     [ProducesResponseType<string>(StatusCodes.Status401Unauthorized)]
     public async Task<ActionResult<IEnumerable<AssessmentDto>>> CreateNewAssessment(CreateTeamsAssessmentRequest request)
     {
-        var result = await assessmentService.CreateTeamsAssessmentAsync(request, User.ReadContextUser());
+        var result = await assessmentCreationService.CreateTeamsAssessmentAsync(request, User.ReadContextUser());
 
         return result.ToActionResult(this, dto => CreatedAtAction("CreateNewAssessment", dto));
     }

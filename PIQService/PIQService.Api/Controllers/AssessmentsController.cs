@@ -16,11 +16,25 @@ namespace PIQService.Api.Controllers;
 [Authorize]
 [Route("assessments")]
 public class AssessmentsController(
+    IAssessmentScoringService assessmentScoringService,
     IAssessmentFormsService assessmentFormsService,
     IAssessmentService assessmentService
 )
     : ControllerBase
 {
+    /// <summary>
+    /// Получение оценивания по id
+    /// </summary>
+    [HttpGet("{id}")]
+    [SwaggerResponseExample(StatusCodes.Status200OK, typeof(AssessmentDtoExample))]
+    [ProducesResponseType<AssessmentDto>(StatusCodes.Status200OK)]
+    [ProducesResponseType<string>(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<AssessmentDto>> GetAssessment(Guid id)
+    {
+        var result = await assessmentService.GetAssessmentAsync(id, User.ReadContextUser());
+        return result.ToActionResult(this);
+    }
+
     /// <summary>
     /// Редактирование существующего оценивания
     /// </summary>
@@ -80,7 +94,7 @@ public class AssessmentsController(
     [ProducesResponseType<string>(StatusCodes.Status401Unauthorized)]
     public async Task<ActionResult<IEnumerable<AssessUserDto>>> GetAssessUsers(Guid assessmentId)
     {
-        var result = await assessmentService.SelectUsersToAssessAsync(User.ReadSid(), assessmentId);
+        var result = await assessmentScoringService.GetUsersToScoreAsync(assessmentId, User.ReadContextUser());
         return result.ToActionResult(this);
     }
 
@@ -97,7 +111,7 @@ public class AssessmentsController(
     [ProducesResponseType<string>(StatusCodes.Status401Unauthorized)]
     public async Task<ActionResult<IEnumerable<AssessChoiceDto>>> GetChoicesForAssessedUser(Guid assessmentId, Guid assessedUserId)
     {
-        var result = await assessmentService.SelectAssessChoicesAsync(assessmentId, User.ReadSid(), assessedUserId);
+        var result = await assessmentScoringService.GetChoicesAsync(assessmentId, assessedUserId, User.ReadContextUser());
         return result.ToActionResult(this);
     }
 
@@ -110,10 +124,9 @@ public class AssessmentsController(
     [ProducesResponseType<string>(StatusCodes.Status404NotFound)]
     [ProducesResponseType<string>(StatusCodes.Status409Conflict)]
     [ProducesResponseType<string>(StatusCodes.Status401Unauthorized)]
-    public async Task<ActionResult<AssessmentMarkDto>> AssessUser(Guid assessmentId, Guid assessedUserId,
-        IEnumerable<Guid> selectedChoiceIds)
+    public async Task<ActionResult<AssessmentMarkDto>> AssessUser(Guid assessmentId, Guid assessedUserId, IReadOnlyCollection<Guid> choiceIds)
     {
-        var result = await assessmentService.AssessUserAsync(assessmentId, User.ReadSid(), assessedUserId, selectedChoiceIds);
+        var result = await assessmentScoringService.ScoreAsync(assessmentId, assessedUserId, User.ReadContextUser(), choiceIds);
         return result.ToActionResult(this, value => CreatedAtAction("AssessUser", value));
     }
 }
