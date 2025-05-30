@@ -1,23 +1,16 @@
+using System.Text.Json.Serialization;
+using PIQService.Models.Domain.Assessments;
+
 namespace PIQService.Models.Domain;
 
-public class Event
+public class Event : EventBase
 {
-    public Guid Id { get; private set; }
+    public TemplateBase Template { get; private set; }
 
-    public string Name { get; private set; }
-
-    public DateTime StartDate { get; private set; }
-
-    public DateTime EndDate { get; private set; }
-
-    public Guid TemplateId { get; private set; }
-
-    public Event(Guid id, string name, DateTime startDate, DateTime endDate, Guid templateId)
+    [JsonConstructor]
+    public Event(Guid id, string name, DateTime startDate, DateTime endDate, TemplateBase template)
+        : base(id, name, startDate, endDate, template.Id)
     {
-        Id = id;
-        Name = name;
-        StartDate = startDate;
-        EndDate = endDate;
-        TemplateId = templateId;
+        Template = template;
     }
 }

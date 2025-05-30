@@ -1,5 +1,6 @@
 using Core.Auth;
 using Core.Results;
+using Microsoft.Extensions.Caching.Hybrid;
 using PIQService.Application.Implementation.Assessments.Marks;
 using PIQService.Application.Implementation.Events;
 using PIQService.Application.Implementation.Forms;
@@ -13,6 +14,7 @@ namespace PIQService.Application.Implementation.Scores;
 
 [RegisterScoped]
 public class ScoreService(
+    HybridCache cache,
     ITeamRepository teamRepository,
     IUserRepository userRepository,
     IEventService eventService,
@@ -42,11 +44,19 @@ public class ScoreService(
             return StatusError.NotFound("Template not found");
 
         var forms = new List<Form>();
-        var circleForm = await formRepository.FindAsync(template.CircleFormId);
+        
+        var circleForm = await cache.GetOrCreateAsync(
+            $"forms_{template.CircleFormId}",
+            async _ => await formRepository.FindAsync(template.CircleFormId)
+        );
+        
         if (circleForm != null)
             forms.Add(circleForm);
 
-        var behaviorForm = await formRepository.FindAsync(template.BehaviorFormId);
+        var behaviorForm = await cache.GetOrCreateAsync(
+            $"forms_{template.BehaviorFormId}",
+            async _ => await formRepository.FindAsync(template.BehaviorFormId)
+        );
         if (behaviorForm != null)
             forms.Add(behaviorForm);
 
@@ -90,14 +100,20 @@ public class ScoreService(
             return StatusError.NotFound("Template not found");
 
         var forms = new List<Form>();
-        var circleForm = await formRepository.FindAsync(template.CircleFormId);
+        var circleForm = await cache.GetOrCreateAsync(
+            $"forms_{template.CircleFormId}",
+            async _ => await formRepository.FindAsync(template.CircleFormId)
+        );
         if (circleForm != null)
             forms.Add(circleForm);
 
-        var behaviorForm = await formRepository.FindAsync(template.BehaviorFormId);
+        var behaviorForm = await cache.GetOrCreateAsync(
+            $"forms_{template.BehaviorFormId}",
+            async _ => await formRepository.FindAsync(template.BehaviorFormId)
+        );
         if (behaviorForm != null)
             forms.Add(behaviorForm);
-        
+
         var userTeamPairs = team.Users.Select(u =>
             (
                 new UserDto { Id = u.Id, FullName = u.GetFullName() }, new TeamDto { Id = team.Id, Name = team.Name }

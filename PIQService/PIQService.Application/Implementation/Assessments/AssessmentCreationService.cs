@@ -73,7 +73,7 @@ public class AssessmentCreationService(
             teams.Add(team);
         }
 
-        var templateId = teams.First().Project.Direction.Event.TemplateId;
+        var templateId = teams.First().Project.Direction.EventBase.TemplateId;
         var template = await templateRepository.FindAsync(templateId);
         if (template == null)
         {

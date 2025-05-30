@@ -10,7 +10,7 @@ public static class DirectionConverter
         return new DirectionDbo
         {
             Id = domainModel.Id,
-            EventId = domainModel.Event.Id,
+            EventId = domainModel.EventBase.Id,
             Name = domainModel.Name
         };
     }
@@ -19,7 +19,7 @@ public static class DirectionConverter
     {
         return new Direction(
             dbo.Id,
-            dbo.Event.ToDomainModel(),
+            dbo.Event.ToDomainBaseModel(),
             dbo.Name
         );
     }

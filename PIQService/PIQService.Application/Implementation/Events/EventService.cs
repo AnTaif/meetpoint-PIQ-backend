@@ -1,5 +1,6 @@
 using Core.Auth;
 using Core.Results;
+using Microsoft.Extensions.Caching.Hybrid;
 using Microsoft.Extensions.Logging;
 using PIQService.Application.Implementation.Teams;
 using PIQService.Models.Converters;
@@ -11,13 +12,24 @@ namespace PIQService.Application.Implementation.Events;
 
 [RegisterScoped]
 public class EventService(
+    HybridCache cache,
     IEventRepository eventRepository,
     ITeamRepository teamRepository,
     ILogger<EventService> logger
 )
     : IEventService
 {
-    public async Task<Result<Event?>> FindCurrentEventAsync()
+    public async Task<Event?> FindEventAsync(Guid? eventId)
+    {
+        if (eventId == null)
+        {
+            return await FindCurrentEventAsync();
+        }
+
+        return await eventRepository.FindAsync(eventId.Value);
+    }
+
+    public async Task<Event?> FindCurrentEventAsync()
     {
         var activeEvents = await eventRepository.SelectActiveAsync(DateTime.UtcNow);
         return activeEvents.FirstOrDefault();
@@ -26,19 +38,19 @@ public class EventService(
     public async Task<Result<GetEventHierarchyResponse>> GetEventHierarchyForUserAsync(ContextUser contextUser, Guid? eventId = null,
         bool onlyWhereTutor = true)
     {
-        Event? @event;
+        EventBase? @event;
         if (!eventId.HasValue)
         {
-            var findCurrentEventResult = await FindCurrentEventAsync();
+            var currentEvent = await FindCurrentEventAsync();
 
-            if (findCurrentEventResult.IsFailure)
-                return findCurrentEventResult.Error;
+            if (currentEvent == null)
+                return StatusError.NotFound("Not found current event");
 
-            @event = findCurrentEventResult.Value;
+            @event = currentEvent;
         }
         else
         {
-            @event = await eventRepository.FindAsync(eventId.Value);
+            @event = await eventRepository.FindBaseAsync(eventId.Value);
         }
 
         if (@event == null)
@@ -70,7 +82,10 @@ public class EventService(
             teams = [];
         }
 
-        var requiresEvaluationTeams = await teamRepository.SelectNotAssessedTeamsAsync(contextUser.Id);
+        var requiresEvaluationTeams = await cache.GetOrCreateAsync(
+            $"requires_evaluation_by_user_{contextUser.Id}",
+            async _ => await teamRepository.SelectNotAssessedTeamsAsync(contextUser.Id)
+        );
 
         return new GetEventHierarchyResponse
         {

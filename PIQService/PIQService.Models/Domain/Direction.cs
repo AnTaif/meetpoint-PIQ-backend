@@ -1,24 +1,27 @@
+using System.Text.Json.Serialization;
+
 namespace PIQService.Models.Domain;
 
 public class Direction
 {
     public Guid Id { get; private set; }
 
-    public Event Event { get; private set; }
+    public EventBase EventBase { get; private set; }
 
     public string Name { get; private set; }
 
-    public Direction(Guid id, Event @event, string name)
+    [JsonConstructor]
+    public Direction(Guid id, EventBase eventBase, string name)
     {
         Id = id;
-        Event = @event;
+        EventBase = eventBase;
         Name = name;
     }
 
-    public Direction(Event @event, string name)
+    public Direction(EventBase eventBase, string name)
     {
         Id = Guid.NewGuid();
-        Event = @event;
+        EventBase = eventBase;
         Name = name;
     }
 }
