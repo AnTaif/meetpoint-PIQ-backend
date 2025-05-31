@@ -7,7 +7,7 @@ using PIQService.Api.Docs.RequestExamples;
 using PIQService.Api.Docs.ResponseExamples;
 using PIQService.Application.Implementation.Assessments;
 using PIQService.Application.Implementation.Assessments.Requests;
-using PIQService.Application.Implementation.Events;
+using PIQService.Application.Implementation.Hierarchies;
 using PIQService.Models.Dto;
 using PIQService.Models.Dto.Responses;
 using Swashbuckle.AspNetCore.Filters;
@@ -20,7 +20,7 @@ namespace PIQService.Api.Controllers;
 public class EventsController(
     IAssessmentCreationService assessmentCreationService,
     IAssessmentService assessmentService,
-    IEventService eventService
+    IHierarchyService hierarchyService
 )
     : ControllerBase
 {
@@ -37,13 +37,13 @@ public class EventsController(
     /// </param>
     [HttpGet("current")]
     [Authorize]
-    [SwaggerResponseExample(StatusCodes.Status200OK, typeof(GetEventHierarchyResponseExample))]
-    [ProducesResponseType<GetEventHierarchyResponse>(StatusCodes.Status200OK)]
+    [SwaggerResponseExample(StatusCodes.Status200OK, typeof(GetHierarchyResponseExample))]
+    [ProducesResponseType<GetHierarchyResponse>(StatusCodes.Status200OK)]
     [ProducesResponseType<string>(StatusCodes.Status404NotFound)]
     [ProducesResponseType<string>(StatusCodes.Status401Unauthorized)]
-    public async Task<ActionResult<GetEventHierarchyResponse>> GetCurrentEvent([FromQuery] bool onlyWhereTutor = true)
+    public async Task<ActionResult<GetHierarchyResponse>> GetCurrentEvent([FromQuery] bool onlyWhereTutor = true)
     {
-        var result = await eventService.GetEventHierarchyForUserAsync(User.ReadContextUser(), onlyWhereTutor: onlyWhereTutor);
+        var result = await hierarchyService.GetHierarchyForEventByUserAsync(null, User.ReadContextUser(), onlyWhereTutor: onlyWhereTutor);
         return result.ToActionResult(this);
     }
 

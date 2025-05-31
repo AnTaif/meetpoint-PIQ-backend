@@ -4,12 +4,12 @@ using Swashbuckle.AspNetCore.Filters;
 
 namespace PIQService.Api.Docs.ResponseExamples;
 
-public class GetEventHierarchyResponseExample : IExamplesProvider<GetEventHierarchyResponse>
+public class GetHierarchyResponseExample : IExamplesProvider<GetHierarchyResponse>
 {
-    public GetEventHierarchyResponse GetExamples() =>
+    public GetHierarchyResponse GetExamples() =>
         new()
         {
-            Event = new EventDto
+            Event = new EventHierarchyDto
             {
                 Id = Guid.Parse("812eea5a-7775-4ef8-a7fe-8c88f450b46b"),
                 Name = "ПП Весна 2025",
@@ -17,22 +17,23 @@ public class GetEventHierarchyResponseExample : IExamplesProvider<GetEventHierar
                 EndDate = new DateTime(2025, 6, 1),
                 Directions =
                 [
-                    new DirectionDto
+                    new DirectionHierarchyDto
                     {
                         Id = Guid.Parse("5d7825ff-a113-42db-ab04-fe683daf90ad"),
                         Name = "Точка сбора",
                         Projects =
                         [
-                            new ProjectDto
+                            new ProjectHierarchyDto
                             {
                                 Id = Guid.Parse("ee901c82-61f5-4ab5-8567-14cf97b2b81c"),
                                 Name = "ПВК",
                                 Teams =
                                 [
-                                    new TeamDto
+                                    new TeamHierarchyDto
                                     {
                                         Id = Guid.Parse("efd4d2d8-114d-4807-89e2-c65b8d10dcaa"),
                                         Name = "ПВК 1",
+                                        AssessmentRequired = true,
                                         Tutor = new UserDto
                                         {
                                             Id = Guid.Parse("a1615f01-814d-4791-8d14-e55fbf34f57b"),
@@ -45,10 +46,11 @@ public class GetEventHierarchyResponseExample : IExamplesProvider<GetEventHierar
                                             },
                                         ],
                                     },
-                                    new TeamDto
+                                    new TeamHierarchyDto
                                     {
                                         Id = Guid.Parse("c5a0d585-2939-42ca-9c0d-5fcea9779980"),
                                         Name = "ПВК 3",
+                                        AssessmentRequired = false,
                                         Tutor = new UserDto
                                         {
                                             Id = Guid.Parse("412cf4d8-340c-4170-b2db-a0c8ac1ab93d"),
@@ -71,10 +73,5 @@ public class GetEventHierarchyResponseExample : IExamplesProvider<GetEventHierar
                     },
                 ],
             },
-            TeamIdsForEvaluation =
-            [
-                Guid.Parse("efd4d2d8-114d-4807-89e2-c65b8d10dcaa"),
-                Guid.Parse("c5a0d585-2939-42ca-9c0d-5fcea9779980"),
-            ],
         };
 }

@@ -4,6 +4,7 @@ using Microsoft.Extensions.Caching.Hybrid;
 using PIQService.Application.Implementation.Assessments.Marks;
 using PIQService.Application.Implementation.Events;
 using PIQService.Application.Implementation.Forms;
+using PIQService.Application.Implementation.Hierarchies;
 using PIQService.Application.Implementation.Teams;
 using PIQService.Application.Implementation.Templates;
 using PIQService.Application.Implementation.Users;
@@ -17,7 +18,7 @@ public class ScoreService(
     HybridCache cache,
     ITeamRepository teamRepository,
     IUserRepository userRepository,
-    IEventService eventService,
+    IHierarchyService hierarchyService,
     IEventRepository eventRepository,
     ITemplateRepository templateRepository,
     IAssessmentMarkRepository markRepository,
@@ -44,19 +45,13 @@ public class ScoreService(
             return StatusError.NotFound("Template not found");
 
         var forms = new List<Form>();
-        
-        var circleForm = await cache.GetOrCreateAsync(
-            $"forms_{template.CircleFormId}",
-            async _ => await formRepository.FindAsync(template.CircleFormId)
-        );
+
+        var circleForm = await formRepository.FindAsync(template.CircleFormId);
         
         if (circleForm != null)
             forms.Add(circleForm);
 
-        var behaviorForm = await cache.GetOrCreateAsync(
-            $"forms_{template.BehaviorFormId}",
-            async _ => await formRepository.FindAsync(template.BehaviorFormId)
-        );
+        var behaviorForm = await formRepository.FindAsync(template.BehaviorFormId);
         if (behaviorForm != null)
             forms.Add(behaviorForm);
 
@@ -69,7 +64,7 @@ public class ScoreService(
             return StatusError.NotFound("Team not found");
 
         return await GetUserMeanScoreDtoAsync(
-            (new UserDto { Id = user.Id, FullName = user.GetFullName(), }, new TeamDto { Id = team.Id, Name = team.Name, }),
+            (new UserDto { Id = user.Id, FullName = user.GetFullName(), }, new TeamHierarchyDto { Id = team.Id, Name = team.Name, }),
             forms, byAssessment
         );
     }
@@ -100,23 +95,17 @@ public class ScoreService(
             return StatusError.NotFound("Template not found");
 
         var forms = new List<Form>();
-        var circleForm = await cache.GetOrCreateAsync(
-            $"forms_{template.CircleFormId}",
-            async _ => await formRepository.FindAsync(template.CircleFormId)
-        );
+        var circleForm = await formRepository.FindAsync(template.CircleFormId);
         if (circleForm != null)
             forms.Add(circleForm);
 
-        var behaviorForm = await cache.GetOrCreateAsync(
-            $"forms_{template.BehaviorFormId}",
-            async _ => await formRepository.FindAsync(template.BehaviorFormId)
-        );
+        var behaviorForm = await formRepository.FindAsync(template.BehaviorFormId);
         if (behaviorForm != null)
             forms.Add(behaviorForm);
 
         var userTeamPairs = team.Users.Select(u =>
             (
-                new UserDto { Id = u.Id, FullName = u.GetFullName() }, new TeamDto { Id = team.Id, Name = team.Name }
+                new UserDto { Id = u.Id, FullName = u.GetFullName() }, new TeamHierarchyDto { Id = team.Id, Name = team.Name }
             )
         ).ToList();
 
@@ -136,7 +125,7 @@ public class ScoreService(
         if (form == null)
             return StatusError.NotFound("Form not found");
 
-        var hierarchyResult = await eventService.GetEventHierarchyForUserAsync(contextUser, onlyWhereTutor: onlyWhereTutor);
+        var hierarchyResult = await hierarchyService.GetHierarchyForEventByUserAsync(null, contextUser, onlyWhereTutor: onlyWhereTutor);
         if (hierarchyResult.IsFailure)
             return hierarchyResult.Error;
 
@@ -161,7 +150,7 @@ public class ScoreService(
         return dtos;
     }
 
-    private async Task<UserMeanScoreDto> GetUserMeanScoreDtoAsync((UserDto User, TeamDto Team) userTeamPair,
+    private async Task<UserMeanScoreDto> GetUserMeanScoreDtoAsync((UserDto User, TeamHierarchyDto Team) userTeamPair,
         IEnumerable<Form> forms, Guid? byAssessment = null)
     {
         var questionToCriteriaIds = GetQuestionToCriteriaIds(forms);

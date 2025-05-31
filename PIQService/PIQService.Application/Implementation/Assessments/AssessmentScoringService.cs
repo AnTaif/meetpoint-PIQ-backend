@@ -1,5 +1,6 @@
 using Core.Auth;
 using Core.Results;
+using Microsoft.Extensions.Caching.Hybrid;
 using Microsoft.Extensions.Logging;
 using PIQService.Application.Implementation.Assessments.Marks;
 using PIQService.Application.Implementation.Teams;
@@ -12,6 +13,7 @@ namespace PIQService.Application.Implementation.Assessments;
 
 [RegisterScoped]
 public class AssessmentScoringService(
+    HybridCache cache,
     IAssessmentMarkRepository markRepository,
     IAssessmentRepository assessmentRepository,
     ITeamRepository teamRepository,
@@ -63,6 +65,7 @@ public class AssessmentScoringService(
             markRepository.UpdateChoices(mark, choiceIds);
         }
 
+        await cache.RemoveAsync($"requires_evaluation_by_user_{assessor.Id}");
         await assessmentRepository.SaveChangesAsync();
         return mark.ToDtoModel();
     }
