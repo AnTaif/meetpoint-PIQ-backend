@@ -21,17 +21,23 @@ public class EventService(
 {
     public async Task<Event?> FindEventAsync(Guid? eventId)
     {
-        if (eventId == null)
-        {
-            return await FindCurrentEventAsync();
-        }
-
-        return await eventRepository.FindAsync(eventId.Value);
+        return eventId == null ? await FindCurrentEventAsync() : await eventRepository.FindAsync(eventId.Value);
     }
 
-    public async Task<Event?> FindCurrentEventAsync()
+    public async Task<EventBase?> FindEventWithoutDepsAsync(Guid? eventId)
+    {
+        return eventId == null ? await FindCurrentEventBaseAsync() : await eventRepository.FindBaseAsync(eventId.Value);
+    }
+
+    private async Task<Event?> FindCurrentEventAsync()
     {
         var activeEvents = await eventRepository.SelectActiveAsync(DateTime.UtcNow);
+        return activeEvents.FirstOrDefault();
+    }
+
+    private async Task<EventBase?> FindCurrentEventBaseAsync()
+    {
+        var activeEvents = await eventRepository.SelectActiveBaseAsync(DateTime.UtcNow);
         return activeEvents.FirstOrDefault();
     }
 
@@ -61,7 +67,7 @@ public class EventService(
         List<Team> teams;
         if (contextUser.Roles.Contains(RolesConstants.Admin) && !onlyWhereTutor)
         {
-            teams = await teamRepository.SelectAsync(@event.Id);
+            teams = await teamRepository.SelectByEventIdAsync(@event.Id);
         }
         else if (contextUser.Roles.Contains(RolesConstants.Tutor) && onlyWhereTutor)
         {

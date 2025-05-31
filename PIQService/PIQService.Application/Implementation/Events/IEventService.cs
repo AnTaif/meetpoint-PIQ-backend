@@ -7,9 +7,9 @@ namespace PIQService.Application.Implementation.Events;
 
 public interface IEventService
 {
-    Task<Event?> FindCurrentEventAsync();
-
     Task<Event?> FindEventAsync(Guid? eventId);
+    
+    Task<EventBase?> FindEventWithoutDepsAsync(Guid? eventId);
 
     /// <param name="onlyWhereTutor">Параметр для админов-тьюторов, если false - можно получить всю иерархию</param>
     Task<Result<GetEventHierarchyResponse>> GetEventHierarchyForUserAsync(

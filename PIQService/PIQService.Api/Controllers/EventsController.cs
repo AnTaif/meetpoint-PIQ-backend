@@ -59,7 +59,7 @@ public class EventsController(
     [ProducesResponseType<string>(StatusCodes.Status401Unauthorized)]
     public async Task<ActionResult<IEnumerable<AssessmentDto>>> CreateNewAssessment(CreateTeamsAssessmentRequest request)
     {
-        var result = await assessmentCreationService.CreateTeamsAssessmentAsync(request, User.ReadContextUser());
+        var result = await assessmentCreationService.CreateAssessmentsForTeamsAsync(request, User.ReadContextUser());
 
         return result.ToActionResult(this, dto => CreatedAtAction("CreateNewAssessment", dto));
     }

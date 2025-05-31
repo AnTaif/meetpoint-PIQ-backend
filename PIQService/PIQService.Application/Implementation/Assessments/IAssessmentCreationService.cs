@@ -7,7 +7,7 @@ namespace PIQService.Application.Implementation.Assessments;
 
 public interface IAssessmentCreationService
 {
-    Task<Result<AssessmentDto>> CreateTeamAssessmentAsync(Guid teamId, CreateTeamAssessmentRequest request, ContextUser contextUser);
+    Task<Result<AssessmentDto>> CreateAssessmentForTeamAsync(Guid teamId, CreateTeamAssessmentRequest request, ContextUser contextUser);
 
-    Task<Result<IEnumerable<AssessmentDto>>> CreateTeamsAssessmentAsync(CreateTeamsAssessmentRequest request, ContextUser contextUser);
+    Task<Result<IEnumerable<AssessmentDto>>> CreateAssessmentsForTeamsAsync(CreateTeamsAssessmentRequest request, ContextUser contextUser);
 }

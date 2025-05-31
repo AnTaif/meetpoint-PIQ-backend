@@ -16,7 +16,7 @@ public class EventRepository(AppDbContext dbContext) : IEventRepository
 
         return @event?.ToDomainModel();
     }
-    
+
     public async Task<EventBase?> FindBaseAsync(Guid id)
     {
         var @event = await dbContext.Events.FindAsync(id);
@@ -32,5 +32,14 @@ public class EventRepository(AppDbContext dbContext) : IEventRepository
             .ToListAsync();
 
         return events.Select(e => e.ToDomainModel());
+    }
+
+    public async Task<IEnumerable<EventBase>> SelectActiveBaseAsync(DateTime onDate)
+    {
+        var events = await dbContext.Events
+            .Where(e => e.StartDate <= onDate && e.EndDate >= onDate)
+            .ToListAsync();
+
+        return events.Select(e => e.ToDomainBaseModel());
     }
 }

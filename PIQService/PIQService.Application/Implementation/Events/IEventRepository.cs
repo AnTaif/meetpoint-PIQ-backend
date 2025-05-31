@@ -9,4 +9,6 @@ public interface IEventRepository
     Task<EventBase?> FindBaseAsync(Guid id);
 
     Task<IEnumerable<Event>> SelectActiveAsync(DateTime onDate);
+
+    Task<IEnumerable<EventBase>> SelectActiveBaseAsync(DateTime onDate);
 }
