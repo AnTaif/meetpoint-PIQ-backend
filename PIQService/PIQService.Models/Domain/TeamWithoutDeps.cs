@@ -1,3 +1,5 @@
+using System.Text.Json.Serialization;
+
 namespace PIQService.Models.Domain;
 
 public class TeamWithoutDeps
@@ -10,6 +12,7 @@ public class TeamWithoutDeps
 
     public string Name { get; private set; }
     
+    [JsonConstructor]
     public TeamWithoutDeps(Guid id, Guid projectId, Guid tutorId, string name)
     {
         Id = id;

@@ -1,5 +1,6 @@
 using Core.Auth;
 using Core.Results;
+using Microsoft.Extensions.Caching.Hybrid;
 using Microsoft.Extensions.Logging;
 using PIQService.Application.Implementation.Assessments.Requests;
 using PIQService.Application.Implementation.Teams;
@@ -11,6 +12,7 @@ namespace PIQService.Application.Implementation.Assessments;
 
 [RegisterScoped]
 public class AssessmentService(
+    HybridCache cache,
     IAssessmentScoringService assessmentScoringService,
     ITeamRepository teamRepository,
     IAssessmentRepository assessmentRepository,
@@ -30,7 +32,7 @@ public class AssessmentService(
 
     public async Task<Result<List<AssessmentDto>>> GetTeamAssessmentsAsync(Guid teamId, ContextUser contextUser)
     {
-        var team = await teamRepository.FindAsync(teamId);
+        var team = await teamRepository.FindWithoutDepsAsync(teamId);
         if (team == null)
         {
             return StatusError.NotFound("Team not found");
@@ -75,6 +77,7 @@ public class AssessmentService(
 
         assessment.Edit(request.Name, request.StartDate, request.EndDate, request.UseCircleAssessment, request.UseBehaviorAssessment);
 
+        await cache.RemoveAsync($"requires_evaluation_by_user_{contextUser.Id}");
         assessmentRepository.Update(assessment);
         await assessmentRepository.SaveChangesAsync();
 
@@ -100,6 +103,7 @@ public class AssessmentService(
             return StatusError.Conflict("Cannot delete completed assessment");
         }
 
+        await cache.RemoveAsync($"requires_evaluation_by_user_{contextUser.Id}");
         assessmentRepository.Delete(assessment);
         await assessmentRepository.SaveChangesAsync();
 
@@ -108,9 +112,9 @@ public class AssessmentService(
 
     private async Task<bool> CanManageAssessmentAsync(AssessmentWithoutDeps assessment, ContextUser user)
     {
-        var team = await teamRepository.FindAsync(assessment.TeamId)
+        var team = await teamRepository.FindWithoutDepsAsync(assessment.TeamId)
                    ?? throw new Exception("Error when finding assessment's team");
 
-        return team.Tutor.Id == user.Id || user.Roles.Contains(RolesConstants.Admin);
+        return team.TutorId == user.Id || user.Roles.Contains(RolesConstants.Admin);
     }
 }

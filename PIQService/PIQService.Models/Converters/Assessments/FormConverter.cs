@@ -30,4 +30,12 @@ public static class FormConverter
             CriteriaList = form.CriteriaList.Select(c => c.ToDtoModel()).ToList(),
             Questions = form.Questions.Select(q => q.ToShortDtoModel()).ToList(),
         };
+
+    public static FormWithCriteriaDto ToFormWithCriteriaDto(this Form form) =>
+        new()
+        {
+            Id = form.Id,
+            Type = form.Type,
+            CriteriaList = form.CriteriaList.Select(c => c.ToDtoModel()).ToList()
+        };
 }

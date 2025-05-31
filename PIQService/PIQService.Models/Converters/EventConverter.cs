@@ -1,3 +1,4 @@
+using PIQService.Models.Converters.Assessments;
 using PIQService.Models.Dbo;
 using PIQService.Models.Domain;
 using PIQService.Models.Dto;
@@ -6,7 +7,7 @@ namespace PIQService.Models.Converters;
 
 public static class EventConverter
 {
-    public static EventDbo ToDboModel(this Event domainModel)
+    public static EventDbo ToDboModel(this EventBase domainModel)
     {
         return new EventDbo
         {
@@ -17,25 +18,30 @@ public static class EventConverter
         };
     }
 
-    public static Event ToDomainModel(this EventDbo domainModel)
-    {
-        return new Event(
+    public static Event ToDomainModel(this EventDbo domainModel) =>
+        new(
+            domainModel.Id,
+            domainModel.Name,
+            domainModel.StartDate,
+            domainModel.EndDate,
+            domainModel.Template.ToDomainBaseModel()
+        );
+
+    public static EventBase ToDomainBaseModel(this EventDbo domainModel) =>
+        new(
             domainModel.Id,
             domainModel.Name,
             domainModel.StartDate,
             domainModel.EndDate,
             domainModel.TemplateId
         );
-    }
 
-    public static EventDto ToDtoModel(this Event @event)
-    {
-        return new EventDto
+    public static EventDto ToDtoModel(this EventBase eventBase) =>
+        new()
         {
-            Id = @event.Id,
-            Name = @event.Name,
-            StartDate = @event.StartDate,
-            EndDate = @event.EndDate,
+            Id = eventBase.Id,
+            Name = eventBase.Name,
+            StartDate = eventBase.StartDate,
+            EndDate = eventBase.EndDate,
         };
-    }
 }

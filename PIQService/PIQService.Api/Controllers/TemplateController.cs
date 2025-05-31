@@ -2,7 +2,7 @@ using Core.Results;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PIQService.Api.Docs.ResponseExamples;
-using PIQService.Application.Implementation.Templates;
+using PIQService.Application.Implementation.Forms;
 using PIQService.Models.Dto;
 using Swashbuckle.AspNetCore.Filters;
 
@@ -11,7 +11,7 @@ namespace PIQService.Api.Controllers;
 [ApiController]
 [Route("templates")]
 [Authorize]
-public class TemplateController(ITemplateService templateService) : ControllerBase
+public class TemplateController(IFormService formService) : ControllerBase
 {
     [HttpGet("current/forms-with-criteria")]
     [SwaggerResponseExample(StatusCodes.Status200OK, typeof(EnumerableFormWithCriteriaDtoExample))]
@@ -20,7 +20,7 @@ public class TemplateController(ITemplateService templateService) : ControllerBa
     [ProducesResponseType<string>(StatusCodes.Status401Unauthorized)]
     public async Task<ActionResult<List<FormWithCriteriaDto>>> GetFormsWithCriteria()
     {
-        var result = await templateService.GetFormsWithCriteriaAsync();
+        var result = await formService.GetFormsWithCriteriaAsync(null);
         return result.ToActionResult(this);
     }
 }

@@ -12,6 +12,7 @@
 
     <ItemGroup>
         <PackageReference Include="Injectio" Version="5.0.0" PrivateAssets="all"/>
+        <PackageReference Include="Microsoft.Extensions.Caching.Hybrid" Version="9.5.0" />
     </ItemGroup>
 
 </Project>

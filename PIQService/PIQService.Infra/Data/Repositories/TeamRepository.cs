@@ -27,7 +27,16 @@ public class TeamRepository(AppDbContext dbContext) : ITeamRepository
         return team?.ToDomainModelWithoutDeps();
     }
 
-    public async Task<List<Team>> SelectAsync(Guid eventId)
+    public async Task<List<TeamWithoutDeps>> SelectWithoutDepsAsync(IEnumerable<Guid> teamIds)
+    {
+        var dbos = await dbContext.Teams
+            .Where(t => teamIds.Contains(t.Id))
+            .ToListAsync();
+
+        return dbos.Select(t => t.ToDomainModelWithoutDeps()).ToList();
+    }
+
+    public async Task<List<Team>> SelectByEventIdAsync(Guid eventId)
     {
         var teams = await dbContext.Teams
             .Include(t => t.Tutor)
