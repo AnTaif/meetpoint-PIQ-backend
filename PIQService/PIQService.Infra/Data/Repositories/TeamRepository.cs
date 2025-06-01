@@ -27,6 +27,20 @@ public class TeamRepository(AppDbContext dbContext) : ITeamRepository
         return team?.ToDomainModelWithoutDeps();
     }
 
+    public async Task<List<Team>> SelectAsync(IEnumerable<Guid> teamIds)
+    {
+        var dbos = await dbContext.Teams
+            .Include(t => t.Project)
+            .ThenInclude(p => p.Direction)
+            .ThenInclude(d => d.Event)
+            .Include(t => t.Members)
+            .Include(t => t.Tutor)
+            .Where(t => teamIds.Contains(t.Id))
+            .ToListAsync();
+
+        return dbos.Select(t => t.ToDomainModel()).ToList();
+    }
+
     public async Task<List<TeamWithoutDeps>> SelectWithoutDepsAsync(IEnumerable<Guid> teamIds)
     {
         var dbos = await dbContext.Teams
@@ -36,9 +50,16 @@ public class TeamRepository(AppDbContext dbContext) : ITeamRepository
         return dbos.Select(t => t.ToDomainModelWithoutDeps()).ToList();
     }
 
-    public async Task<List<Team>> SelectByEventIdAsync(Guid eventId)
+    public async Task<List<Team>> SelectByEventIdAsync(Guid eventId, IEnumerable<Guid>? byTeams = null)
     {
-        var teams = await dbContext.Teams
+        var query = dbContext.Teams.AsQueryable();
+        
+        if (byTeams != null)
+        {
+            query = query.Where(t => byTeams.Contains(t.Id));
+        }
+        
+        var teams = await query
             .Include(t => t.Tutor)
             .Include(t => t.Members)
             .Include(t => t.Project)
@@ -54,9 +75,16 @@ public class TeamRepository(AppDbContext dbContext) : ITeamRepository
         return teams.Select(t => t.ToDomainModel()).ToList();
     }
 
-    public async Task<List<Team>> SelectByStudentIdAsync(Guid studentId, Guid eventId)
+    public async Task<List<Team>> SelectByStudentIdAsync(Guid studentId, Guid eventId, IEnumerable<Guid>? byTeams = null)
     {
-        var teams = await dbContext.Teams
+        var query = dbContext.Teams.AsQueryable();
+        
+        if (byTeams != null)
+        {
+            query = query.Where(t => byTeams.Contains(t.Id));
+        }
+        
+        var teams = await query
             .Include(t => t.Tutor)
             .Include(t => t.Members)
             .Include(t => t.Project)
@@ -73,9 +101,16 @@ public class TeamRepository(AppDbContext dbContext) : ITeamRepository
         return teams.Select(t => t.ToDomainModel()).ToList();
     }
 
-    public async Task<List<Team>> SelectByTutorIdAsync(Guid tutorId, Guid eventId)
+    public async Task<List<Team>> SelectByTutorIdAsync(Guid tutorId, Guid eventId, IEnumerable<Guid>? byTeams = null)
     {
-        var teams = await dbContext.Teams
+        var query = dbContext.Teams.AsQueryable();
+        
+        if (byTeams != null)
+        {
+            query = query.Where(t => byTeams.Contains(t.Id));
+        }
+
+        var teams = await query
             .Include(t => t.Tutor)
             .Include(t => t.Members)
             .Include(t => t.Project)

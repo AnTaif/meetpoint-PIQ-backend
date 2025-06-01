@@ -8,13 +8,15 @@ public interface ITeamRepository
 
     Task<TeamWithoutDeps?> FindWithoutDepsAsync(Guid teamId);
 
+    Task<List<Team>> SelectAsync(IEnumerable<Guid> teamIds);
+
     Task<List<TeamWithoutDeps>> SelectWithoutDepsAsync(IEnumerable<Guid> teamIds);
     
-    Task<List<Team>> SelectByEventIdAsync(Guid eventId);
+    Task<List<Team>> SelectByEventIdAsync(Guid eventId, IEnumerable<Guid>? byTeams = null);
 
-    Task<List<Team>> SelectByStudentIdAsync(Guid studentId, Guid eventId);
+    Task<List<Team>> SelectByStudentIdAsync(Guid studentId, Guid eventId, IEnumerable<Guid>? byTeams = null);
     
-    Task<List<Team>> SelectByTutorIdAsync(Guid tutorId, Guid eventId);
+    Task<List<Team>> SelectByTutorIdAsync(Guid tutorId, Guid eventId, IEnumerable<Guid>? byTeams = null);
 
     Task<List<Team>> SelectNotAssessedTeamsAsync(Guid tutorId);
 }

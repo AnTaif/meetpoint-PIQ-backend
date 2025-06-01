@@ -35,6 +35,7 @@ public class EventsController(
     /// Необязательный параметр, доступный только кураторам и админам.
     /// Если true - возвращаются команды, где текущий пользователь куратор
     /// </param>
+    [Obsolete("Пересесть на GET events/current/event-hierarchy")]
     [HttpGet("current")]
     [Authorize]
     [SwaggerResponseExample(StatusCodes.Status200OK, typeof(GetHierarchyResponseExample))]

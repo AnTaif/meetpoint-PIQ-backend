@@ -21,7 +21,7 @@ public class HierarchyService(
     : IHierarchyService
 {
     public async Task<Result<GetHierarchyResponse>> GetHierarchyForEventByUserAsync(
-        Guid? eventId, ContextUser contextUser, bool onlyWhereTutor = true)
+        Guid? eventId, ContextUser contextUser, bool onlyWhereTutor = true, List<Guid>? byTeams = null)
     {
         var currentEvent = await eventService.FindEventWithoutDepsAsync(eventId);
         if (currentEvent == null)
@@ -29,7 +29,7 @@ public class HierarchyService(
             return StatusError.NotFound("Current event not found");
         }
 
-        var teams = await ResolveTeamsForEventByUserAsync(currentEvent.Id, contextUser, onlyWhereTutor);
+        var teams = await ResolveTeamsForEventByUserAsync(currentEvent.Id, contextUser, onlyWhereTutor, byTeams);
 
         var assessmentRequiredTeamIds = await cache.GetOrCreateAsync<HashSet<Guid>>(
             $"requires_evaluation_by_user_{contextUser.Id}",
@@ -81,7 +81,7 @@ public class HierarchyService(
         };
     }
 
-    private async Task<List<Team>> ResolveTeamsForEventByUserAsync(Guid eventId, ContextUser contextUser, bool byTutor)
+    private async Task<List<Team>> ResolveTeamsForEventByUserAsync(Guid eventId, ContextUser contextUser, bool byTutor, List<Guid>? byTeams)
     {
         if (contextUser.Roles.Contains(RolesConstants.Admin) && !byTutor)
         {
