@@ -3,7 +3,7 @@ using Core.Results;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PIQService.Api.Docs.ResponseExamples;
-using PIQService.Application.Implementation.Scores;
+using PIQService.Application.Implementation.ReportsStatistics;
 using PIQService.Models.Dto;
 using Swashbuckle.AspNetCore.Filters;
 
@@ -12,7 +12,7 @@ namespace PIQService.Api.Controllers;
 [ApiController]
 [Authorize]
 [Route("user-scores")]
-public class UserScoresController(IScoreService scoreService) : ControllerBase
+public class UserScoresController(IReportsStatisticsService reportsStatisticsService) : ControllerBase
 {
     /// <summary>
     /// Получение средних результатов пользователя
@@ -25,7 +25,7 @@ public class UserScoresController(IScoreService scoreService) : ControllerBase
     public async Task<ActionResult<UserMeanScoreDto>> GetUserMeanScoresByForm(
         Guid userId, [FromQuery] Guid? byAssessment = null)
     {
-        var result = await scoreService.GetUserMeanScoresAsync(userId, User.ReadContextUser(), byAssessment);
+        var result = await reportsStatisticsService.GetUserMeanScoresAsync(userId, User.ReadContextUser(), byAssessment);
         return result.ToActionResult(this);
     }
 
@@ -40,7 +40,7 @@ public class UserScoresController(IScoreService scoreService) : ControllerBase
     [ProducesResponseType<string>(StatusCodes.Status401Unauthorized)]
     public async Task<ActionResult<List<UserMeanScoreDto>>> GetTeamMeanScores(Guid teamId, [FromQuery] Guid? byAssessment = null)
     {
-        var result = await scoreService.GetTeamMeanScoresAsync(teamId, User.ReadContextUser(), byAssessment);
+        var result = await reportsStatisticsService.GetTeamMeanScoresAsync(teamId, User.ReadContextUser(), byAssessment);
         return result.ToActionResult(this);
     }
 
@@ -61,7 +61,7 @@ public class UserScoresController(IScoreService scoreService) : ControllerBase
     public async Task<ActionResult<List<UserMeanScoreDto>>> GetUsersMeanScoresByForm(
         Guid formId, [FromQuery] bool onlyWhereTutor = true)
     {
-        var result = await scoreService.GetUsersMeanScoresByFormIdAsync(formId, User.ReadContextUser(), onlyWhereTutor);
+        var result = await reportsStatisticsService.GetUsersMeanScoresByFormIdAsync(formId, User.ReadContextUser(), onlyWhereTutor);
         return result.ToActionResult(this);
     }
 }

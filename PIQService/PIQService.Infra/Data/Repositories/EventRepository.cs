@@ -1,5 +1,5 @@
 using Microsoft.EntityFrameworkCore;
-using PIQService.Application.Implementation.Events;
+using PIQService.Application.Implementation.EventSupporting;
 using PIQService.Models.Converters;
 using PIQService.Models.Domain;
 
@@ -22,6 +22,26 @@ public class EventRepository(AppDbContext dbContext) : IEventRepository
         var @event = await dbContext.Events.FindAsync(id);
 
         return @event?.ToDomainBaseModel();
+    }
+
+    public async Task<Guid?> FindTemplateIdByEventIdAsync(Guid eventId)
+    {
+        var templateId = await dbContext.Events
+            .Where(e => e.Id == eventId)
+            .Select(e => e.TemplateId)
+            .FirstOrDefaultAsync();
+
+        return templateId;
+    }
+
+    public async Task<Guid?> FindTemplateIdByActiveEventAsync(DateTime onDate)
+    {
+        var templateId = await dbContext.Events
+            .Where(e => e.StartDate <= onDate && e.EndDate >= onDate)
+            .Select(e => e.TemplateId)
+            .FirstOrDefaultAsync();
+
+        return templateId;
     }
 
     public async Task<IEnumerable<Event>> SelectActiveAsync(DateTime onDate)

@@ -7,7 +7,7 @@ using PIQService.Api.Docs.RequestExamples;
 using PIQService.Api.Docs.ResponseExamples;
 using PIQService.Application.Implementation.Assessments.Sessions;
 using PIQService.Application.Implementation.Assessments.Sessions.Requests;
-using PIQService.Application.Implementation.Hierarchies;
+using PIQService.Application.Implementation.EventSupporting.Hierarchies;
 using PIQService.Models.Dto;
 using PIQService.Models.Dto.Responses;
 using Swashbuckle.AspNetCore.Filters;

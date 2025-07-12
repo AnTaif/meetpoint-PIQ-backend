@@ -1,6 +1,6 @@
 using PIQService.Models.Domain;
 
-namespace PIQService.Application.Implementation.Teams;
+namespace PIQService.Application.Implementation.EventSupporting.Teams;
 
 public interface ITeamRepository
 {

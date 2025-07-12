@@ -2,14 +2,13 @@ using Core.Auth;
 using Core.Results;
 using Microsoft.Extensions.Caching.Hybrid;
 using Microsoft.Extensions.Logging;
-using PIQService.Application.Implementation.Events;
-using PIQService.Application.Implementation.Teams;
+using PIQService.Application.Implementation.EventSupporting.Teams;
 using PIQService.Models.Converters;
 using PIQService.Models.Domain;
 using PIQService.Models.Dto;
 using PIQService.Models.Dto.Responses;
 
-namespace PIQService.Application.Implementation.Hierarchies;
+namespace PIQService.Application.Implementation.EventSupporting.Hierarchies;
 
 [RegisterScoped]
 public class HierarchyService(

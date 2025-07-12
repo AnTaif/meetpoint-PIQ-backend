@@ -3,7 +3,7 @@ using Core.Results;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PIQService.Api.Docs.ResponseExamples;
-using PIQService.Application.Implementation.Hierarchies;
+using PIQService.Application.Implementation.EventSupporting.Hierarchies;
 using PIQService.Models.Dto.Responses;
 using Swashbuckle.AspNetCore.Filters;
 

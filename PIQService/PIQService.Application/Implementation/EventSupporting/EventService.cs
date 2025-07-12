@@ -1,7 +1,14 @@
 using Microsoft.Extensions.Logging;
 using PIQService.Models.Domain;
 
-namespace PIQService.Application.Implementation.Events;
+namespace PIQService.Application.Implementation.EventSupporting;
+
+public interface IEventService
+{
+    Task<Event?> FindEventAsync(Guid? eventId);
+    Task<EventBase?> FindEventWithoutDepsAsync(Guid? eventId);
+    Task<Guid?> FindTemplateIdAsync(Guid? eventId = null);
+}
 
 [RegisterScoped]
 public class EventService(
@@ -18,6 +25,13 @@ public class EventService(
     public async Task<EventBase?> FindEventWithoutDepsAsync(Guid? eventId)
     {
         return eventId == null ? await FindCurrentEventBaseAsync() : await eventRepository.FindBaseAsync(eventId.Value);
+    }
+
+    public async Task<Guid?> FindTemplateIdAsync(Guid? eventId = null)
+    {
+        return eventId == null
+            ? await eventRepository.FindTemplateIdByActiveEventAsync(DateTime.UtcNow)
+            : await eventRepository.FindTemplateIdByEventIdAsync(eventId.Value);
     }
 
     private async Task<Event?> FindCurrentEventAsync()

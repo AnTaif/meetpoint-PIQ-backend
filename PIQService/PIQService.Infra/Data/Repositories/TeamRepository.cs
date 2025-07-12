@@ -1,5 +1,5 @@
 using Microsoft.EntityFrameworkCore;
-using PIQService.Application.Implementation.Teams;
+using PIQService.Application.Implementation.EventSupporting.Teams;
 using PIQService.Models.Converters;
 using PIQService.Models.Domain;
 

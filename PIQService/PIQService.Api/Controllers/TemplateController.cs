@@ -2,7 +2,7 @@ using Core.Results;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PIQService.Api.Docs.ResponseExamples;
-using PIQService.Application.Implementation.Forms;
+using PIQService.Application.Implementation.Templates.Forms;
 using PIQService.Models.Dto;
 using Swashbuckle.AspNetCore.Filters;
 

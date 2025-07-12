@@ -1,5 +1,5 @@
 using PIQService.Application.Implementation.Assessments.Sessions.Requests;
-using PIQService.Application.Implementation.Events;
+using PIQService.Application.Implementation.EventSupporting;
 using PIQService.Models.Converters.Assessments;
 using PIQService.Models.Domain.Assessments;
 using PIQService.Models.Dto;
@@ -34,8 +34,8 @@ public class AssessmentCreator(
     private async Task<List<AssessmentDto>> CreateAssessmentsForTeamsAsync(
         CreateAssessmentRequestBase request, IReadOnlyCollection<Guid> teamIds)
     {
-        var currentEvent = await eventService.FindEventWithoutDepsAsync(null)
-                           ?? throw new Exception("Current event not found");
+        var currentTemplateId = await eventService.FindTemplateIdAsync()
+                                ?? throw new Exception("Current event not found");
 
         var dtos = new List<AssessmentDto>();
         foreach (var teamId in teamIds)
@@ -47,7 +47,7 @@ public class AssessmentCreator(
                 request.EndDate,
                 request.UseCircleAssessment,
                 request.UseBehaviorAssessment,
-                currentEvent.TemplateId,
+                currentTemplateId,
                 teamId
             );
 

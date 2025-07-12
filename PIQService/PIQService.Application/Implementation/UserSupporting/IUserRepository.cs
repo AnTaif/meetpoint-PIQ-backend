@@ -1,6 +1,6 @@
 using PIQService.Models.Domain;
 
-namespace PIQService.Application.Implementation.Users;
+namespace PIQService.Application.Implementation.UserSupporting;
 
 public interface IUserRepository
 {

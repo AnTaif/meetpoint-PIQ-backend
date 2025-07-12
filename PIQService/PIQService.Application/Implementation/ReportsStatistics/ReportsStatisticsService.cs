@@ -1,21 +1,28 @@
 using Core.Auth;
 using Core.Results;
-using Microsoft.Extensions.Caching.Hybrid;
 using PIQService.Application.Implementation.Assessments.Marks;
-using PIQService.Application.Implementation.Events;
-using PIQService.Application.Implementation.Forms;
-using PIQService.Application.Implementation.Hierarchies;
-using PIQService.Application.Implementation.Teams;
+using PIQService.Application.Implementation.EventSupporting;
+using PIQService.Application.Implementation.EventSupporting.Hierarchies;
+using PIQService.Application.Implementation.EventSupporting.Teams;
 using PIQService.Application.Implementation.Templates;
-using PIQService.Application.Implementation.Users;
+using PIQService.Application.Implementation.Templates.Forms;
+using PIQService.Application.Implementation.UserSupporting;
 using PIQService.Models.Domain.Assessments;
 using PIQService.Models.Dto;
 
-namespace PIQService.Application.Implementation.Scores;
+namespace PIQService.Application.Implementation.ReportsStatistics;
+
+public interface IReportsStatisticsService
+{
+    Task<Result<UserMeanScoreDto>> GetUserMeanScoresAsync(Guid userId, ContextUser contextUser, Guid? byAssessment);
+    Task<Result<List<UserMeanScoreDto>>> GetTeamMeanScoresAsync(Guid teamId, ContextUser contextUser, Guid? byAssessment);
+
+    /// <param name="onlyWhereTutor">Параметр для админов-тьюторов, если false - можно получить всю иерархию</param>
+    Task<Result<List<UserMeanScoreDto>>> GetUsersMeanScoresByFormIdAsync(Guid formId, ContextUser contextUser, bool onlyWhereTutor = true);
+}
 
 [RegisterScoped]
-public class ScoreService(
-    HybridCache cache,
+public class ReportsStatisticsService(
     ITeamRepository teamRepository,
     IUserRepository userRepository,
     IHierarchyService hierarchyService,
@@ -24,7 +31,7 @@ public class ScoreService(
     IAssessmentMarkRepository markRepository,
     IFormRepository formRepository
 )
-    : IScoreService
+    : IReportsStatisticsService
 {
     public async Task<Result<UserMeanScoreDto>> GetUserMeanScoresAsync(Guid userId, ContextUser contextUser, Guid? byAssessment)
     {
@@ -47,7 +54,7 @@ public class ScoreService(
         var forms = new List<Form>();
 
         var circleForm = await formRepository.FindAsync(template.CircleFormId);
-        
+
         if (circleForm != null)
             forms.Add(circleForm);
 

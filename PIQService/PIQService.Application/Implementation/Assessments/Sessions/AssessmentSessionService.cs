@@ -2,7 +2,7 @@ using Core.Auth;
 using Core.Results;
 using PIQService.Application.Implementation.Assessments.Reports;
 using PIQService.Application.Implementation.Assessments.Sessions.Requests;
-using PIQService.Application.Implementation.Teams;
+using PIQService.Application.Implementation.EventSupporting.Teams;
 using PIQService.Models.Converters.Assessments;
 using PIQService.Models.Dto;
 

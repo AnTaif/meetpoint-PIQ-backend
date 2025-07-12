@@ -1,5 +1,5 @@
 using Core.Auth;
-using PIQService.Application.Implementation.Teams;
+using PIQService.Application.Implementation.EventSupporting.Teams;
 
 namespace PIQService.Application.Implementation;
 

@@ -1,5 +1,5 @@
 using Microsoft.EntityFrameworkCore;
-using PIQService.Application.Implementation.Users;
+using PIQService.Application.Implementation.UserSupporting;
 using PIQService.Models.Converters;
 using PIQService.Models.Domain;
 

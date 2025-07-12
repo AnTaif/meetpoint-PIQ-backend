@@ -1,6 +1,6 @@
 using PIQService.Models.Domain.Assessments;
 
-namespace PIQService.Application.Implementation.Forms;
+namespace PIQService.Application.Implementation.Templates.Forms;
 
 public interface IFormRepository
 {

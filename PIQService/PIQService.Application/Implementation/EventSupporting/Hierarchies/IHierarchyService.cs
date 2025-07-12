@@ -2,7 +2,7 @@ using Core.Auth;
 using Core.Results;
 using PIQService.Models.Dto.Responses;
 
-namespace PIQService.Application.Implementation.Hierarchies;
+namespace PIQService.Application.Implementation.EventSupporting.Hierarchies;
 
 public interface IHierarchyService
 {

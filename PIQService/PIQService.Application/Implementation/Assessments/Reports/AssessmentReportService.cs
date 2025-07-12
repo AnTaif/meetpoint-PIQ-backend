@@ -4,7 +4,7 @@ using Microsoft.Extensions.Caching.Hybrid;
 using Microsoft.Extensions.Logging;
 using PIQService.Application.Implementation.Assessments.Forms;
 using PIQService.Application.Implementation.Assessments.Marks;
-using PIQService.Application.Implementation.Teams;
+using PIQService.Application.Implementation.EventSupporting.Teams;
 using PIQService.Models.Converters;
 using PIQService.Models.Converters.Assessments;
 using PIQService.Models.Domain.Assessments;
