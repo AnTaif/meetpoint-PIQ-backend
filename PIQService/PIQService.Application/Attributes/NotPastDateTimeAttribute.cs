@@ -9,7 +9,7 @@ public class NotPastDateTimeAttribute : ValidationAttribute
         ErrorMessage = "Дата не может быть в прошлом. Пожалуйста, укажите текущую или будущую дату.";
     }
     
-    public override bool IsValid(object? value) => value != null && IsValid((DateTime)value);
+    public override bool IsValid(object? value) => value is DateTime date && IsValid(date);
 
     private static bool IsValid(DateTime value) => value >= DateTime.UtcNow;
 }
