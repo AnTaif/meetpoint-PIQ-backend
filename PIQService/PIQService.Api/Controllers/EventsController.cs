@@ -5,8 +5,8 @@ using Microsoft.AspNetCore.Mvc;
 using PIQService.Api.Docs;
 using PIQService.Api.Docs.RequestExamples;
 using PIQService.Api.Docs.ResponseExamples;
-using PIQService.Application.Implementation.Assessments;
-using PIQService.Application.Implementation.Assessments.Requests;
+using PIQService.Application.Implementation.Assessments.Sessions;
+using PIQService.Application.Implementation.Assessments.Sessions.Requests;
 using PIQService.Application.Implementation.Hierarchies;
 using PIQService.Models.Dto;
 using PIQService.Models.Dto.Responses;
@@ -18,8 +18,7 @@ namespace PIQService.Api.Controllers;
 [Authorize]
 [Route("events")]
 public class EventsController(
-    IAssessmentCreationService assessmentCreationService,
-    IAssessmentService assessmentService,
+    IAssessmentSessionService assessmentSessionService,
     IHierarchyService hierarchyService
 )
     : ControllerBase
@@ -53,14 +52,14 @@ public class EventsController(
     /// </summary>
     [HttpPost("assessments")]
     [Authorize(Roles = RolesConstants.AdminTutor)]
-    [SwaggerRequestExample(typeof(CreateTeamsAssessmentRequest), typeof(CreateTeamsAssessmentRequestExample))]
+    [SwaggerRequestExample(typeof(CreateAssessmentsForTeamsRequest), typeof(CreateTeamsAssessmentRequestExample))]
     [SwaggerResponseExample(StatusCodes.Status201Created, typeof(EnumerableAssessmentDtoExample))]
     [ProducesResponseType<AssessmentDto>(StatusCodes.Status201Created)]
     [ProducesResponseType<string>(StatusCodes.Status404NotFound)]
     [ProducesResponseType<string>(StatusCodes.Status401Unauthorized)]
-    public async Task<ActionResult<IEnumerable<AssessmentDto>>> CreateNewAssessment(CreateTeamsAssessmentRequest request)
+    public async Task<ActionResult<IEnumerable<AssessmentDto>>> CreateNewAssessment(CreateAssessmentsForTeamsRequest request)
     {
-        var result = await assessmentCreationService.CreateAssessmentsForTeamsAsync(request, User.ReadContextUser());
+        var result = await assessmentSessionService.CreateAssessmentsForTeamsAsync(request, User.ReadContextUser());
 
         return result.ToActionResult(this, dto => CreatedAtAction("CreateNewAssessment", dto));
     }

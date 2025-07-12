@@ -2,6 +2,7 @@ using Core.Auth;
 using Core.Results;
 using Microsoft.Extensions.Caching.Hybrid;
 using Microsoft.Extensions.Logging;
+using PIQService.Application.Implementation.Assessments.Forms;
 using PIQService.Application.Implementation.Assessments.Marks;
 using PIQService.Application.Implementation.Teams;
 using PIQService.Models.Converters;
@@ -9,20 +10,27 @@ using PIQService.Models.Converters.Assessments;
 using PIQService.Models.Domain.Assessments;
 using PIQService.Models.Dto;
 
-namespace PIQService.Application.Implementation.Assessments;
+namespace PIQService.Application.Implementation.Assessments.Reports;
+
+public interface IAssessmentReportService
+{
+    Task<Result<AssessmentMarkDto>> ReportAsync(Guid assessmentId, Guid assessedUserId, ContextUser assessor, IReadOnlyCollection<Guid> choiceIds);   
+    Task<Result<List<AssessUserDto>>> GetUsersToReportAsync(Guid assessmentId, ContextUser contextUser);
+    Task<Result<List<AssessChoiceDto>>> GetReportsAsync(Guid assessmentId, Guid assessedId, ContextUser assessor);
+}
 
 [RegisterScoped]
-public class AssessmentScoringService(
+public class AssessmentReportService(
     HybridCache cache,
     IAssessmentMarkRepository markRepository,
     IAssessmentRepository assessmentRepository,
     ITeamRepository teamRepository,
     IAssessmentFormsService assessmentFormsService,
-    ILogger<AssessmentScoringService> logger
+    ILogger<AssessmentReportService> logger
 )
-    : IAssessmentScoringService
+    : IAssessmentReportService
 {
-    public async Task<Result<AssessmentMarkDto>> ScoreAsync(
+    public async Task<Result<AssessmentMarkDto>> ReportAsync(
         Guid assessmentId, Guid assessedUserId, ContextUser assessor, IReadOnlyCollection<Guid> choiceIds)
     {
         var usedFormsResult = await assessmentFormsService.GetAssessmentUsedFormsAsync(assessmentId);
@@ -70,7 +78,7 @@ public class AssessmentScoringService(
         return mark.ToDtoModel();
     }
 
-    public async Task<Result<List<AssessUserDto>>> GetUsersToScoreAsync(Guid assessmentId, ContextUser contextUser)
+    public async Task<Result<List<AssessUserDto>>> GetUsersToReportAsync(Guid assessmentId, ContextUser contextUser)
     {
         var assessment = await assessmentRepository.FindWithoutDepsAsync(assessmentId);
 
@@ -105,7 +113,7 @@ public class AssessmentScoringService(
         }).ToList();
     }
 
-    public async Task<Result<List<AssessChoiceDto>>> GetChoicesAsync(Guid assessmentId, Guid assessedId, ContextUser assessor)
+    public async Task<Result<List<AssessChoiceDto>>> GetReportsAsync(Guid assessmentId, Guid assessedId, ContextUser assessor)
     {
         var assessment = await assessmentRepository.FindWithoutDepsAsync(assessmentId);
 

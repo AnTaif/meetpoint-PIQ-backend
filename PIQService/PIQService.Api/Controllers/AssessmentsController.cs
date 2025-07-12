@@ -5,8 +5,10 @@ using Microsoft.AspNetCore.Mvc;
 using PIQService.Api.Docs;
 using PIQService.Api.Docs.RequestExamples;
 using PIQService.Api.Docs.ResponseExamples;
-using PIQService.Application.Implementation.Assessments;
-using PIQService.Application.Implementation.Assessments.Requests;
+using PIQService.Application.Implementation.Assessments.Forms;
+using PIQService.Application.Implementation.Assessments.Reports;
+using PIQService.Application.Implementation.Assessments.Sessions;
+using PIQService.Application.Implementation.Assessments.Sessions.Requests;
 using PIQService.Models.Dto;
 using Swashbuckle.AspNetCore.Filters;
 
@@ -16,9 +18,9 @@ namespace PIQService.Api.Controllers;
 [Authorize]
 [Route("assessments")]
 public class AssessmentsController(
-    IAssessmentScoringService assessmentScoringService,
+    IAssessmentReportService assessmentReportService,
     IAssessmentFormsService assessmentFormsService,
-    IAssessmentService assessmentService
+    IAssessmentSessionService assessmentSessionService
 )
     : ControllerBase
 {
@@ -31,7 +33,7 @@ public class AssessmentsController(
     [ProducesResponseType<string>(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<AssessmentDto>> GetAssessment(Guid id)
     {
-        var result = await assessmentService.GetAssessmentAsync(id, User.ReadContextUser());
+        var result = await assessmentSessionService.GetAssessmentAsync(id, User.ReadContextUser());
         return result.ToActionResult(this);
     }
 
@@ -51,7 +53,7 @@ public class AssessmentsController(
     [ProducesResponseType<string>(StatusCodes.Status401Unauthorized)]
     public async Task<ActionResult<AssessmentDto>> EditAssessment(Guid id, EditAssessmentRequest request)
     {
-        var result = await assessmentService.EditAssessmentAsync(id, request, User.ReadContextUser());
+        var result = await assessmentSessionService.EditAssessmentAsync(id, request, User.ReadContextUser());
         return result.ToActionResult(this);
     }
 
@@ -80,7 +82,7 @@ public class AssessmentsController(
     [ProducesResponseType<string>(StatusCodes.Status401Unauthorized)]
     public async Task<ActionResult> DeleteAssessment(Guid id)
     {
-        var result = await assessmentService.DeleteAsync(id, User.ReadContextUser());
+        var result = await assessmentSessionService.DeleteAssessmentAsync(id, User.ReadContextUser());
         return result.ToActionResult(this);
     }
 
@@ -94,7 +96,7 @@ public class AssessmentsController(
     [ProducesResponseType<string>(StatusCodes.Status401Unauthorized)]
     public async Task<ActionResult<IEnumerable<AssessUserDto>>> GetAssessUsers(Guid assessmentId)
     {
-        var result = await assessmentScoringService.GetUsersToScoreAsync(assessmentId, User.ReadContextUser());
+        var result = await assessmentReportService.GetUsersToReportAsync(assessmentId, User.ReadContextUser());
         return result.ToActionResult(this);
     }
 
@@ -111,7 +113,7 @@ public class AssessmentsController(
     [ProducesResponseType<string>(StatusCodes.Status401Unauthorized)]
     public async Task<ActionResult<IEnumerable<AssessChoiceDto>>> GetChoicesForAssessedUser(Guid assessmentId, Guid assessedUserId)
     {
-        var result = await assessmentScoringService.GetChoicesAsync(assessmentId, assessedUserId, User.ReadContextUser());
+        var result = await assessmentReportService.GetReportsAsync(assessmentId, assessedUserId, User.ReadContextUser());
         return result.ToActionResult(this);
     }
 
@@ -126,7 +128,7 @@ public class AssessmentsController(
     [ProducesResponseType<string>(StatusCodes.Status401Unauthorized)]
     public async Task<ActionResult<AssessmentMarkDto>> AssessUser(Guid assessmentId, Guid assessedUserId, IReadOnlyCollection<Guid> choiceIds)
     {
-        var result = await assessmentScoringService.ScoreAsync(assessmentId, assessedUserId, User.ReadContextUser(), choiceIds);
+        var result = await assessmentReportService.ReportAsync(assessmentId, assessedUserId, User.ReadContextUser(), choiceIds);
         return result.ToActionResult(this, value => CreatedAtAction("AssessUser", value));
     }
 }

@@ -1,11 +1,11 @@
-using PIQService.Application.Implementation.Assessments.Requests;
+using PIQService.Application.Implementation.Assessments.Sessions.Requests;
 using Swashbuckle.AspNetCore.Filters;
 
 namespace PIQService.Api.Docs.RequestExamples;
 
-public class CreateTeamsAssessmentRequestExample : IExamplesProvider<CreateTeamsAssessmentRequest>
+public class CreateTeamsAssessmentRequestExample : IExamplesProvider<CreateAssessmentsForTeamsRequest>
 {
-    public CreateTeamsAssessmentRequest GetExamples() =>
+    public CreateAssessmentsForTeamsRequest GetExamples() =>
         new()
         {
             Name = "Неделя 1",

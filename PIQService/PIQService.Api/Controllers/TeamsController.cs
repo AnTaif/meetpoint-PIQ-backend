@@ -5,7 +5,8 @@ using Microsoft.AspNetCore.Mvc;
 using PIQService.Api.Docs;
 using PIQService.Api.Docs.RequestExamples;
 using PIQService.Application.Implementation.Assessments;
-using PIQService.Application.Implementation.Assessments.Requests;
+using PIQService.Application.Implementation.Assessments.Sessions;
+using PIQService.Application.Implementation.Assessments.Sessions.Requests;
 using PIQService.Models.Dto;
 using Swashbuckle.AspNetCore.Filters;
 
@@ -15,8 +16,7 @@ namespace PIQService.Api.Controllers;
 [Authorize]
 [Route("teams")]
 public class TeamsController(
-    IAssessmentCreationService assessmentCreationService,
-    IAssessmentService assessmentService
+    IAssessmentSessionService assessmentSessionService
 )
     : ControllerBase
 {
@@ -29,7 +29,7 @@ public class TeamsController(
     [ProducesResponseType<string>(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<IEnumerable<AssessmentDto>>> GetTeamAssessments(Guid teamId)
     {
-        var result = await assessmentService.GetTeamAssessmentsAsync(teamId, User.ReadContextUser());
+        var result = await assessmentSessionService.GetAssessmentsForTeamAsync(teamId, User.ReadContextUser());
         return result.ToActionResult(this);
     }
 
@@ -38,14 +38,14 @@ public class TeamsController(
     /// </summary>
     [HttpPost("{teamId}/assessments")]
     [Authorize(Roles = RolesConstants.AdminTutor)]
-    [SwaggerRequestExample(typeof(CreateTeamAssessmentRequest), typeof(CreateTeamAssessmentRequestExample))]
+    [SwaggerRequestExample(typeof(CreateAssessmentForTeamRequest), typeof(CreateTeamAssessmentRequestExample))]
     [SwaggerResponseExample(StatusCodes.Status201Created, typeof(AssessmentDtoExample))]
     [ProducesResponseType<AssessmentDto>(StatusCodes.Status201Created)]
     [ProducesResponseType<string>(StatusCodes.Status404NotFound)]
     [ProducesResponseType<string>(StatusCodes.Status401Unauthorized)]
-    public async Task<ActionResult<AssessmentDto>> CreateForTeam(Guid teamId, CreateTeamAssessmentRequest request)
+    public async Task<ActionResult<AssessmentDto>> CreateForTeam(Guid teamId, CreateAssessmentForTeamRequest request)
     {
-        var result = await assessmentCreationService.CreateAssessmentForTeamAsync(teamId, request, User.ReadContextUser());
+        var result = await assessmentSessionService.CreateAssessmentForTeamAsync(teamId, request, User.ReadContextUser());
 
         return result.ToActionResult(this, dto => CreatedAtAction("CreateForTeam", dto));
     }

@@ -1,24 +1,32 @@
 using Core.Auth;
 using Core.Results;
-using Microsoft.Extensions.Caching.Hybrid;
-using Microsoft.Extensions.Logging;
-using PIQService.Application.Implementation.Assessments.Requests;
+using PIQService.Application.Implementation.Assessments.Reports;
+using PIQService.Application.Implementation.Assessments.Sessions.Requests;
 using PIQService.Application.Implementation.Teams;
 using PIQService.Models.Converters.Assessments;
-using PIQService.Models.Domain.Assessments;
 using PIQService.Models.Dto;
 
-namespace PIQService.Application.Implementation.Assessments;
+namespace PIQService.Application.Implementation.Assessments.Sessions;
+
+public interface IAssessmentSessionService
+{
+    Task<Result<AssessmentDto>> GetAssessmentAsync(Guid assessmentId, ContextUser contextUser);
+    Task<Result<List<AssessmentDto>>> GetAssessmentsForTeamAsync(Guid teamId, ContextUser contextUser);
+    Task<Result<AssessmentDto>> CreateAssessmentForTeamAsync(Guid teamId, CreateAssessmentForTeamRequest request, ContextUser contextUser);
+    Task<Result<IEnumerable<AssessmentDto>>> CreateAssessmentsForTeamsAsync(CreateAssessmentsForTeamsRequest request, ContextUser contextUser);
+    Task<Result<AssessmentDto>> EditAssessmentAsync(Guid id, EditAssessmentRequest request, ContextUser contextUser);
+    Task<Result> DeleteAssessmentAsync(Guid id, ContextUser contextUser);
+}
 
 [RegisterScoped]
-public class AssessmentService(
-    HybridCache cache,
-    IAssessmentScoringService assessmentScoringService,
-    ITeamRepository teamRepository,
+public class AssessmentSessionService(
     IAssessmentRepository assessmentRepository,
-    ILogger<AssessmentService> logger
+    ITeamRepository teamRepository,
+    IAssessmentReportService assessmentReportService,
+    IAssessmentCreator assessmentCreator,
+    ISecurityService securityService
 )
-    : IAssessmentService
+    : IAssessmentSessionService
 {
     public async Task<Result<AssessmentDto>> GetAssessmentAsync(Guid assessmentId, ContextUser contextUser)
     {
@@ -26,11 +34,11 @@ public class AssessmentService(
 
         if (assessment == null)
             return StatusError.NotFound("Assessment not found");
-        
+
         return assessment.ToDtoModel(-1, -1);
     }
 
-    public async Task<Result<List<AssessmentDto>>> GetTeamAssessmentsAsync(Guid teamId, ContextUser contextUser)
+    public async Task<Result<List<AssessmentDto>>> GetAssessmentsForTeamAsync(Guid teamId, ContextUser contextUser)
     {
         var team = await teamRepository.FindWithoutDepsAsync(teamId);
         if (team == null)
@@ -42,7 +50,7 @@ public class AssessmentService(
         var dtos = new List<AssessmentDto>();
         foreach (var assessment in assessments)
         {
-            var assessUsersResult = await assessmentScoringService.GetUsersToScoreAsync(assessment.Id, contextUser);
+            var assessUsersResult = await assessmentReportService.GetUsersToReportAsync(assessment.Id, contextUser);
             if (assessUsersResult.IsFailure)
                 return assessUsersResult.Error;
 
@@ -54,6 +62,28 @@ public class AssessmentService(
         return dtos;
     }
 
+    public async Task<Result<AssessmentDto>> CreateAssessmentForTeamAsync(
+        Guid teamId, CreateAssessmentForTeamRequest request, ContextUser contextUser)
+    {
+        if (!await securityService.IsAdminOrTeamsTutorAsync(contextUser, teamId))
+        {
+            return StatusError.Forbidden();
+        }
+        
+        return await assessmentCreator.CreateSingleForTeamAsync(request, teamId);
+    }
+
+    public async Task<Result<IEnumerable<AssessmentDto>>> CreateAssessmentsForTeamsAsync(
+        CreateAssessmentsForTeamsRequest request, ContextUser contextUser)
+    {
+        if (!await securityService.IsAdminOrTeamsTutorAsync(contextUser, request.TeamIds))
+        {
+            return StatusError.Forbidden();
+        }
+        
+        return await assessmentCreator.CreateManyForTeamsAsync(request);
+    }
+
     public async Task<Result<AssessmentDto>> EditAssessmentAsync(Guid id, EditAssessmentRequest request, ContextUser contextUser)
     {
         var assessment = await assessmentRepository.FindWithoutDepsAsync(id);
@@ -62,7 +92,7 @@ public class AssessmentService(
             return StatusError.NotFound("Assessment not found");
         }
 
-        if (!await CanManageAssessmentAsync(assessment, contextUser))
+        if (!await securityService.IsAdminOrTeamsTutorAsync(contextUser, assessment.TeamId))
         {
             return StatusError.Forbidden("Вы не можете редактировать данное оценивание");
         }
@@ -77,14 +107,13 @@ public class AssessmentService(
 
         assessment.Edit(request.Name, request.StartDate, request.EndDate, request.UseCircleAssessment, request.UseBehaviorAssessment);
 
-        await cache.RemoveAsync($"requires_evaluation_by_user_{contextUser.Id}");
         assessmentRepository.Update(assessment);
         await assessmentRepository.SaveChangesAsync();
 
         return assessment.ToDtoModel(-1, -1);
     }
 
-    public async Task<Result> DeleteAsync(Guid id, ContextUser contextUser)
+    public async Task<Result> DeleteAssessmentAsync(Guid id, ContextUser contextUser)
     {
         var assessment = await assessmentRepository.FindWithoutDepsAsync(id);
 
@@ -93,7 +122,7 @@ public class AssessmentService(
             return StatusError.NotFound("Assessment not found");
         }
 
-        if (!await CanManageAssessmentAsync(assessment, contextUser))
+        if (!await securityService.IsAdminOrTeamsTutorAsync(contextUser, assessment.TeamId))
         {
             return StatusError.Forbidden("Вы не можете редактировать данное оценивание");
         }
@@ -103,18 +132,9 @@ public class AssessmentService(
             return StatusError.Conflict("Cannot delete completed assessment");
         }
 
-        await cache.RemoveAsync($"requires_evaluation_by_user_{contextUser.Id}");
         assessmentRepository.Delete(assessment);
         await assessmentRepository.SaveChangesAsync();
 
         return Result.Success;
-    }
-
-    private async Task<bool> CanManageAssessmentAsync(AssessmentWithoutDeps assessment, ContextUser user)
-    {
-        var team = await teamRepository.FindWithoutDepsAsync(assessment.TeamId)
-                   ?? throw new Exception("Error when finding assessment's team");
-
-        return team.TutorId == user.Id || user.Roles.Contains(RolesConstants.Admin);
     }
 }

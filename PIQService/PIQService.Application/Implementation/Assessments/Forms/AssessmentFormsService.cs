@@ -5,7 +5,12 @@ using PIQService.Application.Implementation.Templates;
 using PIQService.Models.Converters.Assessments;
 using PIQService.Models.Dto;
 
-namespace PIQService.Application.Implementation.Assessments;
+namespace PIQService.Application.Implementation.Assessments.Forms;
+
+public interface IAssessmentFormsService
+{
+    Task<Result<IEnumerable<FormShortDto>>> GetAssessmentUsedFormsAsync(Guid assessmentId);
+}
 
 [RegisterScoped]
 public class AssessmentFormsService(

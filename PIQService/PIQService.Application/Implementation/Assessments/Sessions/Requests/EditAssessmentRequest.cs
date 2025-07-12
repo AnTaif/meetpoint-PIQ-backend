@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using PIQService.Application.Attributes;
 
-namespace PIQService.Application.Implementation.Assessments.Requests;
+namespace PIQService.Application.Implementation.Assessments.Sessions.Requests;
 
 public class EditAssessmentRequest
 {

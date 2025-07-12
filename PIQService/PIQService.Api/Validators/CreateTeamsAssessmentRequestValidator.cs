@@ -1,9 +1,9 @@
 using FluentValidation;
-using PIQService.Application.Implementation.Assessments.Requests;
+using PIQService.Application.Implementation.Assessments.Sessions.Requests;
 
 namespace PIQService.Api.Validators;
 
-public class CreateTeamsAssessmentRequestValidator : AbstractValidator<CreateTeamsAssessmentRequest>
+public class CreateTeamsAssessmentRequestValidator : AbstractValidator<CreateAssessmentsForTeamsRequest>
 {
     public CreateTeamsAssessmentRequestValidator()
     {
