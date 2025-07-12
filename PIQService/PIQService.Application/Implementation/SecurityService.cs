@@ -11,6 +11,7 @@ public interface ISecurityService
     Task<bool> IsTeamsTutorAsync(ContextUser user, IReadOnlyCollection<Guid> teamIds);
 }
 
+[RegisterScoped]
 public class SecurityService(
     ITeamRepository teamRepository
 )
